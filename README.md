@@ -67,16 +67,16 @@ Observed output with the tested samples:
 | Nova, system passthrough | ✅ DTS-HD MA, DTS:X | ✅ DTS-HD MA, DTS:X |
 | Emby 3.5.63 | ✅ DTS-HD MA, DTS:X | ✅ DTS-HD MA, DTS:X |
 | Kodi 21 | ✅ DTS-HD MA, DTS:X | ✅ DTS-HD MA, DTS:X |
-| Plezy 2.22.0 | ✅ DTS-HD MA, DTS:X | Untested |
-| Wholphin 1.0.8 | ✅ DTS-HD MA, DTS:X | Untested |
+| Plezy 2.22.0 | ✅ DTS-HD MA, DTS:X | ✅ DTS-HD MA, DTS:X |
+| Wholphin 1.0.8 | ✅ DTS-HD MA, DTS:X | ✅ DTS-HD MA, DTS:X |
 | Plex 2026.19.1 | ❌ AAC transcode | ✅ DTS-HD MA, DTS:X |
 | Jellyfin Android TV 0.19.10 | ⚠️ DTS core or ❌ AAC transcode | ⚠️ DTS core |
 
 Karat results use RS8182.3811N, Nova 6.4.3, Emby 3.5.63 (`com.mb.android`)
 and Kodi 21.3. Gazelle's Plex/Jellyfin results are from PS7702. Kodi uses its own
 DTS packer and does not need the DTS fix. Plezy and Wholphin were tested on
-PS7717 with the combined module; Plezy supplied already-packed audio, while
-Wholphin used the patched system packer. App/server transcoding cannot be
+Gazelle PS7717 and Karat RS8182 with the combined module; Plezy supplied
+already-packed audio, while Wholphin used the patched system packer. App/server transcoding cannot be
 reversed by the module.
 
 ## Installation
