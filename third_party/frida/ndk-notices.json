@@ -1,0 +1,20 @@
+{
+  "url": "https://dl.google.com/android/repository/android-ndk-r29-linux.zip",
+  "files": [
+    {
+      "path": "android-ndk-r29/NOTICE.toolchain",
+      "sha256": "789714a9076571c580cf531bdcebec776a4d889c12c3c1108adafc6e4338710a",
+      "bytes": 799639
+    },
+    {
+      "path": "android-ndk-r29/NOTICE",
+      "sha256": "faf0dc52cf6ce9ab09a04b0c074a378dd2565ee1ed9bc1179d83793bcdba012e",
+      "bytes": 516438
+    },
+    {
+      "path": "android-ndk-r29/source.properties",
+      "sha256": "716f3518a923198cfab037abb32dc3f1b1f7e9a9dcdcda6b66be5906215d2658",
+      "bytes": 107
+    }
+  ]
+}

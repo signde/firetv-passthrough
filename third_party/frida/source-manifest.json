@@ -1,0 +1,1650 @@
+[
+  {
+    "id": "brotli",
+    "repo": "frida/brotli",
+    "revision": "01d9e2922ca878965ebcd71ee8965d2a7aadb47a",
+    "category": "sdk-superset",
+    "url": "https://codeload.github.com/frida/brotli/tar.gz/01d9e2922ca878965ebcd71ee8965d2a7aadb47a",
+    "archive": "brotli-01d9e2922ca878965ebcd71ee8965d2a7aadb47a.tar.gz",
+    "sha256": "9e5350b4b1d12d71d7b7599494959c2859232c3c203bd3c5cb4ccf4a9e15471c",
+    "bytes": 513617,
+    "notice_files": [
+      "LICENSE"
+    ]
+  },
+  {
+    "id": "capstone",
+    "repo": "frida/capstone",
+    "revision": "d536b1577fd033a31d75f48fd183aa425256cc18",
+    "category": "sdk-superset",
+    "url": "https://codeload.github.com/frida/capstone/tar.gz/d536b1577fd033a31d75f48fd183aa425256cc18",
+    "archive": "capstone-d536b1577fd033a31d75f48fd183aa425256cc18.tar.gz",
+    "sha256": "56b4910b0ddfbd954e281db3e652f91162265c939f69a2370964ad14a6ffc0d2",
+    "bytes": 7667278,
+    "notice_files": [
+      "LICENSE.TXT",
+      "LICENSE_LLVM.TXT",
+      "bindings/python/LICENSE.TXT",
+      "suite/regress/LICENSE",
+      "bindings/vb6/Apache_2.0_License.txt"
+    ]
+  },
+  {
+    "id": "elfutils",
+    "repo": "frida/elfutils",
+    "revision": "1284bbc128473aea220337685985d465607fbac8",
+    "category": "sdk-superset",
+    "url": "https://codeload.github.com/frida/elfutils/tar.gz/1284bbc128473aea220337685985d465607fbac8",
+    "archive": "elfutils-1284bbc128473aea220337685985d465607fbac8.tar.gz",
+    "sha256": "3e5728c39a2d04b28a744a5be032e1726a85b6a7c80d19027d2facc69ab0f28b",
+    "bytes": 8911739,
+    "notice_files": [
+      "AUTHORS",
+      "COPYING",
+      "COPYING-GPLV2",
+      "COPYING-LGPLV3",
+      "doc/COPYING-GFDL"
+    ]
+  },
+  {
+    "id": "frida",
+    "repo": "frida/frida",
+    "revision": "324ee3a9c90bf398f9b6571ec16c27c70a062839",
+    "category": "project",
+    "url": "https://codeload.github.com/frida/frida/tar.gz/324ee3a9c90bf398f9b6571ec16c27c70a062839",
+    "archive": "frida-324ee3a9c90bf398f9b6571ec16c27c70a062839.tar.gz",
+    "sha256": "d84a78dbf61158575aa25c5bda8840540ce3b9922d36bfb55d27d452fbbf1ae7",
+    "bytes": 31802,
+    "notice_files": [
+      "COPYING"
+    ]
+  },
+  {
+    "id": "frida-core",
+    "repo": "frida/frida-core",
+    "revision": "d1f5966ca6faf555e5f6aab8ae1500e404c5cbfa",
+    "category": "project",
+    "url": "https://codeload.github.com/frida/frida-core/tar.gz/d1f5966ca6faf555e5f6aab8ae1500e404c5cbfa",
+    "archive": "frida-core-d1f5966ca6faf555e5f6aab8ae1500e404c5cbfa.tar.gz",
+    "sha256": "32004fdbfeef43d10e701a8c5d4dd58d5c7f4d6f8a36218502cfca0691531558",
+    "bytes": 4498157,
+    "notice_files": [
+      "COPYING"
+    ]
+  },
+  {
+    "id": "frida-gum",
+    "repo": "frida/frida-gum",
+    "revision": "394129220697e3ded9cfa45019e4eeb1c3693495",
+    "category": "project",
+    "url": "https://codeload.github.com/frida/frida-gum/tar.gz/394129220697e3ded9cfa45019e4eeb1c3693495",
+    "archive": "frida-gum-394129220697e3ded9cfa45019e4eeb1c3693495.tar.gz",
+    "sha256": "d5391aec102e84341d0e4e5aa56f5baa1e9124c96732f5b335988ae08c728610",
+    "bytes": 14427485,
+    "notice_files": [
+      "COPYING"
+    ]
+  },
+  {
+    "id": "glib",
+    "repo": "frida/glib",
+    "revision": "e0cc7c6f0d88f47e4dee4607df085d08c89b8a6a",
+    "category": "sdk-superset",
+    "url": "https://codeload.github.com/frida/glib/tar.gz/e0cc7c6f0d88f47e4dee4607df085d08c89b8a6a",
+    "archive": "glib-e0cc7c6f0d88f47e4dee4607df085d08c89b8a6a.tar.gz",
+    "sha256": "71bca7ca1106ec879aa33c087fa84d330e6f9d88ec7376253348f03de6497990",
+    "bytes": 9217990,
+    "notice_files": [
+      "LICENSES/Apache-2.0.txt",
+      "LICENSES/CC0-1.0.txt",
+      "LICENSES/GPL-2.0-or-later.txt",
+      "LICENSES/LGPL-2.1-or-later.txt",
+      "LICENSES/LLVM-exception.txt",
+      "LICENSES/LicenseRef-old-glib-tests.txt",
+      "LICENSES/MIT.txt",
+      "docs/reference/AUTHORS",
+      "docs/reference/COPYING",
+      "gmodule/AUTHORS",
+      "proxy-libintl-static/COPYING.LIB.txt"
+    ]
+  },
+  {
+    "id": "glib-networking",
+    "repo": "frida/glib-networking",
+    "revision": "ef47b1a09cf8c1875f181bcf901643689a56d12f",
+    "category": "sdk-superset",
+    "url": "https://codeload.github.com/frida/glib-networking/tar.gz/ef47b1a09cf8c1875f181bcf901643689a56d12f",
+    "archive": "glib-networking-ef47b1a09cf8c1875f181bcf901643689a56d12f.tar.gz",
+    "sha256": "87a6c4a244094eadcc1f2e18b3800ffa231c215124b7af113c5eb0d056028d32",
+    "bytes": 419914,
+    "notice_files": [
+      "COPYING",
+      "LICENSE_EXCEPTION"
+    ]
+  },
+  {
+    "id": "json-glib",
+    "repo": "frida/json-glib",
+    "revision": "1a39cbe151b02c4192987c8fcc98997a59db2154",
+    "category": "sdk-superset",
+    "url": "https://codeload.github.com/frida/json-glib/tar.gz/1a39cbe151b02c4192987c8fcc98997a59db2154",
+    "archive": "json-glib-1a39cbe151b02c4192987c8fcc98997a59db2154.tar.gz",
+    "sha256": "da733d01080eca5f985cda182017e94bbe8ffaed4bc3b17cd08f6abcf79d534b",
+    "bytes": 235334,
+    "notice_files": [
+      "LICENSES/CC0-1.0.txt",
+      "LICENSES/LGPL-2.1-or-later.txt",
+      "LICENSES/MIT.txt"
+    ]
+  },
+  {
+    "id": "libbpf",
+    "repo": "frida/libbpf",
+    "revision": "6c8d0d00a122fe126b7a3094f0785340128506f5",
+    "category": "sdk-superset",
+    "url": "https://codeload.github.com/frida/libbpf/tar.gz/6c8d0d00a122fe126b7a3094f0785340128506f5",
+    "archive": "libbpf-6c8d0d00a122fe126b7a3094f0785340128506f5.tar.gz",
+    "sha256": "7627c8ea2da9f71eacc63ebb7256fbb899c3689e2c82ce79ee8bd9d2b209fc47",
+    "bytes": 1076978,
+    "notice_files": [
+      "LICENSE",
+      "LICENSE.BSD-2-Clause",
+      "LICENSE.LGPL-2.1"
+    ]
+  },
+  {
+    "id": "libdwarf",
+    "repo": "frida/libdwarf",
+    "revision": "61ff154ae803d2b0202dbc1bf385cda1ac3ece54",
+    "category": "sdk-superset",
+    "url": "https://codeload.github.com/frida/libdwarf/tar.gz/61ff154ae803d2b0202dbc1bf385cda1ac3ece54",
+    "archive": "libdwarf-61ff154ae803d2b0202dbc1bf385cda1ac3ece54.tar.gz",
+    "sha256": "32dfc6096c5bac4bbaa3d53a8d6bbe1761fed0547fbaff343a3fd7fa61cdb052",
+    "bytes": 3227429,
+    "notice_files": [
+      "AUTHORS",
+      "COPYING",
+      "src/bin/dwarfdump/COPYING",
+      "src/bin/dwarfgen/COPYING",
+      "src/lib/libdwarf/COPYING",
+      "src/lib/libdwarfp/COPYING",
+      "src/bin/dwarfdump/DWARFDUMPCOPYRIGHT",
+      "src/bin/dwarfdump/GPL.txt",
+      "src/lib/libdwarf/LGPL.txt",
+      "src/lib/libdwarf/LIBDWARFCOPYRIGHT"
+    ]
+  },
+  {
+    "id": "libffi",
+    "repo": "frida/libffi",
+    "revision": "3fe3257235cc9ffd192e1cd567f1bdfff751fa3e",
+    "category": "sdk-superset",
+    "url": "https://codeload.github.com/frida/libffi/tar.gz/3fe3257235cc9ffd192e1cd567f1bdfff751fa3e",
+    "archive": "libffi-3fe3257235cc9ffd192e1cd567f1bdfff751fa3e.tar.gz",
+    "sha256": "6a8c2fee461bc7562f2beb5635e7903f01623f404bf48d9edd6b8773f0baef75",
+    "bytes": 588698,
+    "notice_files": [
+      "LICENSE",
+      "LICENSE-BUILDTOOLS"
+    ]
+  },
+  {
+    "id": "libgee",
+    "repo": "frida/libgee",
+    "revision": "ad17ed847039469fcc2dc711ecfee2bbf7d2bf87",
+    "category": "sdk-superset",
+    "url": "https://codeload.github.com/frida/libgee/tar.gz/ad17ed847039469fcc2dc711ecfee2bbf7d2bf87",
+    "archive": "libgee-ad17ed847039469fcc2dc711ecfee2bbf7d2bf87.tar.gz",
+    "sha256": "59817deaa4db678727a3150cbdc14adebff78fa7011b42f7af7574e64598bfb5",
+    "bytes": 142779,
+    "notice_files": [
+      "AUTHORS",
+      "COPYING"
+    ]
+  },
+  {
+    "id": "libiconv",
+    "repo": "frida/libiconv",
+    "revision": "cc24563b2c9c43727242e3bcc55bfcc210926ff2",
+    "category": "sdk-superset",
+    "url": "https://codeload.github.com/frida/libiconv/tar.gz/cc24563b2c9c43727242e3bcc55bfcc210926ff2",
+    "archive": "libiconv-cc24563b2c9c43727242e3bcc55bfcc210926ff2.tar.gz",
+    "sha256": "539dd285d2565f88a498014131223c2290181cb1c9dffc4619b9d13bb51e39e4",
+    "bytes": 4399549,
+    "notice_files": [
+      "AUTHORS",
+      "COPYING",
+      "COPYING.LIB",
+      "libcharset/AUTHORS",
+      "libcharset/COPYING.LIB"
+    ]
+  },
+  {
+    "id": "libnice",
+    "repo": "frida/libnice",
+    "revision": "9a3da6e3e5bbcf935fd85b6b8557ff8c7dd9032c",
+    "category": "sdk-superset",
+    "url": "https://codeload.github.com/frida/libnice/tar.gz/9a3da6e3e5bbcf935fd85b6b8557ff8c7dd9032c",
+    "archive": "libnice-9a3da6e3e5bbcf935fd85b6b8557ff8c7dd9032c.tar.gz",
+    "sha256": "cf5d350e68a18f9b93edceb37cec49d34561682bf969e6d2dc08faa80d2ccb80",
+    "bytes": 455276,
+    "notice_files": [
+      "AUTHORS",
+      "COPYING",
+      "COPYING.LGPL",
+      "COPYING.MPL"
+    ]
+  },
+  {
+    "id": "libpsl",
+    "repo": "frida/libpsl",
+    "revision": "b76c0fed2e27353d5fbb067ecdfdf76d2281eb91",
+    "category": "sdk-superset",
+    "url": "https://codeload.github.com/frida/libpsl/tar.gz/b76c0fed2e27353d5fbb067ecdfdf76d2281eb91",
+    "archive": "libpsl-b76c0fed2e27353d5fbb067ecdfdf76d2281eb91.tar.gz",
+    "sha256": "a2e67a5876d565999252c7f949be2f8429f0e9bb7ce7fc59cd1a529ce38feaa2",
+    "bytes": 6992424,
+    "notice_files": [
+      "AUTHORS",
+      "COPYING",
+      "LICENSE",
+      "src/LICENSE.chromium"
+    ]
+  },
+  {
+    "id": "libsoup",
+    "repo": "frida/libsoup",
+    "revision": "4fd67869310b9de8fe2947bc8504ccbcf1abf285",
+    "category": "sdk-superset",
+    "url": "https://codeload.github.com/frida/libsoup/tar.gz/4fd67869310b9de8fe2947bc8504ccbcf1abf285",
+    "archive": "libsoup-4fd67869310b9de8fe2947bc8504ccbcf1abf285.tar.gz",
+    "sha256": "49ee3f99ba8e05ecf82ffe1345b5d2e07a4624f2d3e07a96251a579a015595e4",
+    "bytes": 1864800,
+    "notice_files": [
+      "AUTHORS",
+      "COPYING"
+    ]
+  },
+  {
+    "id": "libunwind",
+    "repo": "frida/libunwind",
+    "revision": "509f83336cc9af43f52a60b7ff07d56a0dcbcdd8",
+    "category": "sdk-superset",
+    "url": "https://codeload.github.com/frida/libunwind/tar.gz/509f83336cc9af43f52a60b7ff07d56a0dcbcdd8",
+    "archive": "libunwind-509f83336cc9af43f52a60b7ff07d56a0dcbcdd8.tar.gz",
+    "sha256": "26015e5233dc68dc99b9eb8396a7bd54b37d143da6012d14cfd9a687e15048c1",
+    "bytes": 495662,
+    "notice_files": [
+      "AUTHORS",
+      "COPYING",
+      "LICENSE"
+    ]
+  },
+  {
+    "id": "libxml2",
+    "repo": "frida/libxml2",
+    "revision": "f09ad5551829b7f2df3666759e701644a0ea8558",
+    "category": "sdk-superset",
+    "url": "https://codeload.github.com/frida/libxml2/tar.gz/f09ad5551829b7f2df3666759e701644a0ea8558",
+    "archive": "libxml2-f09ad5551829b7f2df3666759e701644a0ea8558.tar.gz",
+    "sha256": "b4aca62bd914a6d5c63e37c3e37179111d02e3a04827638e76f4bf203a0cb40e",
+    "bytes": 3816747,
+    "notice_files": [
+      "Copyright"
+    ]
+  },
+  {
+    "id": "lwip",
+    "repo": "frida/lwip",
+    "revision": "00ea2b4c3c57dae81ec3a88c3d58ef38ab17e0c9",
+    "category": "sdk-superset",
+    "url": "https://codeload.github.com/frida/lwip/tar.gz/00ea2b4c3c57dae81ec3a88c3d58ef38ab17e0c9",
+    "archive": "lwip-00ea2b4c3c57dae81ec3a88c3d58ef38ab17e0c9.tar.gz",
+    "sha256": "5156a3a0cdce47bd5dbcac1d80f7b3e70ce5c3e430a58c09b640ae7815bef5a4",
+    "bytes": 1606286,
+    "notice_files": [
+      "COPYING",
+      "contrib/apps/LwipMibCompiler/SharpSnmpLib/license.txt"
+    ]
+  },
+  {
+    "id": "lzfse",
+    "repo": "frida/lzfse",
+    "revision": "5cfb7c86919d3c2c636d0d7552b51855a611ba1c",
+    "category": "sdk-superset",
+    "url": "https://codeload.github.com/frida/lzfse/tar.gz/5cfb7c86919d3c2c636d0d7552b51855a611ba1c",
+    "archive": "lzfse-5cfb7c86919d3c2c636d0d7552b51855a611ba1c.tar.gz",
+    "sha256": "5574b75c0e567582f5d138bfc13865a408516f1b932a4c241c2878c89cb7c006",
+    "bytes": 51096,
+    "notice_files": [
+      "LICENSE"
+    ]
+  },
+  {
+    "id": "minizip-ng",
+    "repo": "frida/minizip-ng",
+    "revision": "3a87bc9dedd9d1ece0845632a80d6c359e750d75",
+    "category": "sdk-superset",
+    "url": "https://codeload.github.com/frida/minizip-ng/tar.gz/3a87bc9dedd9d1ece0845632a80d6c359e750d75",
+    "archive": "minizip-ng-3a87bc9dedd9d1ece0845632a80d6c359e750d75.tar.gz",
+    "sha256": "6878378c3ee03ab9c2e25663fbcb9eff0f04b9ddf413cd5369263c2216ffe137",
+    "bytes": 645079,
+    "notice_files": [
+      "LICENSE",
+      "test/fuzz/unzip_fuzzer_seed_corpus/license_zstd.zip"
+    ]
+  },
+  {
+    "id": "nghttp2",
+    "repo": "frida/nghttp2",
+    "revision": "ae13d24ea59c30e36ca53d1b22c4e664588d0445",
+    "category": "sdk-superset",
+    "url": "https://codeload.github.com/frida/nghttp2/tar.gz/ae13d24ea59c30e36ca53d1b22c4e664588d0445",
+    "archive": "nghttp2-ae13d24ea59c30e36ca53d1b22c4e664588d0445.tar.gz",
+    "sha256": "207362cb9d439bb325ba9eda2eca75ab95b559f4b94d8e8f1a293183c6326c0d",
+    "bytes": 3888162,
+    "notice_files": [
+      "AUTHORS",
+      "COPYING",
+      "LICENSE",
+      "doc/_exts/rubydomain/LICENSE.rubydomain",
+      "third-party/llhttp/LICENSE-MIT",
+      "third-party/url-parser/AUTHORS",
+      "third-party/url-parser/LICENSE-MIT"
+    ]
+  },
+  {
+    "id": "ngtcp2",
+    "repo": "frida/ngtcp2",
+    "revision": "5b21d4418ff668d9b5ddc4f744b7a28af4196abf",
+    "category": "sdk-superset",
+    "url": "https://codeload.github.com/frida/ngtcp2/tar.gz/5b21d4418ff668d9b5ddc4f744b7a28af4196abf",
+    "archive": "ngtcp2-5b21d4418ff668d9b5ddc4f744b7a28af4196abf.tar.gz",
+    "sha256": "018f4842eb8d0ca1e369f2a1bf1051324d17ddf972b58e7931733c0c72ff3bce",
+    "bytes": 601370,
+    "notice_files": [
+      "AUTHORS",
+      "COPYING",
+      "third-party/http-parser/AUTHORS",
+      "third-party/http-parser/LICENSE-MIT"
+    ]
+  },
+  {
+    "id": "ninja",
+    "repo": "frida/ninja",
+    "revision": "516800b093d1a2e5589ee1cdd7393dffdf9c702e",
+    "category": "toolchain",
+    "url": "https://codeload.github.com/frida/ninja/tar.gz/516800b093d1a2e5589ee1cdd7393dffdf9c702e",
+    "archive": "ninja-516800b093d1a2e5589ee1cdd7393dffdf9c702e.tar.gz",
+    "sha256": "02bdd8a1077847dea7738a9f271f33b7ba5d4497b616e70763df966b317c91f7",
+    "bytes": 230764,
+    "notice_files": [
+      "COPYING"
+    ]
+  },
+  {
+    "id": "openssl",
+    "repo": "frida/openssl",
+    "revision": "fa60a1c8c704e4ca0cc0dcb289c3be1fea1b50ff",
+    "category": "sdk-superset",
+    "url": "https://codeload.github.com/frida/openssl/tar.gz/fa60a1c8c704e4ca0cc0dcb289c3be1fea1b50ff",
+    "archive": "openssl-fa60a1c8c704e4ca0cc0dcb289c3be1fea1b50ff.tar.gz",
+    "sha256": "53559857d58383256efe59ca7cb55caa0a6635c9680a3c8a5d29fec78f20be71",
+    "bytes": 29148918,
+    "notice_files": [
+      "AUTHORS.md",
+      "LICENSE.build",
+      "LICENSE.txt",
+      "external/perl/Text-Template-1.56/LICENSE",
+      "util/perl/OpenSSL/copyright.pm"
+    ]
+  },
+  {
+    "id": "pcre2",
+    "repo": "frida/pcre2",
+    "revision": "b47486922fdc3486499b310dc9cf903449700474",
+    "category": "sdk-superset",
+    "url": "https://codeload.github.com/frida/pcre2/tar.gz/b47486922fdc3486499b310dc9cf903449700474",
+    "archive": "pcre2-b47486922fdc3486499b310dc9cf903449700474.tar.gz",
+    "sha256": "6dfae668d6e887a552358270cd215bfa13ab3864a4304f7cd7026474c48d36c5",
+    "bytes": 2754591,
+    "notice_files": [
+      "AUTHORS",
+      "COPYING",
+      "LICENCE",
+      "LICENSE.build",
+      "cmake/COPYING-CMAKE-SCRIPTS"
+    ]
+  },
+  {
+    "id": "pkg-config",
+    "repo": "frida/pkg-config",
+    "revision": "4696795673d1d3dec46b663df48f8cbf66461d14",
+    "category": "toolchain",
+    "url": "https://codeload.github.com/frida/pkg-config/tar.gz/4696795673d1d3dec46b663df48f8cbf66461d14",
+    "archive": "pkg-config-4696795673d1d3dec46b663df48f8cbf66461d14.tar.gz",
+    "sha256": "a7199634c06369e811c0b7fbc1cf0ef7d52e36724359f4ea538eaac0d66b3713",
+    "bytes": 1201087,
+    "notice_files": [
+      "AUTHORS",
+      "COPYING",
+      "glib/AUTHORS",
+      "glib/COPYING"
+    ]
+  },
+  {
+    "id": "quickjs",
+    "repo": "frida/quickjs",
+    "revision": "247bfdcbd3c58171af060351d7587541d05989fd",
+    "category": "sdk-superset",
+    "url": "https://codeload.github.com/frida/quickjs/tar.gz/247bfdcbd3c58171af060351d7587541d05989fd",
+    "archive": "quickjs-247bfdcbd3c58171af060351d7587541d05989fd.tar.gz",
+    "sha256": "dae9fa330a25d1be4a2ce95e8f40c60f89468741b5940ef5cff48bad602aace7",
+    "bytes": 619804,
+    "notice_files": [
+      "LICENSE"
+    ]
+  },
+  {
+    "id": "releng",
+    "repo": "frida/releng",
+    "revision": "d6b56b460b67c690a1e19396d61f4eccebbabfd8",
+    "category": "project",
+    "url": "https://codeload.github.com/frida/releng/tar.gz/d6b56b460b67c690a1e19396d61f4eccebbabfd8",
+    "archive": "releng-d6b56b460b67c690a1e19396d61f4eccebbabfd8.tar.gz",
+    "sha256": "5aadb5e1a8b04206301fd5c7f69be22eb168bd815baeee360835fa5eddc651f3",
+    "bytes": 57973,
+    "notice_files": []
+  },
+  {
+    "id": "selinux",
+    "repo": "frida/selinux",
+    "revision": "b7c8cd70d821bb3fc69500e6273149299b80b923",
+    "category": "sdk-superset",
+    "url": "https://codeload.github.com/frida/selinux/tar.gz/b7c8cd70d821bb3fc69500e6273149299b80b923",
+    "archive": "selinux-b7c8cd70d821bb3fc69500e6273149299b80b923.tar.gz",
+    "sha256": "13c0a000562b0bac7d9d8cfadd67fccd047eb1a196b4d8648d607013791f8731",
+    "bytes": 6059016,
+    "notice_files": [
+      "LICENSE",
+      "checkpolicy/LICENSE",
+      "dbus/LICENSE",
+      "gui/LICENSE",
+      "libselinux/LICENSE",
+      "libsemanage/LICENSE",
+      "libsepol/LICENSE",
+      "mcstrans/LICENSE",
+      "policycoreutils/LICENSE",
+      "python/LICENSE",
+      "python/sepolgen/LICENSE",
+      "restorecond/LICENSE",
+      "sandbox/LICENSE",
+      "secilc/LICENSE",
+      "semodule-utils/LICENSE"
+    ]
+  },
+  {
+    "id": "sqlite",
+    "repo": "frida/sqlite",
+    "revision": "ef9edc77c069f6824bc88352a437f00aabef6e11",
+    "category": "sdk-superset",
+    "url": "https://codeload.github.com/frida/sqlite/tar.gz/ef9edc77c069f6824bc88352a437f00aabef6e11",
+    "archive": "sqlite-ef9edc77c069f6824bc88352a437f00aabef6e11.tar.gz",
+    "sha256": "72beaa5a0c99ff5c3db7d38899c1cccb421dcf974fcbf59a00293378580ea3b2",
+    "bytes": 2557374,
+    "notice_files": [
+      "PUBLIC-DOMAIN.txt"
+    ]
+  },
+  {
+    "id": "tinycc",
+    "repo": "frida/tinycc",
+    "revision": "3da7432bebd348bf16cdc7a22c3717b4f22946af",
+    "category": "sdk-superset",
+    "url": "https://codeload.github.com/frida/tinycc/tar.gz/3da7432bebd348bf16cdc7a22c3717b4f22946af",
+    "archive": "tinycc-3da7432bebd348bf16cdc7a22c3717b4f22946af.tar.gz",
+    "sha256": "c38d889d9a2907d96157c5483c9231b1cb2d917e15a72b4843b1f348024ebfab",
+    "bytes": 852281,
+    "notice_files": [
+      "COPYING",
+      "tests/tests2/LICENSE"
+    ]
+  },
+  {
+    "id": "usrsctp",
+    "repo": "frida/usrsctp",
+    "revision": "57b8b42abad9b00861f92281f013830bbbd0b5f0",
+    "category": "sdk-superset",
+    "url": "https://codeload.github.com/frida/usrsctp/tar.gz/57b8b42abad9b00861f92281f013830bbbd0b5f0",
+    "archive": "usrsctp-57b8b42abad9b00861f92281f013830bbbd0b5f0.tar.gz",
+    "sha256": "ed368a0273235c58ff497952d33148b72b58405ea8cd1db8ba3f0b5e3d78bf8e",
+    "bytes": 773692,
+    "notice_files": [
+      "LICENSE.md"
+    ]
+  },
+  {
+    "id": "v8",
+    "repo": "frida/v8",
+    "revision": "a07af892420dfd873b33bd4ce4ba9d963072e1b9",
+    "category": "sdk-superset",
+    "url": "https://codeload.github.com/frida/v8/tar.gz/a07af892420dfd873b33bd4ce4ba9d963072e1b9",
+    "archive": "v8-a07af892420dfd873b33bd4ce4ba9d963072e1b9.tar.gz",
+    "sha256": "64e4b80de58df9cfbd79ac284af9a7e77b9195589a0582104388a13e3b7be1ae",
+    "bytes": 28674069,
+    "notice_files": [
+      "AUTHORS",
+      "LICENSE",
+      "LICENSE.fdlibm",
+      "LICENSE.strongtalk",
+      "LICENSE.v8",
+      "src/third_party/siphash/LICENSE",
+      "src/third_party/utf8-decoder/LICENSE",
+      "src/third_party/valgrind/LICENSE",
+      "src/third_party/vtune/LICENSE",
+      "test/js-perf-test/SixSpeed/LICENSE.sixspeed",
+      "test/mjsunit/third_party/object-keys/LICENSE",
+      "test/mjsunit/third_party/regexp-pcre/LICENSE",
+      "test/wasm-js/third_party/LICENSE.testharness",
+      "third_party/colorama/LICENSE",
+      "third_party/inspector_protocol/LICENSE",
+      "third_party/jinja2/LICENSE.rst",
+      "third_party/jsoncpp/LICENSE",
+      "third_party/markupsafe/AUTHORS",
+      "third_party/markupsafe/LICENSE",
+      "third_party/test262-harness/LICENSE",
+      "third_party/v8/builtins/LICENSE",
+      "third_party/wasm-api/LICENSE"
+    ]
+  },
+  {
+    "id": "vala",
+    "repo": "frida/vala",
+    "revision": "172348fa9123ff4a95d541c5f9e56837434c4b6e",
+    "category": "toolchain",
+    "url": "https://codeload.github.com/frida/vala/tar.gz/172348fa9123ff4a95d541c5f9e56837434c4b6e",
+    "archive": "vala-172348fa9123ff4a95d541c5f9e56837434c4b6e.tar.gz",
+    "sha256": "008057c29f5504ebd3d5d46f889d62625a57935e982a69c0d886bc8a759d7b7e",
+    "bytes": 3680539,
+    "notice_files": [
+      "AUTHORS",
+      "COPYING"
+    ]
+  },
+  {
+    "id": "xz",
+    "repo": "frida/xz",
+    "revision": "e70f5800ab5001c9509d374dbf3e7e6b866c43fe",
+    "category": "sdk-superset",
+    "url": "https://codeload.github.com/frida/xz/tar.gz/e70f5800ab5001c9509d374dbf3e7e6b866c43fe",
+    "archive": "xz-e70f5800ab5001c9509d374dbf3e7e6b866c43fe.tar.gz",
+    "sha256": "1bea42439c243d72fca1b5f9782e809f43d2f9722d24c399325d641a369f03a0",
+    "bytes": 951457,
+    "notice_files": [
+      "AUTHORS",
+      "COPYING",
+      "COPYING.GPLv2",
+      "COPYING.GPLv3",
+      "COPYING.LGPLv2.1",
+      "LICENSE.build"
+    ]
+  },
+  {
+    "id": "zlib",
+    "repo": "frida/zlib",
+    "revision": "171a3eacaea8b731ef1fc586e7777b77742e2a1d",
+    "category": "sdk-superset",
+    "url": "https://codeload.github.com/frida/zlib/tar.gz/171a3eacaea8b731ef1fc586e7777b77742e2a1d",
+    "archive": "zlib-171a3eacaea8b731ef1fc586e7777b77742e2a1d.tar.gz",
+    "sha256": "3d9fec0b58e66e0733c6276edd2ea52f7a1c12ead56b2be78506ccaffc2d9fa2",
+    "bytes": 1598800,
+    "notice_files": [
+      "LICENSE",
+      "LICENSE.build",
+      "contrib/dotzlib/LICENSE_1_0.txt"
+    ]
+  },
+  {
+    "id": "meson",
+    "repo": "frida/meson",
+    "revision": "342713453ed2f10c99fbbe6f7625170e04c12c8f",
+    "category": "nested-source",
+    "url": "https://codeload.github.com/frida/meson/tar.gz/342713453ed2f10c99fbbe6f7625170e04c12c8f",
+    "archive": "meson-342713453ed2f10c99fbbe6f7625170e04c12c8f.tar.gz",
+    "sha256": "1eb587761d164b18c459b14adb8f5aeb9885911010cf0d0991627d14051614d1",
+    "bytes": 4770089,
+    "notice_files": [
+      "COPYING",
+      "docs/theme/extra/templates/license.html",
+      "packaging/License.rtf",
+      "packaging/macpages/English.lproj/license.html"
+    ]
+  },
+  {
+    "id": "tomlkit",
+    "repo": "python-poetry/tomlkit",
+    "revision": "911cccd630965ff423316e25b4685ecf7df0ec0a",
+    "category": "nested-source",
+    "url": "https://codeload.github.com/python-poetry/tomlkit/tar.gz/911cccd630965ff423316e25b4685ecf7df0ec0a",
+    "archive": "tomlkit-911cccd630965ff423316e25b4685ecf7df0ec0a.tar.gz",
+    "sha256": "2f9e579cb4f88c4425554e74451e0cedefe39b3f8e9fc04407f196c62a8eff74",
+    "bytes": 177082,
+    "notice_files": [
+      "LICENSE",
+      "tests/toml-spec-tests/LICENSE"
+    ]
+  },
+  {
+    "id": "gvdb",
+    "repo": "GNOME/gvdb",
+    "revision": "0854af0fdb6d527a8d1999835ac2c5059976c210",
+    "category": "nested-source",
+    "url": "https://codeload.github.com/GNOME/gvdb/tar.gz/0854af0fdb6d527a8d1999835ac2c5059976c210",
+    "archive": "gvdb-0854af0fdb6d527a8d1999835ac2c5059976c210.tar.gz",
+    "sha256": "08352e54e8216d9001820c627c62858585465b51dc557cc22f0f4770ed182ebd",
+    "bytes": 20837,
+    "notice_files": [
+      "COPYING"
+    ]
+  },
+  {
+    "id": "npm-frida-assert-3.0.2",
+    "name": "@frida/assert",
+    "revision": "3.0.2",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@frida/assert/-/assert-3.0.2.tgz",
+    "archive": "npm-frida-assert-3.0.2.tgz",
+    "integrity": "sha512-JXJq5SbXGrM5EkjrZKfRmB29zOoEOix02NC6A5TSJ+C1GE/X051EinJJsuOO2pEOx7KZwpvAHvS0WXW0+levKg==",
+    "license": "MIT",
+    "sha256": "27b33a3814c2ba74e448752f5852db009e738a68309d769d638c942e5bfb7eac",
+    "bytes": 16387,
+    "notice_files": [
+      "LICENSE"
+    ]
+  },
+  {
+    "id": "npm-frida-base64-js-2.0.3",
+    "name": "@frida/base64-js",
+    "revision": "2.0.3",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@frida/base64-js/-/base64-js-2.0.3.tgz",
+    "archive": "npm-frida-base64-js-2.0.3.tgz",
+    "integrity": "sha512-2w0F+1TynOTCZ/v7du9LdHPWwq0lJhazjo2fF9upMyQmA1zHetT14fLuQ1v/6T0qPgyeEGkiSrybstU8EsgeUA==",
+    "license": "MIT",
+    "sha256": "a6df62a8b3f75a4269095678c6343cd8ab01bdb4c340fa44cf1d403451e5f724",
+    "bytes": 2680,
+    "notice_files": [
+      "LICENSE"
+    ]
+  },
+  {
+    "id": "npm-frida-buffer-7.0.4",
+    "name": "@frida/buffer",
+    "revision": "7.0.4",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@frida/buffer/-/buffer-7.0.4.tgz",
+    "archive": "npm-frida-buffer-7.0.4.tgz",
+    "integrity": "sha512-RxQ1lZRRiCJj7nhcCiD8xeJx0NsLpGGnjqsmTg7jShGmbnVFMN5W7+J+3gqdPSQhc/IxNBIWc6zRXVp4+qnYHg==",
+    "license": "MIT",
+    "sha256": "2ea09d8f8b2e57a3f2a117d8a14fb2021aa28821e510a90796fbc5cd49140c44",
+    "bytes": 15688,
+    "notice_files": [
+      "LICENSE"
+    ]
+  },
+  {
+    "id": "npm-frida-crypto-1.0.1",
+    "name": "@frida/crypto",
+    "revision": "1.0.1",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@frida/crypto/-/crypto-1.0.1.tgz",
+    "archive": "npm-frida-crypto-1.0.1.tgz",
+    "integrity": "sha512-WXTkVjESvX8TIVXIynJJv9BKSIdQP0Iis04StIXknkDi1ULdMlrypA9p5C4KW1H6GCkNsVnKbybpzsulYCTvag==",
+    "license": "MIT",
+    "sha256": "c5c1fff0b2bc98e91f70b95fd5979413f14e91f6aa007586b8cc732925ea85cf",
+    "bytes": 1051,
+    "notice_files": []
+  },
+  {
+    "id": "npm-frida-diagnostics_channel-1.0.0",
+    "name": "@frida/diagnostics_channel",
+    "revision": "1.0.0",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@frida/diagnostics_channel/-/diagnostics_channel-1.0.0.tgz",
+    "archive": "npm-frida-diagnostics_channel-1.0.0.tgz",
+    "integrity": "sha512-mYX1jp/5Bpk24tHArJNx65iCk7qSuV8YJkdU0gFNVtJUXxfV8BG5WuPa4mL+ynxsbWWpsg/cwKZbLAepYKTdQQ==",
+    "license": "MIT",
+    "sha256": "39b7a7f242c41e6fd3d418908ad286f44b974fa34ca0f63c9ba36a509410ae0b",
+    "bytes": 1664,
+    "notice_files": [
+      "LICENSE.md"
+    ]
+  },
+  {
+    "id": "npm-frida-events-4.0.4",
+    "name": "@frida/events",
+    "revision": "4.0.4",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@frida/events/-/events-4.0.4.tgz",
+    "archive": "npm-frida-events-4.0.4.tgz",
+    "integrity": "sha512-qJVQ6VWHf9sjUKuiJzoCAC00frbpcwxeYfvQ+PP9LU/d70j+QvjWgYe98Qa3ekLaBU6r/AvWm8ThKCDUCLWrQQ==",
+    "license": "MIT",
+    "sha256": "d8e538420905e50de48fdb5313a0ff858b68619e591cdc78c4d402be206d24ea",
+    "bytes": 4811,
+    "notice_files": [
+      "LICENSE"
+    ]
+  },
+  {
+    "id": "npm-frida-http-4.0.2",
+    "name": "@frida/http",
+    "revision": "4.0.2",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@frida/http/-/http-4.0.2.tgz",
+    "archive": "npm-frida-http-4.0.2.tgz",
+    "integrity": "sha512-cvkc7ex7GmVXVOWqtjXKBWUUbYEBgpNRKZbEEoMeI8KiIs8zejKwg+N7rx7296Ao+EP3+xcUr4wBVr3xLaUVfQ==",
+    "license": "MIT",
+    "sha256": "3cedc6ee7c6183342a1da73e1db6eb4fd0b0cfbe186721c766286b8d350e86bf",
+    "bytes": 22610,
+    "notice_files": [
+      "LICENSE"
+    ]
+  },
+  {
+    "id": "npm-frida-http-parser-js-1.0.0",
+    "name": "@frida/http-parser-js",
+    "revision": "1.0.0",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@frida/http-parser-js/-/http-parser-js-1.0.0.tgz",
+    "archive": "npm-frida-http-parser-js-1.0.0.tgz",
+    "integrity": "sha512-2nMrNXt/OeTlWbqnE8AH4Sfz4I2+BGoN206dzKEyC/g2svtn83Xu+zuv/V3TkwrA27s26Mcy84ZwsXeNlqNxUQ==",
+    "license": "MIT",
+    "sha256": "a48d59dca27709b72b7b5068634f150a0c8d642b56c835b354bc984a13bd148d",
+    "bytes": 5773,
+    "notice_files": [
+      "LICENSE.md"
+    ]
+  },
+  {
+    "id": "npm-frida-https-1.0.0",
+    "name": "@frida/https",
+    "revision": "1.0.0",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@frida/https/-/https-1.0.0.tgz",
+    "archive": "npm-frida-https-1.0.0.tgz",
+    "integrity": "sha512-OiqQ6qsALcWOktRLq07oJ0i6sH8eX6MXb/MdZS1qVKDRf6wchH4Pjn6fiLB+pt/OlYbggk+DOfpHwSdjTwuHMQ==",
+    "license": "MIT",
+    "sha256": "f0d3e1914b511bcb374b0eeb60f4e53d68cd1c20144953b358aabd4c244d3cae",
+    "bytes": 1302,
+    "notice_files": [
+      "LICENSE.md"
+    ]
+  },
+  {
+    "id": "npm-frida-ieee754-2.0.2",
+    "name": "@frida/ieee754",
+    "revision": "2.0.2",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@frida/ieee754/-/ieee754-2.0.2.tgz",
+    "archive": "npm-frida-ieee754-2.0.2.tgz",
+    "integrity": "sha512-wlcUebnne4ENN7GDr5pTH598ZDLMVOsh0FjenxeVOe6u7ewZkz9gGRnLnZKJAm9kl5G6XhdxhI0cSXVQK/rQUw==",
+    "license": "BSD-3-Clause",
+    "sha256": "690c2fb186206abd4917e7c8c6139091b8cc469cc717e3495f47fa7f55e109c4",
+    "bytes": 2385,
+    "notice_files": [
+      "LICENSE"
+    ]
+  },
+  {
+    "id": "npm-frida-net-5.0.0",
+    "name": "@frida/net",
+    "revision": "5.0.0",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@frida/net/-/net-5.0.0.tgz",
+    "archive": "npm-frida-net-5.0.0.tgz",
+    "integrity": "sha512-czsyNauuAJ3Udzbg3xm9abaK/AKaMnqgZkIPeO0kVYRah9d1tCHMXTnWi+d8vJaDzB/bIXOcfmV2VX0hCDlfJw==",
+    "license": "MIT",
+    "sha256": "912cfe7e140c3325674554f2e51918296a3613c4fcb47aaf93ed677e96d066a8",
+    "bytes": 11253,
+    "notice_files": [
+      "LICENSE"
+    ]
+  },
+  {
+    "id": "npm-frida-os-1.0.2",
+    "name": "@frida/os",
+    "revision": "1.0.2",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@frida/os/-/os-1.0.2.tgz",
+    "archive": "npm-frida-os-1.0.2.tgz",
+    "integrity": "sha512-3ISAiGNiyIya3QN2EHBCz1wqP0enTdSxP99wUeroeh8+AQRmgoOr/5TRnrVry8pe378anay3fmV/tdUMMSkehQ==",
+    "license": "MIT",
+    "sha256": "483f4f73648db54dca39620335939826bd9ba247b3223b53b4c591fe35d9c767",
+    "bytes": 1533,
+    "notice_files": [
+      "LICENSE"
+    ]
+  },
+  {
+    "id": "npm-frida-path-2.0.3",
+    "name": "@frida/path",
+    "revision": "2.0.3",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@frida/path/-/path-2.0.3.tgz",
+    "archive": "npm-frida-path-2.0.3.tgz",
+    "integrity": "sha512-2RQy36QatoC846fzBhBhV8sXMsSOBGoYvwTHeaE1zUdz7F4RNScP4QEekTTooBYWYX/XjiF36KQpYAzc9OYFtg==",
+    "license": "MIT",
+    "sha256": "79c480b42fdf8b3297f0dfc032f0c3f58a6c2c7678dec37ae456326dec264add",
+    "bytes": 8527,
+    "notice_files": [
+      "LICENSE"
+    ]
+  },
+  {
+    "id": "npm-frida-process-1.2.1",
+    "name": "@frida/process",
+    "revision": "1.2.1",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@frida/process/-/process-1.2.1.tgz",
+    "archive": "npm-frida-process-1.2.1.tgz",
+    "integrity": "sha512-nvCu22DstFW2ttGFtOKekHM7vnjbZm+XgtvavOt427GNT6uV7k0JYK9tnMbcLMRWv57DG6udAmuJlWs8Paq1ag==",
+    "license": "MIT",
+    "sha256": "0598151a28638b5e9a4c8db47b234b9ebf9d6188de338396b243db278f17c2e9",
+    "bytes": 2850,
+    "notice_files": [
+      "LICENSE"
+    ]
+  },
+  {
+    "id": "npm-frida-punycode-3.0.0",
+    "name": "@frida/punycode",
+    "revision": "3.0.0",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@frida/punycode/-/punycode-3.0.0.tgz",
+    "archive": "npm-frida-punycode-3.0.0.tgz",
+    "integrity": "sha512-XVSDY2KamDs1D5/fTVgHcOSNxdU4kTboxzqJMBbTjcQC7XScIT9c0EfbwKCq7Kci6gWQdsHSCr7lU+9Oc4KAdg==",
+    "license": "MIT",
+    "sha256": "a0aa827f61ea5898eb7253efc904378b38b6cce9622961730cbaeec7aef9717b",
+    "bytes": 5455,
+    "notice_files": [
+      "LICENSE-MIT.txt"
+    ]
+  },
+  {
+    "id": "npm-frida-querystring-1.0.0",
+    "name": "@frida/querystring",
+    "revision": "1.0.0",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@frida/querystring/-/querystring-1.0.0.tgz",
+    "archive": "npm-frida-querystring-1.0.0.tgz",
+    "integrity": "sha512-15m1fOZPmoO/vWlgPJrG/J9/BJDz6a2/JpVGpS8ynNzo+fBhTznaStX5nHxUs24mVTqh/OqLo0EiYJM5WWHXxg==",
+    "license": "MIT",
+    "sha256": "1055ff70cabda6e81f6685e2d93519dcbae6cf2ecd41dd43e3afdd82990dd3cd",
+    "bytes": 2867,
+    "notice_files": [
+      "LICENSE"
+    ]
+  },
+  {
+    "id": "npm-frida-readable-stream-4.1.3",
+    "name": "@frida/readable-stream",
+    "revision": "4.1.3",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@frida/readable-stream/-/readable-stream-4.1.3.tgz",
+    "archive": "npm-frida-readable-stream-4.1.3.tgz",
+    "integrity": "sha512-ntGUFmi+CryRGRJIK13a/VST2Ad19uivbln8Xd92vKPAARq+6vMIASDyZIqyl5BLRccfiyCHdYgrgQ6RI5rUig==",
+    "license": "MIT",
+    "sha256": "21cf57482a7193ca063ea598534509ee647999b61a53d9e8d85a858d2f70ff23",
+    "bytes": 40532,
+    "notice_files": [
+      "LICENSE"
+    ]
+  },
+  {
+    "id": "npm-frida-reserved-words-1.0.0",
+    "name": "@frida/reserved-words",
+    "revision": "1.0.0",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@frida/reserved-words/-/reserved-words-1.0.0.tgz",
+    "archive": "npm-frida-reserved-words-1.0.0.tgz",
+    "integrity": "sha512-2yG/XxJlsGlk/mm6eZTb4OAaQEhkTI2qaFfZFtAsrA/XuCpuMWkS4y/guyBlsRu4hAuhK2HPmNM8+OLLK1zM9Q==",
+    "license": "MIT",
+    "sha256": "a46c84bb7b2ee4a197cd7b72a9b86efea84e774513aef7bd7a853ee5efd0a68a",
+    "bytes": 3013,
+    "notice_files": [
+      "LICENSE"
+    ]
+  },
+  {
+    "id": "npm-frida-stream-1.0.2",
+    "name": "@frida/stream",
+    "revision": "1.0.2",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@frida/stream/-/stream-1.0.2.tgz",
+    "archive": "npm-frida-stream-1.0.2.tgz",
+    "integrity": "sha512-4OuaC1ztmEKgTq3WeBhsy8Oq+AwW9n9cYnvLklcC9jwD93AEwgbWpecLlxJCVuALvTMdhKPg0nQVfyGYP/i9Bw==",
+    "license": "MIT",
+    "sha256": "a0caffdedea8afc8047a7f557d251b8b0eeeb29e8dcb9b8d4938482feca0cc1d",
+    "bytes": 1240,
+    "notice_files": [
+      "LICENSE.md"
+    ]
+  },
+  {
+    "id": "npm-frida-string_decoder-2.0.0",
+    "name": "@frida/string_decoder",
+    "revision": "2.0.0",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@frida/string_decoder/-/string_decoder-2.0.0.tgz",
+    "archive": "npm-frida-string_decoder-2.0.0.tgz",
+    "integrity": "sha512-in371tYZMHQiW9HF5MS3JDw6Ao6tyBoq34UWy2rzOswYyMG1rpizh85ofi/yVkxDiaqybEZefxzkVittpPGT6g==",
+    "license": "MIT",
+    "sha256": "e75d268aa86814cc7d08b51ec0e16bf87949f417c2ddc04ccb42fdbab03e80a5",
+    "bytes": 3696,
+    "notice_files": [
+      "LICENSE"
+    ]
+  },
+  {
+    "id": "npm-frida-timers-3.0.0",
+    "name": "@frida/timers",
+    "revision": "3.0.0",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@frida/timers/-/timers-3.0.0.tgz",
+    "archive": "npm-frida-timers-3.0.0.tgz",
+    "integrity": "sha512-3b+0igv10aT8TMxefrTAd06rActqbxJLY2Xkkq9vYcPBffB/yHszl0NYIp/5ko8WC3ecDYPU6bQiY6fjs72zTA==",
+    "license": "MIT",
+    "sha256": "1d9bab660050c320093869181560f5452db461e191c4d97384ad4f441dfe154f",
+    "bytes": 3218,
+    "notice_files": [
+      "LICENSE.md"
+    ]
+  },
+  {
+    "id": "npm-frida-tty-1.0.0",
+    "name": "@frida/tty",
+    "revision": "1.0.0",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@frida/tty/-/tty-1.0.0.tgz",
+    "archive": "npm-frida-tty-1.0.0.tgz",
+    "integrity": "sha512-p/kjLnKYxEAB1MdYP8+5rKv9CsHzyA+0jg9BcGETzjQVKHHcroHDULRxDYUh+DC7qs6cpX8QdDQh9E+a6ydgsQ==",
+    "license": "MIT",
+    "sha256": "cdc20a5a81e0fbe8d1a011c056903a8f7d509e47afcde3f25119d3e12134a7c5",
+    "bytes": 1228,
+    "notice_files": [
+      "LICENSE"
+    ]
+  },
+  {
+    "id": "npm-frida-url-1.0.2",
+    "name": "@frida/url",
+    "revision": "1.0.2",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@frida/url/-/url-1.0.2.tgz",
+    "archive": "npm-frida-url-1.0.2.tgz",
+    "integrity": "sha512-ZKunbKJHMr8w2Eb/5K1avy0MzK1B998S17wYXNv3RmzBGxMm8S5T0F3qEpRxkU7/72P8m4izyQU87fWl+FjQsQ==",
+    "license": "MIT",
+    "sha256": "728af447877d85534815c70e45ddc053566a864c691f2ec5f00e37589d2726ea",
+    "bytes": 9634,
+    "notice_files": [
+      "LICENSE"
+    ]
+  },
+  {
+    "id": "npm-frida-util-1.0.3",
+    "name": "@frida/util",
+    "revision": "1.0.3",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@frida/util/-/util-1.0.3.tgz",
+    "archive": "npm-frida-util-1.0.3.tgz",
+    "integrity": "sha512-htcG3uDiRXv89ERVNNYhfase39kJ2X75ZARfrYcYEtJLFEsSk0nemM1YnEIR4CjrHvdvkWHrwgKkS+acOyoNEg==",
+    "license": "MIT",
+    "sha256": "4022fba8164bfdd2e320ea6f8853a772d7e12328d81972e5d29aab19a6ae2a52",
+    "bytes": 7632,
+    "notice_files": [
+      "LICENSE"
+    ]
+  },
+  {
+    "id": "npm-frida-vm-2.0.0",
+    "name": "@frida/vm",
+    "revision": "2.0.0",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@frida/vm/-/vm-2.0.0.tgz",
+    "archive": "npm-frida-vm-2.0.0.tgz",
+    "integrity": "sha512-7fsjLWscZT5odNIBtg6qbLNI+vAk1xmii6H5W2kaYkMYt0vRohQEcDSUWacA+eaWlu5SvMjZI82Yibj/3G9pJw==",
+    "license": "MIT",
+    "sha256": "a4dead29fb4c758baf25ef0697e9626f78bdbaf3254d432005e5480b34c94306",
+    "bytes": 2066,
+    "notice_files": [
+      "LICENSE"
+    ]
+  },
+  {
+    "id": "npm-types-frida-gum-19.12.0",
+    "name": "@types/frida-gum",
+    "revision": "19.12.0",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@types/frida-gum/-/frida-gum-19.12.0.tgz",
+    "archive": "npm-types-frida-gum-19.12.0.tgz",
+    "integrity": "sha512-fqXtwFA8AwE89tSdNHlaY+hNWI5j62bcO1xk5w0NSuHBIH6KRxYzIK6rp/JP7TXtRKU2ewBwx81FrHTfGF0q7w==",
+    "license": "MIT",
+    "sha256": "06e9518ca1f19895a3a210b5751b858407580943429ffc974bf05712b6c3c536",
+    "bytes": 42348,
+    "notice_files": [
+      "LICENSE"
+    ]
+  },
+  {
+    "id": "npm-types-node-18.19.103",
+    "name": "@types/node",
+    "revision": "18.19.103",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@types/node/-/node-18.19.103.tgz",
+    "archive": "npm-types-node-18.19.103.tgz",
+    "integrity": "sha512-hHTHp+sEz6SxFsp+SA+Tqrua3AbmlAw+Y//aEwdHrdZkYVRWdvWD3y5uPZ0flYOkgskaFWqZ/YGFm3FaFQ0pRw==",
+    "license": "MIT",
+    "sha256": "f527da17929b09ceb05e4828b31fc1fbc200ad4716414aa01d2ca2d7d9d89723",
+    "bytes": 382734,
+    "notice_files": [
+      "LICENSE"
+    ]
+  },
+  {
+    "id": "npm-base64-js-1.5.1",
+    "name": "base64-js",
+    "revision": "1.5.1",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/base64-js/-/base64-js-1.5.1.tgz",
+    "archive": "npm-base64-js-1.5.1.tgz",
+    "integrity": "sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==",
+    "license": "MIT",
+    "sha256": "b1b7a945b52685269083425216d6597e33d97bf21699d656e92fdb3eb5210a85",
+    "bytes": 4109,
+    "notice_files": [
+      "LICENSE"
+    ]
+  },
+  {
+    "id": "npm-frida-fs-7.0.0",
+    "name": "frida-fs",
+    "revision": "7.0.0",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/frida-fs/-/frida-fs-7.0.0.tgz",
+    "archive": "npm-frida-fs-7.0.0.tgz",
+    "integrity": "sha512-95m7LCjuFMZObrR/37tlEUHAKC0UP82vWBtcaFntUSFr5MuqhoZG6FDCXKl58FhTf0SwOCYvwctCYPLV3/pHgw==",
+    "license": "MIT",
+    "sha256": "73682f5fe8634c58da914a58acdef9a2931ef9fced4307cec64e869e43bd70a8",
+    "bytes": 9190,
+    "notice_files": [
+      "LICENSE.md"
+    ]
+  },
+  {
+    "id": "npm-http-parser-js-0.5.10",
+    "name": "http-parser-js",
+    "revision": "0.5.10",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/http-parser-js/-/http-parser-js-0.5.10.tgz",
+    "archive": "npm-http-parser-js-0.5.10.tgz",
+    "integrity": "sha512-Pysuw9XpUq5dVc/2SMHpuTY01RFl8fttgcyunjL7eEMhGM3cI4eOmiCycJDVCo/7O7ClfQD3SaI6ftDzqOXYMA==",
+    "license": "MIT",
+    "sha256": "ab1672c31c6392825adaf4b61796a979beeea0daaffb10484f0da20238fd94e4",
+    "bytes": 7719,
+    "notice_files": [
+      "LICENSE.md"
+    ]
+  },
+  {
+    "id": "npm-ieee754-1.2.1",
+    "name": "ieee754",
+    "revision": "1.2.1",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/ieee754/-/ieee754-1.2.1.tgz",
+    "archive": "npm-ieee754-1.2.1.tgz",
+    "integrity": "sha512-dcyqhDvX1C46lXZcVqCpK+FtMRQVdIMN6/Df5js2zouUsqG7I6sFxitIC+7KYK29KdXOLHdu9zL4sFnoVQnqaA==",
+    "license": "BSD-3-Clause",
+    "sha256": "8ef14b9b397e339db89db97881fb714f49319d8f0eb1275901f45567b28f9dac",
+    "bytes": 2886,
+    "notice_files": [
+      "LICENSE"
+    ]
+  },
+  {
+    "id": "npm-undici-types-5.26.5",
+    "name": "undici-types",
+    "revision": "5.26.5",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/undici-types/-/undici-types-5.26.5.tgz",
+    "archive": "npm-undici-types-5.26.5.tgz",
+    "integrity": "sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==",
+    "license": "MIT",
+    "sha256": "503bffdea1bee0526fb2ac75a4ac01ee5e712f251fabdeb8da4b408a519ed465",
+    "bytes": 17979,
+    "notice_files": []
+  },
+  {
+    "id": "npm-esbuild-aix-ppc64-0.25.5",
+    "name": "@esbuild/aix-ppc64",
+    "revision": "0.25.5",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@esbuild/aix-ppc64/-/aix-ppc64-0.25.5.tgz",
+    "archive": "npm-esbuild-aix-ppc64-0.25.5.tgz",
+    "integrity": "sha512-9o3TMmpmftaCMepOdA5k/yDw8SfInyzWWTjYTFCX3kPSDJMROQTb8jg+h9Cnwnmm1vOzvxN7gIfB5V2ewpjtGA==",
+    "license": "MIT",
+    "sha256": "a8fe40318832a5c450a7c6f52355d16f48519c71e037d3cd8edb652dc3b24760",
+    "bytes": 4137235,
+    "notice_files": []
+  },
+  {
+    "id": "npm-esbuild-android-arm-0.25.5",
+    "name": "@esbuild/android-arm",
+    "revision": "0.25.5",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@esbuild/android-arm/-/android-arm-0.25.5.tgz",
+    "archive": "npm-esbuild-android-arm-0.25.5.tgz",
+    "integrity": "sha512-AdJKSPeEHgi7/ZhuIPtcQKr5RQdo6OO2IL87JkianiMYMPbCtot9fxPbrMiBADOWWm3T2si9stAiVsGbTQFkbA==",
+    "license": "MIT",
+    "sha256": "ab01c1942b6e0ce00926ce29be79dd3d34e89f5d4599b3130a6d93c9925d22b1",
+    "bytes": 3226588,
+    "notice_files": []
+  },
+  {
+    "id": "npm-esbuild-android-arm64-0.25.5",
+    "name": "@esbuild/android-arm64",
+    "revision": "0.25.5",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@esbuild/android-arm64/-/android-arm64-0.25.5.tgz",
+    "archive": "npm-esbuild-android-arm64-0.25.5.tgz",
+    "integrity": "sha512-VGzGhj4lJO+TVGV1v8ntCZWJktV7SGCs3Pn1GRWI1SBFtRALoomm8k5E9Pmwg3HOAal2VDc2F9+PM/rEY6oIDg==",
+    "license": "MIT",
+    "sha256": "4403d05803f71d8aaba68cc9a2fdf9540c02fd752e6d0929ad02dce3a55e681a",
+    "bytes": 4191064,
+    "notice_files": []
+  },
+  {
+    "id": "npm-esbuild-android-x64-0.25.5",
+    "name": "@esbuild/android-x64",
+    "revision": "0.25.5",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@esbuild/android-x64/-/android-x64-0.25.5.tgz",
+    "archive": "npm-esbuild-android-x64-0.25.5.tgz",
+    "integrity": "sha512-D2GyJT1kjvO//drbRT3Hib9XPwQeWd9vZoBJn+bu/lVsOZ13cqNdDeqIF/xQ5/VmWvMduP6AmXvylO/PIc2isw==",
+    "license": "MIT",
+    "sha256": "1b0295225c0565054b729104300816fc98db6aaec679083c781191bd02bd0cb1",
+    "bytes": 3226587,
+    "notice_files": []
+  },
+  {
+    "id": "npm-esbuild-darwin-arm64-0.25.5",
+    "name": "@esbuild/darwin-arm64",
+    "revision": "0.25.5",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@esbuild/darwin-arm64/-/darwin-arm64-0.25.5.tgz",
+    "archive": "npm-esbuild-darwin-arm64-0.25.5.tgz",
+    "integrity": "sha512-GtaBgammVvdF7aPIgH2jxMDdivezgFu6iKpmT+48+F8Hhg5J/sfnDieg0aeG/jfSvkYQU2/pceFPDKlqZzwnfQ==",
+    "license": "MIT",
+    "sha256": "61a312bcb8249d058639c405cf6378dd3107de5535a9974973c48a6dd0d2d062",
+    "bytes": 4162514,
+    "notice_files": []
+  },
+  {
+    "id": "npm-esbuild-darwin-x64-0.25.5",
+    "name": "@esbuild/darwin-x64",
+    "revision": "0.25.5",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@esbuild/darwin-x64/-/darwin-x64-0.25.5.tgz",
+    "archive": "npm-esbuild-darwin-x64-0.25.5.tgz",
+    "integrity": "sha512-1iT4FVL0dJ76/q1wd7XDsXrSW+oLoquptvh4CLR4kITDtqi2e/xwXwdCVH8hVHU43wgJdsq7Gxuzcs6Iq/7bxQ==",
+    "license": "MIT",
+    "sha256": "d2890be89bd7e322cd83e1665516d3c71b0ac3952655cb27076eddb621a4af24",
+    "bytes": 4434256,
+    "notice_files": []
+  },
+  {
+    "id": "npm-esbuild-freebsd-arm64-0.25.5",
+    "name": "@esbuild/freebsd-arm64",
+    "revision": "0.25.5",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@esbuild/freebsd-arm64/-/freebsd-arm64-0.25.5.tgz",
+    "archive": "npm-esbuild-freebsd-arm64-0.25.5.tgz",
+    "integrity": "sha512-nk4tGP3JThz4La38Uy/gzyXtpkPW8zSAmoUhK9xKKXdBCzKODMc2adkB2+8om9BDYugz+uGV7sLmpTYzvmz6Sw==",
+    "license": "MIT",
+    "sha256": "abfbe3edad2cf736ce43a35c2dea079313a4641869912dcb53738a87080f512f",
+    "bytes": 4003803,
+    "notice_files": []
+  },
+  {
+    "id": "npm-esbuild-freebsd-x64-0.25.5",
+    "name": "@esbuild/freebsd-x64",
+    "revision": "0.25.5",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@esbuild/freebsd-x64/-/freebsd-x64-0.25.5.tgz",
+    "archive": "npm-esbuild-freebsd-x64-0.25.5.tgz",
+    "integrity": "sha512-PrikaNjiXdR2laW6OIjlbeuCPrPaAl0IwPIaRv+SMV8CiM8i2LqVUHFC1+8eORgWyY7yhQY+2U2fA55mBzReaw==",
+    "license": "MIT",
+    "sha256": "0d8997fd565a9c53d1995b30ed53f2d98b35f831cb6e1f55e0a653aa33cee317",
+    "bytes": 4355608,
+    "notice_files": []
+  },
+  {
+    "id": "npm-esbuild-linux-arm-0.25.5",
+    "name": "@esbuild/linux-arm",
+    "revision": "0.25.5",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@esbuild/linux-arm/-/linux-arm-0.25.5.tgz",
+    "archive": "npm-esbuild-linux-arm-0.25.5.tgz",
+    "integrity": "sha512-cPzojwW2okgh7ZlRpcBEtsX7WBuqbLrNXqLU89GxWbNt6uIg78ET82qifUy3W6OVww6ZWobWub5oqZOVtwolfw==",
+    "license": "MIT",
+    "sha256": "3992ae983c874753dc3813e094a6cf936abb9c84d57dcd5471d3a69b5b5a562c",
+    "bytes": 4055342,
+    "notice_files": []
+  },
+  {
+    "id": "npm-esbuild-linux-arm64-0.25.5",
+    "name": "@esbuild/linux-arm64",
+    "revision": "0.25.5",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@esbuild/linux-arm64/-/linux-arm64-0.25.5.tgz",
+    "archive": "npm-esbuild-linux-arm64-0.25.5.tgz",
+    "integrity": "sha512-Z9kfb1v6ZlGbWj8EJk9T6czVEjjq2ntSYLY2cw6pAZl4oKtfgQuS4HOq41M/BcoLPzrUbNd+R4BXFyH//nHxVg==",
+    "license": "MIT",
+    "sha256": "ae5a580130af1a7c7b8760466c9ae85a25782e63330b8c2855cc15ed007dd30d",
+    "bytes": 4014282,
+    "notice_files": []
+  },
+  {
+    "id": "npm-esbuild-linux-ia32-0.25.5",
+    "name": "@esbuild/linux-ia32",
+    "revision": "0.25.5",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@esbuild/linux-ia32/-/linux-ia32-0.25.5.tgz",
+    "archive": "npm-esbuild-linux-ia32-0.25.5.tgz",
+    "integrity": "sha512-sQ7l00M8bSv36GLV95BVAdhJ2QsIbCuCjh/uYrWiMQSUuV+LpXwIqhgJDcvMTj+VsQmqAHL2yYaasENvJ7CDKA==",
+    "license": "MIT",
+    "sha256": "384de69ba89a79fbfcf54256a6537cdca1ea19847b5c0f99399bbc9f220f2924",
+    "bytes": 4035382,
+    "notice_files": []
+  },
+  {
+    "id": "npm-esbuild-linux-loong64-0.25.5",
+    "name": "@esbuild/linux-loong64",
+    "revision": "0.25.5",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@esbuild/linux-loong64/-/linux-loong64-0.25.5.tgz",
+    "archive": "npm-esbuild-linux-loong64-0.25.5.tgz",
+    "integrity": "sha512-0ur7ae16hDUC4OL5iEnDb0tZHDxYmuQyhKhsPBV8f99f6Z9KQM02g33f93rNH5A30agMS46u2HP6qTdEt6Q1kg==",
+    "license": "MIT",
+    "sha256": "9b34a1a38b3699fdd189b22d7116d25a57c885bf50621d1490b61957c220953e",
+    "bytes": 4055166,
+    "notice_files": []
+  },
+  {
+    "id": "npm-esbuild-linux-mips64el-0.25.5",
+    "name": "@esbuild/linux-mips64el",
+    "revision": "0.25.5",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@esbuild/linux-mips64el/-/linux-mips64el-0.25.5.tgz",
+    "archive": "npm-esbuild-linux-mips64el-0.25.5.tgz",
+    "integrity": "sha512-kB/66P1OsHO5zLz0i6X0RxlQ+3cu0mkxS3TKFvkb5lin6uwZ/ttOkP3Z8lfR9mJOBk14ZwZ9182SIIWFGNmqmg==",
+    "license": "MIT",
+    "sha256": "403e90e888663848be0e449a0a0d770dfd05ae1bb7e7800f2b026c2870743cbc",
+    "bytes": 3698232,
+    "notice_files": []
+  },
+  {
+    "id": "npm-esbuild-linux-ppc64-0.25.5",
+    "name": "@esbuild/linux-ppc64",
+    "revision": "0.25.5",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@esbuild/linux-ppc64/-/linux-ppc64-0.25.5.tgz",
+    "archive": "npm-esbuild-linux-ppc64-0.25.5.tgz",
+    "integrity": "sha512-UZCmJ7r9X2fe2D6jBmkLBMQetXPXIsZjQJCjgwpVDz+YMcS6oFR27alkgGv3Oqkv07bxdvw7fyB71/olceJhkQ==",
+    "license": "MIT",
+    "sha256": "ef2579f723c9e8a9952a63bd8e6c8a376d98a058292c45eb210db49c8890737d",
+    "bytes": 3980235,
+    "notice_files": []
+  },
+  {
+    "id": "npm-esbuild-linux-riscv64-0.25.5",
+    "name": "@esbuild/linux-riscv64",
+    "revision": "0.25.5",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@esbuild/linux-riscv64/-/linux-riscv64-0.25.5.tgz",
+    "archive": "npm-esbuild-linux-riscv64-0.25.5.tgz",
+    "integrity": "sha512-kTxwu4mLyeOlsVIFPfQo+fQJAV9mh24xL+y+Bm6ej067sYANjyEw1dNHmvoqxJUCMnkBdKpvOn0Ahql6+4VyeA==",
+    "license": "MIT",
+    "sha256": "aaaccb8b9ec72c686a814e7a0f8a1b771644686bb1438484631e08ac036c9978",
+    "bytes": 4021025,
+    "notice_files": []
+  },
+  {
+    "id": "npm-esbuild-linux-s390x-0.25.5",
+    "name": "@esbuild/linux-s390x",
+    "revision": "0.25.5",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@esbuild/linux-s390x/-/linux-s390x-0.25.5.tgz",
+    "archive": "npm-esbuild-linux-s390x-0.25.5.tgz",
+    "integrity": "sha512-K2dSKTKfmdh78uJ3NcWFiqyRrimfdinS5ErLSn3vluHNeHVnBAFWC8a4X5N+7FgVE1EjXS1QDZbpqZBjfrqMTQ==",
+    "license": "MIT",
+    "sha256": "21040d2fdc6dcafc170024bfb541cd21f7c59d4ccc7755f29b29b0d1fedf5ce5",
+    "bytes": 4191985,
+    "notice_files": []
+  },
+  {
+    "id": "npm-esbuild-linux-x64-0.25.5",
+    "name": "@esbuild/linux-x64",
+    "revision": "0.25.5",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@esbuild/linux-x64/-/linux-x64-0.25.5.tgz",
+    "archive": "npm-esbuild-linux-x64-0.25.5.tgz",
+    "integrity": "sha512-uhj8N2obKTE6pSZ+aMUbqq+1nXxNjZIIjCjGLfsWvVpy7gKCOL6rsY1MhRh9zLtUtAI7vpgLMK6DxjO8Qm9lJw==",
+    "license": "MIT",
+    "sha256": "95a928d8187c6f7ad632a3f3bbf01f66dfd5b5adb724b8bfeec5fff73ff2d91a",
+    "bytes": 4359160,
+    "notice_files": []
+  },
+  {
+    "id": "npm-esbuild-netbsd-arm64-0.25.5",
+    "name": "@esbuild/netbsd-arm64",
+    "revision": "0.25.5",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@esbuild/netbsd-arm64/-/netbsd-arm64-0.25.5.tgz",
+    "archive": "npm-esbuild-netbsd-arm64-0.25.5.tgz",
+    "integrity": "sha512-pwHtMP9viAy1oHPvgxtOv+OkduK5ugofNTVDilIzBLpoWAM16r7b/mxBvfpuQDpRQFMfuVr5aLcn4yveGvBZvw==",
+    "license": "MIT",
+    "sha256": "629f18f00eab929d2d77830c3284ff477854bd469c9d52f064442164e1897372",
+    "bytes": 3996136,
+    "notice_files": []
+  },
+  {
+    "id": "npm-esbuild-netbsd-x64-0.25.5",
+    "name": "@esbuild/netbsd-x64",
+    "revision": "0.25.5",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@esbuild/netbsd-x64/-/netbsd-x64-0.25.5.tgz",
+    "archive": "npm-esbuild-netbsd-x64-0.25.5.tgz",
+    "integrity": "sha512-WOb5fKrvVTRMfWFNCroYWWklbnXH0Q5rZppjq0vQIdlsQKuw6mdSihwSo4RV/YdQ5UCKKvBy7/0ZZYLBZKIbwQ==",
+    "license": "MIT",
+    "sha256": "5f850f0c77b99ef836591da3e8a79e288c3b9df46e6833f62d25f137146ee439",
+    "bytes": 4338136,
+    "notice_files": []
+  },
+  {
+    "id": "npm-esbuild-openbsd-arm64-0.25.5",
+    "name": "@esbuild/openbsd-arm64",
+    "revision": "0.25.5",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@esbuild/openbsd-arm64/-/openbsd-arm64-0.25.5.tgz",
+    "archive": "npm-esbuild-openbsd-arm64-0.25.5.tgz",
+    "integrity": "sha512-7A208+uQKgTxHd0G0uqZO8UjK2R0DDb4fDmERtARjSHWxqMTye4Erz4zZafx7Di9Cv+lNHYuncAkiGFySoD+Mw==",
+    "license": "MIT",
+    "sha256": "35be511adc91a63f28b88b16aa29abbe58560126123cb12bac4f7adfdb511e0f",
+    "bytes": 4002392,
+    "notice_files": []
+  },
+  {
+    "id": "npm-esbuild-openbsd-x64-0.25.5",
+    "name": "@esbuild/openbsd-x64",
+    "revision": "0.25.5",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@esbuild/openbsd-x64/-/openbsd-x64-0.25.5.tgz",
+    "archive": "npm-esbuild-openbsd-x64-0.25.5.tgz",
+    "integrity": "sha512-G4hE405ErTWraiZ8UiSoesH8DaCsMm0Cay4fsFWOOUcz8b8rC6uCvnagr+gnioEjWn0wC+o1/TAHt+It+MpIMg==",
+    "license": "MIT",
+    "sha256": "d18379f0f77be03908f417aca0bfa0da99da3b0418f21aa7addc0d0ccba6ce2b",
+    "bytes": 4345414,
+    "notice_files": []
+  },
+  {
+    "id": "npm-esbuild-sunos-x64-0.25.5",
+    "name": "@esbuild/sunos-x64",
+    "revision": "0.25.5",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@esbuild/sunos-x64/-/sunos-x64-0.25.5.tgz",
+    "archive": "npm-esbuild-sunos-x64-0.25.5.tgz",
+    "integrity": "sha512-l+azKShMy7FxzY0Rj4RCt5VD/q8mG/e+mDivgspo+yL8zW7qEwctQ6YqKX34DTEleFAvCIUviCFX1SDZRSyMQA==",
+    "license": "MIT",
+    "sha256": "77997a64f7c2b64645cca37d838240d01f8484f0cc57339c919568716a3980bf",
+    "bytes": 4346552,
+    "notice_files": []
+  },
+  {
+    "id": "npm-esbuild-win32-arm64-0.25.5",
+    "name": "@esbuild/win32-arm64",
+    "revision": "0.25.5",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@esbuild/win32-arm64/-/win32-arm64-0.25.5.tgz",
+    "archive": "npm-esbuild-win32-arm64-0.25.5.tgz",
+    "integrity": "sha512-O2S7SNZzdcFG7eFKgvwUEZ2VG9D/sn/eIiz8XRZ1Q/DO5a3s76Xv0mdBzVM5j5R639lXQmPmSo0iRpHqUUrsxw==",
+    "license": "MIT",
+    "sha256": "0128e7f04053e68c8c6e21822ba3a97235de2802f4d3b01626c0e3ac03f36b35",
+    "bytes": 4051049,
+    "notice_files": []
+  },
+  {
+    "id": "npm-esbuild-win32-ia32-0.25.5",
+    "name": "@esbuild/win32-ia32",
+    "revision": "0.25.5",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@esbuild/win32-ia32/-/win32-ia32-0.25.5.tgz",
+    "archive": "npm-esbuild-win32-ia32-0.25.5.tgz",
+    "integrity": "sha512-onOJ02pqs9h1iMJ1PQphR+VZv8qBMQ77Klcsqv9CNW2w6yLqoURLcgERAIurY6QE63bbLuqgP9ATqajFLK5AMQ==",
+    "license": "MIT",
+    "sha256": "03716c52c405a91a35d0998145b864ee50f6f9a5b8d69a1baee79f5fd947cfed",
+    "bytes": 4194642,
+    "notice_files": []
+  },
+  {
+    "id": "npm-esbuild-win32-x64-0.25.5",
+    "name": "@esbuild/win32-x64",
+    "revision": "0.25.5",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/@esbuild/win32-x64/-/win32-x64-0.25.5.tgz",
+    "archive": "npm-esbuild-win32-x64-0.25.5.tgz",
+    "integrity": "sha512-TXv6YnJ8ZMVdX+SXWVBo/0p8LTcrUYngpWjvm91TMjjBQii7Oz11Lw5lbDV5Y0TzuhSJHwiH4hEtC1I42mMS0g==",
+    "license": "MIT",
+    "sha256": "52c37fb9aab0dac0bef9fd829821df978db59053b7f6aa1adc3bdba32c216bc9",
+    "bytes": 4448287,
+    "notice_files": []
+  },
+  {
+    "id": "npm-esbuild-0.25.5",
+    "name": "esbuild",
+    "revision": "0.25.5",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/esbuild/-/esbuild-0.25.5.tgz",
+    "archive": "npm-esbuild-0.25.5.tgz",
+    "integrity": "sha512-P8OtKZRv/5J5hhz0cUAdu/cLuPIKXpQl1R9pZtvmHWQvrAUVd0UNIPT4IB4W3rNOqVO0rlqHmCIbSwxh/c9yUQ==",
+    "license": "MIT",
+    "sha256": "7b72463848bbdb5da3385fb9dfffae3c1f0bbb14141b635294877789d0ec28b1",
+    "bytes": 30770,
+    "notice_files": [
+      "LICENSE.md"
+    ]
+  },
+  {
+    "id": "npm-typescript-5.8.3",
+    "name": "typescript",
+    "revision": "5.8.3",
+    "category": "npm-lockfile",
+    "url": "https://registry.npmjs.org/typescript/-/typescript-5.8.3.tgz",
+    "archive": "npm-typescript-5.8.3.tgz",
+    "integrity": "sha512-p1diW6TqL9L07nNxvRMM7hMMw4c5XOo/1ibL4aAIGmSAt9slTE1Xgw5KWuof2uTOvCg9BY7ZRi+GaF+7sfgPeQ==",
+    "license": "Apache-2.0",
+    "sha256": "72e75dbeb92c2e6eb9a34cb59d74fab5c2ee6f32a0324a89405f6165d5a08374",
+    "bytes": 4250436,
+    "notice_files": [
+      "LICENSE.txt"
+    ]
+  },
+  {
+    "id": "go-github.com-evanw-esbuild-v0.25.5",
+    "name": "github.com/evanw/esbuild",
+    "revision": "v0.25.5",
+    "category": "go-module",
+    "url": "https://proxy.golang.org/github.com/evanw/esbuild/@v/v0.25.5.zip",
+    "archive": "go-github.com-evanw-esbuild-v0.25.5.zip",
+    "integrity": "h1:E+JpeY5S/1LFmnX1vtuZqUKT7qDVcfXdhzMhM3uIKFs=",
+    "sha256": "c8de1a09baac671423b900f672612033c8b67078b549c5ffbe8e4645ab0d6454",
+    "bytes": 2099658,
+    "notice_files": [
+      "LICENSE.md",
+      "internal/xxhash/LICENSE.txt",
+      "npm/esbuild-wasm/LICENSE.md",
+      "npm/esbuild/LICENSE.md"
+    ]
+  },
+  {
+    "id": "go-github.com-frida-TypeScript-tsc-v0.0.0-20260906185614-e00a6a37c16e",
+    "name": "github.com/frida/TypeScript/tsc",
+    "revision": "v0.0.0-20260906185614-e00a6a37c16e",
+    "category": "go-module",
+    "url": "https://proxy.golang.org/github.com/frida/!type!script/tsc/@v/v0.0.0-20260906185614-e00a6a37c16e.zip",
+    "archive": "go-github.com-frida-TypeScript-tsc-v0.0.0-20260906185614-e00a6a37c16e.zip",
+    "integrity": "h1:78BFgtMGOTP1A1/N1aoGpRO6C2kfjiPO2dk+G+ZPcI4=",
+    "sha256": "4da08cc0e476dcfbef14bf88e50f731644a48924a53e9bb61ba123be0df48a35",
+    "bytes": 11487986,
+    "notice_files": [
+      "LICENSE",
+      "pkg/fswatch/LICENSE"
+    ]
+  },
+  {
+    "id": "go-github.com-Microsoft-go-winio-v0.6.2",
+    "name": "github.com/Microsoft/go-winio",
+    "revision": "v0.6.2",
+    "category": "go-module",
+    "url": "https://proxy.golang.org/github.com/!microsoft/go-winio/@v/v0.6.2.zip",
+    "archive": "go-github.com-Microsoft-go-winio-v0.6.2.zip",
+    "integrity": "h1:F2VQgta7ecxGYO8k3ZZz3RS8fVIXVxONVUPlNERoyfY=",
+    "sha256": "cd007bdb877a578efde2780bf5dd2f57dd557b5b08c3614597b820d0369ebb0f",
+    "bytes": 158677,
+    "notice_files": [
+      "LICENSE"
+    ]
+  },
+  {
+    "id": "go-github.com-go-json-experiment-json-v0.0.0-20260623181947-01eb4420fa68",
+    "name": "github.com/go-json-experiment/json",
+    "revision": "v0.0.0-20260623181947-01eb4420fa68",
+    "category": "go-module",
+    "url": "https://proxy.golang.org/github.com/go-json-experiment/json/@v/v0.0.0-20260623181947-01eb4420fa68.zip",
+    "archive": "go-github.com-go-json-experiment-json-v0.0.0-20260623181947-01eb4420fa68.zip",
+    "integrity": "h1:KZaTBSyshWX3MP5jukJcNSuXDQTO+rNpt0J564dX/eg=",
+    "sha256": "54e45770eb951a295e9c4613e8ab8dba929fe0e2b404a07d1f63447a895f750a",
+    "bytes": 847527,
+    "notice_files": [
+      "AUTHORS",
+      "LICENSE"
+    ]
+  },
+  {
+    "id": "go-github.com-klauspost-compress-v1.19.0",
+    "name": "github.com/klauspost/compress",
+    "revision": "v1.19.0",
+    "category": "go-module",
+    "url": "https://proxy.golang.org/github.com/klauspost/compress/@v/v1.19.0.zip",
+    "archive": "go-github.com-klauspost-compress-v1.19.0.zip",
+    "integrity": "h1:sXLILfc9jV2QYWkzFOPWStmcUVH2RHEB1JCdY2oVvCQ=",
+    "sha256": "2eaca328cea81dd4797b6eeadc0fe56cfe501e43fca5d1512f12b39d47e0d8f6",
+    "bytes": 39232841,
+    "notice_files": [
+      "LICENSE",
+      "gzhttp/LICENSE",
+      "internal/lz4ref/LICENSE",
+      "internal/snapref/LICENSE",
+      "s2/LICENSE",
+      "s2/cmd/internal/filepathx/LICENSE",
+      "s2/cmd/internal/readahead/LICENSE",
+      "snappy/AUTHORS",
+      "snappy/LICENSE",
+      "snappy/xerial/LICENSE",
+      "zstd/internal/xxhash/LICENSE.txt"
+    ]
+  },
+  {
+    "id": "go-github.com-klauspost-cpuid-v2-v2.2.10",
+    "name": "github.com/klauspost/cpuid/v2",
+    "revision": "v2.2.10",
+    "category": "go-module",
+    "url": "https://proxy.golang.org/github.com/klauspost/cpuid/v2/@v/v2.2.10.zip",
+    "archive": "go-github.com-klauspost-cpuid-v2-v2.2.10.zip",
+    "integrity": "h1:tBs3QSyvjDyFTq3uoc/9xFpCuOsJQFNPiAhYdw2skhE=",
+    "sha256": "db89665fa22cef477dc551b72d49707c516b749c17ed154bf67eb8081ee08dff",
+    "bytes": 52186,
+    "notice_files": [
+      "LICENSE"
+    ]
+  },
+  {
+    "id": "go-github.com-mackerelio-go-osstat-v0.2.7",
+    "name": "github.com/mackerelio/go-osstat",
+    "revision": "v0.2.7",
+    "category": "go-module",
+    "url": "https://proxy.golang.org/github.com/mackerelio/go-osstat/@v/v0.2.7.zip",
+    "archive": "go-github.com-mackerelio-go-osstat-v0.2.7.zip",
+    "integrity": "h1:TCavZi10wF49bT6iQZ9eT2keGZQpC69MTDfdJej5e94=",
+    "sha256": "0caac3de4d3a63829ed97214fccbc0e0eb7e770c037dc4c8c4dec9e91672f01c",
+    "bytes": 38561,
+    "notice_files": [
+      "LICENSE.txt"
+    ]
+  },
+  {
+    "id": "go-github.com-zeebo-xxh3-v1.1.0",
+    "name": "github.com/zeebo/xxh3",
+    "revision": "v1.1.0",
+    "category": "go-module",
+    "url": "https://proxy.golang.org/github.com/zeebo/xxh3/@v/v1.1.0.zip",
+    "archive": "go-github.com-zeebo-xxh3-v1.1.0.zip",
+    "integrity": "h1:s7DLGDK45Dyfg7++yxI0khrfwq9661w9EN78eP/UZVs=",
+    "sha256": "0cd36657902317f81f3d31b217ebaca6f98dfb665f1af611d1db0904a689bcd1",
+    "bytes": 276050,
+    "notice_files": [
+      "LICENSE"
+    ]
+  },
+  {
+    "id": "go-golang.org-x-sync-v0.21.0",
+    "name": "golang.org/x/sync",
+    "revision": "v0.21.0",
+    "category": "go-module",
+    "url": "https://proxy.golang.org/golang.org/x/sync/@v/v0.21.0.zip",
+    "archive": "go-golang.org-x-sync-v0.21.0.zip",
+    "integrity": "h1:HLII4xRRTtCRkxYp4HNFF0Js/Og6q2i++KXbg0gHCwM=",
+    "sha256": "ee65459023de7f24836f6e2123144b5329bd0a4d05a87c3c448509378e2e6be7",
+    "bytes": 25686,
+    "notice_files": [
+      "LICENSE"
+    ]
+  },
+  {
+    "id": "go-golang.org-x-sys-v0.46.0",
+    "name": "golang.org/x/sys",
+    "revision": "v0.46.0",
+    "category": "go-module",
+    "url": "https://proxy.golang.org/golang.org/x/sys/@v/v0.46.0.zip",
+    "archive": "go-golang.org-x-sys-v0.46.0.zip",
+    "integrity": "h1:noSf2Fq6F8DBgS+LysIkx7rIExoNHJsxOAtPp4rthXw=",
+    "sha256": "36dc83b6bc5884d260cdbd9d09e597b1eed64d15dfdc374ca6e31aef99d533d7",
+    "bytes": 2022627,
+    "notice_files": [
+      "LICENSE"
+    ]
+  },
+  {
+    "id": "go-golang.org-x-text-v0.38.0",
+    "name": "golang.org/x/text",
+    "revision": "v0.38.0",
+    "category": "go-module",
+    "url": "https://proxy.golang.org/golang.org/x/text/@v/v0.38.0.zip",
+    "archive": "go-golang.org-x-text-v0.38.0.zip",
+    "integrity": "h1:sXmwo9DwP3OK9EZ7PqAdaooSGozfl/3a6/xJcbzPRhE=",
+    "sha256": "be98266212ac63cdc78631ae0ff8f783e0f5e47d9b6094c11ffebe43fd0424b3",
+    "bytes": 7015060,
+    "notice_files": [
+      "LICENSE"
+    ]
+  }
+]

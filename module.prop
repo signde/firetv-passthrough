@@ -1,0 +1,6 @@
+id=firetv_passthrough
+name=Fire TV Audio Passthrough (Gazelle / Karat)
+version=0.1.0-experimental
+versionCode=1
+author=signde
+description=DD/DD+/Atmos and DTS-HD MA/DTS:X system passthrough for supported Cube 3 and Stick 4K Max 2 firmware. Replaces the separate Dolby and DTS modules. Experimental unified package.
