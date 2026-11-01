@@ -5,3 +5,19 @@ __pycache__/
 .build/
 dist/
 local/
+
+# Generated FEL payloads and kernel build products
+video/**/*.ko
+*.o
+*.ko
+*.mod
+*.mod.c
+.*.cmd
+Module.symvers
+modules.order
+video/build-inputs.json
+
+# Private APK signing material
+*.jks
+*.keystore
+*.password

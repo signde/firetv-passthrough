@@ -110,6 +110,26 @@ while enabled; do
     if [ ! -f "$STATE/ready" ]; then
         log "Attachment did not become ready; stopping this attempt."
         status "ATTACH_FAILED pid=$pid"
+        # A boot-time HAL replacement can win the race between pidof and attach.
+        # Retry only a different process instance, never one with partial hooks.
+        now_start=$(awk '{print $22}' "/proc/$pid/stat" 2>/dev/null)
+        if [ "$(pidof "$AUDIO_SERVICE")" != "$pid" ] || [ "$now_start" != "$start" ]; then
+            cleanup
+            wait "$INJECTOR" 2>/dev/null
+            wait "$LOGGER" 2>/dev/null
+            INJECTOR= LOGGER= FIFO=
+            rapid=$((rapid + 1))
+            if [ "$rapid" -ge 3 ]; then
+                touch "$MODDIR/blocked"
+                log "Three HAL exits during attachment; latched attachment guard."
+                status BLOCKED
+                exit 1
+            fi
+            log "HAL instance exited before attachment completed; waiting for its replacement."
+            status WAITING_FOR_AUDIO_RESTART
+            pause_enabled 5 || exit 0
+            continue
+        fi
         exit 1
     fi
     log "Attached to HAL pid=$pid. Waiting for process exit; no idle polling."

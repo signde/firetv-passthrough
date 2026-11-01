@@ -45,3 +45,11 @@ or third-party components. This project is not endorsed by those projects or own
 Combines the original project code from
 [Fire TV Dolby passthrough v0.3.2](https://github.com/signde/firetv-dolby-passthrough/tree/v0.3.2)
 and [Fire TV DTS-HD passthrough v0.2.0](https://github.com/signde/firetv-dtshd-passthrough/tree/v0.2.0).
+
+## FEL components
+
+The FEL kernel helpers derive from [djnice's Android VLC FEL work](https://github.com/djnice/vlc-fel-android)
+and retain GPL-2.0-or-later licensing. Their complete corresponding helper sources
+are under src/fel. They build against Amazon's matching Gazelle Linux 5.4.125
+source, configuration and symbol versions. No stock kernel image or proprietary
+Dolby binary is bundled.

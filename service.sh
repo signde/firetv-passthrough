@@ -23,7 +23,13 @@ fi
 DOLBY_PID=$!
 ( . "$MODDIR/scripts/dts-service.sh" ) 8>&- &
 DTS_PID=$!
+VIDEO_PID=
+if [ "$(getprop ro.product.device)" = gazelle ] && [ -f "$MODDIR/video/service.sh" ]; then
+    sh "$MODDIR/video/service.sh" "$MODDIR" 8>&- &
+    VIDEO_PID=$!
+fi
 cleanup() {
+    [ -z "$VIDEO_PID" ] || kill -TERM "$VIDEO_PID" 2>/dev/null
     [ -z "$DOLBY_PID" ] || kill -TERM "$DOLBY_PID" 2>/dev/null
     [ -z "$DTS_PID" ] || kill -TERM "$DTS_PID" 2>/dev/null
     [ -z "$DOLBY_PID" ] || wait "$DOLBY_PID" 2>/dev/null

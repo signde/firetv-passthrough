@@ -1,15 +1,40 @@
-# Fire TV Audio Passthrough
+# Fire TV AV
 
-One Magisk module for **DD, DD+, DD+ Atmos, DTS-HD MA and DTS:X passthrough** on
-**Fire TV Cube 3 (Gazelle, Fire OS 7)** and **Fire TV Stick 4K Max 2 (Karat, Fire OS 8)**.
+One experimental Magisk module for audio passthrough on **Cube 3 / Gazelle** and
+**Stick 4K Max 2 / Karat**, with hardware Dolby Vision FEL on supported Cube 3 builds.
 
-**v0.1.0 experimental release.**
-This combines Dolby v0.3.2 and DTS v0.2.0, replacing both separate modules.
+**v0.2.0 experimental candidate.** Replaces the audio module and the private
+standalone video module. Karat remains audio-only.
 
-Combined-module smoke tests passed on Gazelle PS7717.5741 and Karat RS8182.3811N:
-DTS-HD MA/DTS:X playback, reboot, sleep/wake recovery and audio-service restart.
-DD+ Atmos was also verified on Gazelle; Karat Dolby playback remains unverified
-with the combined package.
+## Gazelle TrueHD correction
+
+Updates the voice DSP reference format when the HDMI audio output opens, keeping
+mode 6 and TrueHD passthrough active. Playback-tested on 7.7.0.2 and 7.7.1.7;
+enabled only for matching reviewed HAL, DSP and ALSA libraries. Other library
+combinations retain the existing audio behavior. Karat is unchanged.
+
+Invoking Alexa during TrueHD can still trigger the microphone error storm.
+That interaction and the unrelated Kodi PCM transition issue remain deferred.
+
+## Dolby Vision FEL
+
+FEL currently supports **7.7.0.2 (PS7702.4965N)** and **7.7.1.7 (PS7717.5741N)**
+with their verified kernels. Other supported audio builds continue as audio-only.
+FEL requires a compatible player, such as **Kodi FEL** or **VLC FEL**, installed
+separately. It uses both hardware decoders and the Dolby Vision composer.
+There is no player whitelist: players can be installed before or after the module.
+Once the module is running, no extra reboot or player root grant is needed.
+Ordinary players do not use FEL automatically; a player must explicitly start a
+session and supply decoded enhancement-layer frames. See the [FEL interface](docs/FEL-INTERFACE.md).
+FEL playback, audio and seeking have been checked at 24 fps, and at 25 fps over
+SMB on PS7717. 4K60 FEL presentation still needs improvement.
+
+Set `ENABLE_FEL=0` in `config.sh` and reboot to disable FEL while retaining audio fixes. Disabling the module and rebooting removes all in-memory patches.
+
+## Deferred issues
+
+- 4K60 FEL frame pacing and recoverable Kodi seek warnings.
+- Alexa interaction during TrueHD and Kodi PCM-to-compressed transitions.
 
 ## Supported firmware
 
@@ -86,11 +111,29 @@ TV/eARC chain advertising eight-channel DTS-HD at 192 kHz.
 
 1. Set Fire OS audio to **Best Available** and enable passthrough in your player.
    In Nova, choose **system passthrough**.
-2. Install `firetv-passthrough-v0.1.0.zip` in Magisk, then reboot.
+2. Install `firetv-av-v0.2.0.zip` in Magisk, then reboot.
 3. Allow about one minute after boot before starting playback.
 
+
+For **Kodi FEL on Cube 3**, add these audio settings to
+`/sdcard/Android/data/org.xbmc.kodi.fel/files/.kodi/userdata/advancedsettings.xml`:
+
+```xml
+<advancedsettings>
+  <audio>
+    <superviseaudiodelay>true</superviseaudiodelay>
+    <allowmultichannelfloat>true</allowmultichannelfloat>
+  </audio>
+</advancedsettings>
+```
+
+Merge into any existing `<audio>` section and restart Kodi FEL. Delay supervision
+helps audio recover after pauses/seeks, sometimes with brief dropouts; multichannel
+float enables higher-precision PCM. Recheck passthrough settings after restoring
+a Kodi backup.
+
 Use the module ZIP, not GitHub's automatic source ZIP. The installer disables the
-old Dolby and DTS modules if present. Reboot to switch over, then remove those
+old Dolby, DTS and standalone video modules if present. Reboot to switch over, then remove those
 disabled modules after confirming playback works.
 
 To uninstall, disable/remove this module and reboot. To roll back to the separate
@@ -106,6 +149,7 @@ aparam get 0 hdmi_format
 cat /data/adb/modules/firetv_passthrough/status.txt
 tail -40 /data/adb/modules/firetv_passthrough/dolby.log
 tail -40 /data/adb/modules/firetv_passthrough/dts.log
+cat /data/adb/modules/firetv_passthrough/video/fel-status.txt
 ```
 
 Expect `hdmi_format=6` and DTS status `ACTIVE`. If a stream fails, stop and reopen
@@ -119,16 +163,18 @@ and receiver hotplug during playback remain untested.
 
 The Dolby component maintains HDMI bypass at boot and after wake/restart events,
 with brief follow-up checks. The DTS component replaces the system packing path
-in memory, preserving HD audio in IEC61937 bursts. Neither component polls HDMI
-while idle. Vendor audio libraries and app APKs are not replaced.
+in memory, preserving HD audio in IEC61937 bursts. On Gazelle, the HAL also retains bypass when Fire OS requests mode 5 during
+display changes. Neither audio component polls HDMI while idle. Vendor audio libraries and app APKs are not replaced.
 
 Karat also receives a Magisk overlay correcting the audio utility's exit crash,
-generated from the device's own file. No firmware binaries are bundled. Frida
+generated from the device's own file. No proprietary vendor libraries are bundled; the video helpers are built from
+the included kernel-module sources. Frida
 runs on-device without ADB or a computer and captures no audio.
 
 ## License
 
-Project code is MIT licensed. Frida retains its own licenses; see
+Original audio code is MIT licensed; the kernel helpers retain their GPL licenses.
+Thanks to **djnice** for the Android FEL player and kernel-helper work adapted for Gazelle. Frida retains its own licenses; see
 [NOTICE.md](NOTICE.md). Published module packages must be accompanied by the
 Frida source companion archive, which is not a Magisk module.
 See [CHANGELOG.md](CHANGELOG.md) for version history.

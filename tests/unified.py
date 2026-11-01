@@ -19,7 +19,7 @@ parser.add_argument('--stock', required=True, type=Path)
 args = parser.parse_args()
 STOCK = args.stock.read_bytes()
 FIXED = '690cfd8c33e3c02d68c7e0d1c51415530907bcf41f1cf8784186ba17c897e4f2'
-IDS = ('gazelle_ddplus_bypass', 'firetv_dtshd_passthrough')
+IDS = ('gazelle_ddplus_bypass', 'firetv_dtshd_passthrough', 'firetv_video')
 
 
 class Unified(unittest.TestCase):
@@ -167,6 +167,16 @@ disable_legacy_modules "$ADB_ROOT"
         self.assertEqual(result.returncode, 0, result.stderr)
         for name in ('dolby.start', 'dolby.exit', 'dts.start', 'dts.exit'):
             self.assertTrue((self.module/name).exists(), name)
+
+    def test_karat_never_starts_video_worker(self):
+        (self.module/'video').mkdir()
+        (self.module/'video/service.sh').write_text('touch "$1/video-started"\n')
+        self.hash_payload()
+        self.assertEqual(self.install(TEST_DEVICE='karat').returncode, 0)
+        shutil.copyfile(self.module/'system/bin/aparam', self.utility)
+        result = self.service(TEST_DEVICE='karat')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertFalse((self.module/'video-started').exists())
 
     def test_supervisor_rejects_active_legacy(self):
         self.legacy(parent='modules_update', ident=IDS[1])

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the unified Fire TV audio module with a pinned Frida runtime."""
+"""Build the combined Fire TV AV module with a pinned Frida runtime."""
 from pathlib import Path
 import hashlib
 import shutil
@@ -77,11 +77,16 @@ def main():
         parser.error('Provide --runtime PATH or use --fetch-runtime once')
     runtime = path.read_bytes()
     require_hash(runtime, RUNTIME_SHA, 'Frida runtime')
-    names = ['module.prop', 'service.sh', 'customize.sh', 'README.md',
+    names = ['module.prop', 'service.sh', 'customize.sh', 'README.md', 'config.sh',
              'verify-firmware.sh', 'src/native.c',
-             'src/agent.js', 'src/karat.js', 'LICENSE', 'NOTICE.md', 'CHANGELOG.md', 'build.py']
-    names += [p.relative_to(ROOT).as_posix() for directory in ('firmware', 'licenses', 'third_party', 'scripts')
-              for p in sorted((ROOT/directory).rglob('*')) if p.is_file() and '__pycache__' not in p.parts and p.name != '.DS_Store' and p.suffix not in ('.pyc', '.pyo')]
+             'src/agent.js', 'src/karat.js', 'src/gazelle-mode.js', 'src/gazelle-dsp.js', 'LICENSE', 'NOTICE.md', 'CHANGELOG.md', 'build.py', 'build-video.sh']
+    names += [p.relative_to(ROOT).as_posix() for directory in ('firmware', 'licenses', 'third_party', 'scripts', 'video', 'src/fel')
+              for p in sorted((ROOT/directory).rglob('*')) if p.is_file() and 'node_modules' not in p.parts and '__pycache__' not in p.parts and not any(part.startswith('.') for part in p.relative_to(ROOT).parts) and not ('src' in p.relative_to(ROOT).parts and p.suffix == '.ko') and p.suffix not in ('.pyc', '.pyo', '.o', '.cmd', '.mod') and p.name not in ('Module.symvers', 'modules.order', 'dvfel.mod.c', 'gazelle_link.mod.c')]
+    for required in ('video/fel/ps7702/dvfel.ko', 'video/fel/ps7717/dvfel.ko'):
+        if not (ROOT/required).is_file():
+            parser.error('Run build-video.sh first: missing '+required)
+    subprocess.run(['python3', str(ROOT/'video-build-inputs.py'), 'check'], check=True)
+    names += ['video-build-inputs.py', 'BUILDING.md', 'docs/FEL-INTERFACE.md']
     stage = stage_files(names)
     for pattern, count, script, output in (
         ('ps*.sha256', 4, 'agent.js', 'runtime.js'),
@@ -93,6 +98,9 @@ def main():
             raise ValueError(f'Expected complete {count}-library profiles: {pattern}')
         source = 'try {\nconst EXPECTED_FIRMWARE_PROFILES=' + json.dumps(expected) + ';\n'
         source += 'const NATIVE_SOURCE=' + json.dumps((ROOT/'src/native.c').read_text()) + ';\n'
+        if script == 'agent.js':
+            source += (ROOT/'src/gazelle-mode.js').read_text() + '\n'
+            source += (ROOT/'src/gazelle-dsp.js').read_text() + '\n'
         source += (ROOT/'src'/script).read_text()
         source += '\n} catch(e) {console.error("DTS_FATAL "+e.stack); throw e;}\n'
         (stage/output).write_text(source)
@@ -101,11 +109,11 @@ def main():
     (stage/'bin/frida-inject').write_bytes(runtime)
     # Magisk removes these root files after installation. Hash persistent payloads.
     manifest = ''.join(sha(p.read_bytes())+'  '+p.relative_to(stage).as_posix()+'\n'
-                       for p in sorted(stage.rglob('*')) if p.is_file() and p.relative_to(stage).as_posix() not in ('customize.sh', 'README.md'))
+                       for p in sorted(stage.rglob('*')) if p.is_file() and p.relative_to(stage).as_posix() not in ('customize.sh', 'README.md', 'config.sh'))
     (stage/'payload.sha256').write_text(manifest)
     properties = dict(line.split('=', 1) for line in (ROOT/'module.prop').read_text().splitlines() if '=' in line)
     version = properties['version'].removesuffix('-experimental')
-    archive(stage, f'firetv-passthrough-v{version}.zip')
+    archive(stage, f'firetv-av-v{version}.zip')
 
 if __name__ == '__main__':
     main()
