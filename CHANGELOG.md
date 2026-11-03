@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.1 (experimental)
+
+- Fixes a Gazelle regression in the TrueHD microphone correction: temporary audio outputs could trigger DSP errors and sustained high CPU usage during streaming playback.
+- Coordinates DSP reference changes with actual playback and teardown; retains mode 6 and TrueHD passthrough.
+- Tested on PS7717 with ESPN audio transitions and TrueHD pause/resume, seeking and stopping. Karat and FEL are unchanged. HDR output enhancements are not included.
+
 ## 0.2.0 (experimental candidate)
 
 - Renames the module to Fire TV AV; retains the existing Magisk ID for upgrades.

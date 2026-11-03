@@ -3,15 +3,19 @@
 One experimental Magisk module for audio passthrough on **Cube 3 / Gazelle** and
 **Stick 4K Max 2 / Karat**, with hardware Dolby Vision FEL on supported Cube 3 builds.
 
-**v0.2.0 experimental candidate.** Replaces the audio module and the private
+**v0.2.1 experimental.** Replaces the audio module and the private
 standalone video module. Karat remains audio-only.
 
 ## Gazelle TrueHD correction
 
-Updates the voice DSP reference format when the HDMI audio output opens, keeping
-mode 6 and TrueHD passthrough active. Playback-tested on 7.7.0.2 and 7.7.1.7;
-enabled only for matching reviewed HAL, DSP and ALSA libraries. Other library
-combinations retain the existing audio behavior. Karat is unchanged.
+Coordinates the voice DSP reference with audio-output opening, playback and
+teardown, keeping mode 6 and TrueHD passthrough active. This fixes a regression
+in the previous correction: brief audio-output changes could trigger microphone
+errors and sustained high CPU usage, observed during ESPN playback.
+
+The revised handling was tested on 7.7.1.7 with ESPN transitions and TrueHD
+playback. It retains the reviewed library checks; the previous correction was
+also tested on 7.7.0.2. Karat is unchanged.
 
 Invoking Alexa during TrueHD can still trigger the microphone error storm.
 That interaction and the unrelated Kodi PCM transition issue remain deferred.
