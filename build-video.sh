@@ -11,4 +11,6 @@ for profile in ps7702 ps7717; do
     mkdir -p "video/fel/$profile"
     cp "src/fel/$profile/dvfel.ko" "video/fel/$profile/"
 done
+# the FEL indicator helper app for the A/B button (video/fel-ab-notify.sh)
+sh tools/fel-indicator/build.sh
 python3 video-build-inputs.py record

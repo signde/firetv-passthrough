@@ -31,7 +31,7 @@ while [ ! -c /dev/dvfel ] && [ "$i" -lt 50 ]; do
 done
 [ -c /dev/dvfel ] || fail DEVICE_NODE_TIMEOUT
 # Match the existing validated, opt-in player settings.
-for setting in wait_el:1 residual_unpaired:1 coherent_bl_fallback:1 seek_wait_ms:200 blank_seek_gaps:0; do
+for setting in wait_el:1 residual_unpaired:1 coherent_bl_fallback:0 seek_wait_ms:200 blank_seek_gaps:0; do
  name=${setting%:*};value=${setting#*:}
  echo "$value" > "/sys/module/dvfel/parameters/$name" || fail CONFIGURATION_FAILED
 done
@@ -44,5 +44,9 @@ done
 . "$OWNER/scripts/fel-access.sh"
 provision_fel_access || fail PLAYER_ACCESS_FAILED
 status "READY: $(cat /sys/module/dvfel/version), shared FEL interface"
+# A/B: applies a switch of the Netflix button to a paused picture and shows "FEL: EL off / on"
+if [ -e /sys/module/dvfel/parameters/el_mute ]; then
+ sh "$M/fel-ab-notify.sh" "$M" </dev/null >/dev/null 2>&1 9>&- &
+fi
 # Session ownership and buffer pins are managed by the helper. Never force
 # rmmod on shutdown, disable or app exit; reboot removes all in-memory hooks.

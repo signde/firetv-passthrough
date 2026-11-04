@@ -55,11 +55,14 @@
 #include <linux/sync_file.h>
 #include <linux/delay.h>
 #include <linux/file.h>
+#include <linux/input.h>
 #include <asm/unaligned.h>
 #include <linux/amlogic/media/vfm/vframe.h>
 #include <linux/amlogic/media/vfm/vframe_provider.h>
 #include <linux/amlogic/media/vfm/vframe_receiver.h>
 #include <linux/amlogic/meson_uvm_core.h>
+#include <linux/amlogic/media/codec_mm/codec_mm.h>
+#include <linux/amlogic/media/canvas/canvas.h>
 
 #include "dvfel_sc2_uapi.h"
 
@@ -174,6 +177,14 @@ static struct dvfel_sc2 {
 } g;
 
 #include "live_fixes.h"
+
+/*
+ * A/B: the EL off / on at once with the remote's Netflix button while a session runs, in any FEL
+ * player (see the A/B section below). Every EL goes to the display as a module copy of the decoder's
+ * vframe (ab_vf), so that the EL of a paused picture can be re-pointed.
+ */
+static struct vframe_s ab_vf[MAX_EL];
+static bool ab_copies;	/* hand out copies: the firmware's vframe layout matches the headers */
 
 static struct kretprobe krp_dual, krp_wait;
 static struct kprobe kp_parse;
@@ -344,9 +355,9 @@ static bool retire_stopped_frames(void)
   /* Layout independently checked in amdv_vf_put's guarded live code. */
   for(id=0;id<2;id++)for(j=0;j<16;j++){
    struct vframe_s **pair=(void *)(0xffffffc011ba4048UL+id*0x188+0x58+j*16);
-   if(READ_ONCE(pair[1])==e->vf){WRITE_ONCE(pair[1],NULL);WRITE_ONCE(pair[0],NULL);}
+   if(READ_ONCE(pair[1])==e->vf||READ_ONCE(pair[1])==&ab_vf[i]){WRITE_ONCE(pair[1],NULL);WRITE_ONCE(pair[0],NULL);}
   }
-  if(READ_ONCE(*cur)==e->vf)WRITE_ONCE(*cur,NULL);
+  if(READ_ONCE(*cur)==e->vf||READ_ONCE(*cur)==&ab_vf[i])WRITE_ONCE(*cur,NULL);
   ent_release_locked(e);retired++;g.el_retired++;
  }
  spin_unlock(&g.lock);
@@ -605,6 +616,220 @@ static int parse_pre(struct kprobe *p, struct pt_regs *regs)
 	return 0;
 }
 
+/* --- A/B: the EL switched off without the player ---
+ *
+ * The remote's Netflix button (ab_key) no longer reaches Android while a session runs; each press
+ * switches el_mute. With the EL off the frames stay paired, but the display gets a neutral EL picture
+ * (no change to the base layer) from a module buffer instead of the decoder's, so VD2 and the composer
+ * keep their FEL setup and the picture is not blanked. The neutral picture is uncompressed 10-bit 4:2:0
+ * as the VD2 input reads it: the luma in 3 bytes per pixel (the value at the top of the first 12-bit
+ * field), the chroma in 12-bit Cr/Cb pairs (found with the VPP pixel probe against 8-bit NV21). A
+ * change of the EL's kind is announced to the video driver by a width 32 pixels narrower for one frame,
+ * so it reprograms VD2. On a switch the EL on screen is re-pointed at once; on a paused picture the
+ * video driver applies it when asked to set the shown frames up again (force_property_change), which
+ * video/fel-ab-notify.sh does (SELinux refuses that write from a kernel thread); it also shows the state.
+ */
+#define AB_W		1920
+#define AB_H		1080
+#define AB_YSTRIDE	(AB_W * 3)
+#define AB_CSTRIDE	(AB_W * 3 / 2)
+#define AB_SIZE		PAGE_ALIGN(AB_YSTRIDE * AB_H + AB_CSTRIDE * AB_H / 2)
+
+static unsigned int ab_key = 0x2e8;
+module_param(ab_key, uint, 0644);
+MODULE_PARM_DESC(ab_key, "Key code of the A/B (EL off/on) button while a session runs (Fire TV remote Netflix: 0x2e8); 0 = none");
+static bool el_mute;
+static unsigned long ab_muted, ab_presses;
+static unsigned long mute_phys;
+static u8 *mute_virt;
+static int ab_seen = -1;	/* the kind of EL last handed out: 0 the decoder's, 1 neutral */
+static int ab_shown = -1;	/* entry of the EL last handed to the display */
+
+/* the neutral picture: 512 in every component; two 12-bit fields per 3 bytes, the value << 2 */
+static void ab_fill_line(u8 *d, int fields)
+{
+	const u32 v = 512 << 2, w = v | v << 12;
+	int k;
+
+	for (k = 0; k < fields / 2; k++, d += 3) {
+		d[0] = w & 0xff;
+		d[1] = (w >> 8) & 0xff;
+		d[2] = (w >> 16) & 0xff;
+	}
+}
+
+static int mute_alloc(void)
+{
+	int y;
+
+	if (mute_phys)
+		return 0;
+	mute_phys = codec_mm_alloc_for_dma(DRV_NAME "-mute", AB_SIZE / PAGE_SIZE, 0, CODEC_MM_FLAGS_DMA);
+	if (!mute_phys)
+		return -ENOMEM;
+	mute_virt = codec_mm_vmap(mute_phys, AB_SIZE);
+	if (!mute_virt) {
+		codec_mm_free_for_dma(DRV_NAME "-mute", mute_phys);
+		mute_phys = 0;
+		return -ENOMEM;
+	}
+	for (y = 0; y < AB_H; y++)
+		ab_fill_line(mute_virt + y * AB_YSTRIDE, AB_W * 2);	/* 24 bits per luma pixel */
+	for (y = 0; y < AB_H / 2; y++)
+		ab_fill_line(mute_virt + AB_YSTRIDE * AB_H + y * AB_CSTRIDE, AB_W);
+	codec_mm_dma_flush(mute_virt, AB_SIZE, DMA_TO_DEVICE);
+	return 0;
+}
+
+static void mute_free(void)
+{
+	if (!mute_phys)
+		return;
+	codec_mm_unmap_phyaddr(mute_virt);
+	codec_mm_free_for_dma(DRV_NAME "-mute", mute_phys);
+	mute_phys = 0;
+	mute_virt = NULL;
+}
+
+/* g.lock held: the vframe to hand out for entry e (the decoder's, or a copy: neutral when muted) */
+static struct vframe_s *el_vf_out(struct el_ent *e, bool get)
+{
+	int i = e - g.ent;
+	struct vframe_s *t = &ab_vf[i];
+	bool mute = READ_ONCE(el_mute) && mute_phys;
+	int seen = mute ? 1 : 0;
+	bool narrow = seen != ab_seen;
+
+	if (!READ_ONCE(ab_copies))
+		return e->vf;
+	memcpy(t, e->vf, sizeof(*t));
+	if (mute) {
+		t->type &= ~(VIDTYPE_COMPRESS | VIDTYPE_SCATTER | VIDTYPE_SUPPORT_COMPRESS | VIDTYPE_VIU_422 |
+			     VIDTYPE_VIU_SINGLE_PLANE | VIDTYPE_VIU_444 | VIDTYPE_VIU_NV12);
+		t->type |= VIDTYPE_VIU_NV21 | VIDTYPE_VIU_FIELD | VIDTYPE_NO_DW;
+		t->bitdepth = BITDEPTH_Y10 | BITDEPTH_U10 | BITDEPTH_V10;
+		t->flag |= VFRAME_FLAG_VIDEO_LINEAR;
+		t->width = AB_W;
+		t->height = AB_H;
+		t->canvas0Addr = (u32)-1;
+		t->canvas1Addr = (u32)-1;
+		t->plane_num = 2;
+		memset(&t->canvas0_config, 0, sizeof(t->canvas0_config));
+		t->canvas0_config[0].phy_addr = mute_phys;
+		t->canvas0_config[0].width = AB_YSTRIDE;
+		t->canvas0_config[0].height = AB_H;
+		t->canvas0_config[0].block_mode = CANVAS_BLKMODE_LINEAR;
+		t->canvas0_config[1].phy_addr = mute_phys + AB_YSTRIDE * AB_H;
+		t->canvas0_config[1].width = AB_CSTRIDE;
+		t->canvas0_config[1].height = AB_H / 2;
+		t->canvas0_config[1].block_mode = CANVAS_BLKMODE_LINEAR;
+		memcpy(t->canvas1_config, t->canvas0_config, sizeof(t->canvas1_config));
+	}
+	if (narrow) {
+		t->width -= 32;
+		t->compWidth -= 32;
+	}
+	if (get) {
+		ab_seen = seen;
+		if (mute)
+			ab_muted++;
+	}
+	return t;
+}
+
+/* after a switch (process context): the neutral picture ready, the EL on screen re-pointed */
+static void ab_work_fn(struct work_struct *w)
+{
+	unsigned long flags;
+
+	if (READ_ONCE(el_mute) && mute_alloc()) {
+		pr_warn(DRV_NAME ": no memory for the neutral EL picture: EL off unavailable\n");
+		WRITE_ONCE(el_mute, false);
+		return;
+	}
+	spin_lock_irqsave(&g.lock, flags);
+	if (g.active && ab_shown >= 0 && g.ent[ab_shown].state == EL_OUT)
+		el_vf_out(&g.ent[ab_shown], false);
+	spin_unlock_irqrestore(&g.lock, flags);
+}
+static DECLARE_WORK(ab_work, ab_work_fn);
+
+static int el_mute_set(const char *val, const struct kernel_param *kp)
+{
+	int ret = param_set_bool(val, kp);
+
+	if (!ret)
+		schedule_work(&ab_work);
+	return ret;
+}
+static const struct kernel_param_ops el_mute_ops = { .set = el_mute_set, .get = param_get_bool };
+module_param_cb(el_mute, &el_mute_ops, &el_mute, 0644);
+MODULE_PARM_DESC(el_mute, "EL off: a neutral EL picture instead of the decoder's (the A/B button switches it)");
+
+static bool ab_filter(struct input_handle *h, unsigned int type, unsigned int code, int value)
+{
+	if (type != EV_KEY || !code || code != READ_ONCE(ab_key) || !READ_ONCE(g.owner))
+		return false;
+	if (value == 1) {
+		WRITE_ONCE(el_mute, !READ_ONCE(el_mute));
+		ab_presses++;
+		schedule_work(&ab_work);
+		pr_info(DRV_NAME ": A/B button: EL %s\n", el_mute ? "off" : "on");
+	}
+	return true; /* not to Android while a session runs */
+}
+
+static int ab_connect(struct input_handler *handler, struct input_dev *dev, const struct input_device_id *id)
+{
+	struct input_handle *h = kzalloc(sizeof(*h), GFP_KERNEL);
+	int ret;
+
+	if (!h)
+		return -ENOMEM;
+	h->dev = dev;
+	h->handler = handler;
+	h->name = DRV_NAME "_ab";
+	ret = input_register_handle(h);
+	if (ret)
+		goto err_free;
+	ret = input_open_device(h);
+	if (ret)
+		goto err_unreg;
+	return 0;
+err_unreg:
+	input_unregister_handle(h);
+err_free:
+	kfree(h);
+	return ret;
+}
+
+static void ab_disconnect(struct input_handle *h)
+{
+	input_close_device(h);
+	input_unregister_handle(h);
+	kfree(h);
+}
+
+static bool ab_match(struct input_handler *handler, struct input_dev *dev)
+{
+	return ab_key && ab_key <= KEY_MAX && test_bit(ab_key, dev->keybit);
+}
+
+static const struct input_device_id ab_ids[] = {
+	{ .flags = INPUT_DEVICE_ID_MATCH_EVBIT, .evbit = { BIT_MASK(EV_KEY) } },
+	{ },
+};
+
+static struct input_handler ab_handler = {
+	.filter = ab_filter,
+	.match = ab_match,
+	.connect = ab_connect,
+	.disconnect = ab_disconnect,
+	.name = DRV_NAME "_ab",
+	.id_table = ab_ids,
+};
+static bool ab_handler_reg;
+
 /* --- the "dveldec" provider, called by the Dolby Vision driver --- */
 
 static struct vframe_s *prov_peek(void *op_arg)
@@ -614,7 +839,7 @@ static struct vframe_s *prov_peek(void *op_arg)
 
 	spin_lock_irqsave(&g.lock, flags);
 	if (g.active && g.nq)
-		vf = g.q[0]->vf;
+		vf = el_vf_out(g.q[0], false);
 	spin_unlock_irqrestore(&g.lock, flags);
 	return vf;
 }
@@ -632,7 +857,8 @@ static struct vframe_s *prov_get(void *op_arg)
 		e->out_jiffies = jiffies;
 		__module_get(THIS_MODULE); /* retain code while a display frame is outstanding */
 		e->display_pin = true;
-		vf = e->vf;
+		vf = el_vf_out(e, true);
+		ab_shown = e - g.ent;
 		g.el_out++;
 		dbg(2, "EL id %u crc %08x to display\n", e->id, e->crc);
 	}
@@ -649,7 +875,7 @@ static void prov_put(struct vframe_s *vf, void *op_arg)
 	for (i = 0; i < MAX_EL; i++) {
 		struct el_ent *e = &g.ent[i];
 
-		if (e->state == EL_OUT && e->vf == vf) {
+		if (e->state == EL_OUT && (e->vf == vf || &ab_vf[i] == vf)) {
 			g.el_put++;
 			ent_release_locked(e);
 			break;
@@ -819,6 +1045,9 @@ static long sess_start(struct file *f)
 		g.done_head = g.done_tail = 0;
 		spin_unlock_irqrestore(&g.lock, flags);
 		WRITE_ONCE(g.session_id, g.session_id + 1);
+		/* a new session starts with the EL */
+		WRITE_ONCE(el_mute, false);
+		ab_shown = -1;
 	}
 	WRITE_ONCE(g.owner, f);
 	WRITE_ONCE(g.active, true);
@@ -1084,6 +1313,7 @@ static int stats_show(struct seq_file *m, void *v)
 	seq_printf(m,"bl_detached %d retired %llu\n",g.bl_detached,g.el_retired);
 	seq_printf(m,"seek_wait_ms %u extended %llu\n",seek_wait_ms,g.seek_wait_extended);
  seq_printf(m,"coherent_bl_fallback %d writes %lu\n",coherent_bl_fallback,fallback_mode_writes);
+ seq_printf(m,"ab copies %d button %d presses %lu el_mute %d neutral %lu\n",ab_copies,ab_handler_reg,ab_presses,el_mute,ab_muted);
  seq_printf(m,"blank_seek_gaps %d pending %d epochs %llu checks %llu\n",blank_seek_gaps,g.gap_pending,g.gap_epochs,g.gap_blank_checks);
 	seq_printf(m,"residual_unpaired %d hits %lu\n",residual_unpaired,residual_unpaired_hits);
 	seq_printf(m,"residual_bypass %d hits %lu\n",residual_bypass,residual_checks_bypassed);
@@ -1169,6 +1399,16 @@ static int __init dvfel_init(void)
 		pr_warn(DRV_NAME ": vframe layout of this firmware not found: no FEL pairing\n");
 	else if (src_fmt_off != SC2_VF_SRC_FMT_OFF)
 		pr_info(DRV_NAME ": vframe src_fmt at %d (Dune r24: %d)\n", src_fmt_off, SC2_VF_SRC_FMT_OFF);
+	/* A/B copies the firmware's vframes: only when their layout is the headers' */
+	if (src_fmt_off == (int)offsetof(struct vframe_s, src_fmt)) {
+		WRITE_ONCE(ab_copies, true);
+		if (input_register_handler(&ab_handler))
+			pr_warn(DRV_NAME ": A/B button handler not registered\n");
+		else
+			ab_handler_reg = true;
+	} else {
+		pr_info(DRV_NAME ": vframe layout differs from the headers: no A/B button\n");
+	}
 	/* Do not alter Dolby driver state on module load. */
 	pr_info(DRV_NAME ": SC2 %s loaded (src_fmt %d)\n", DVFEL_SC2_VERSION, src_fmt_off);
 	return 0;
@@ -1188,6 +1428,9 @@ static void __exit dvfel_exit(void)
 	int i;
 
 	debugfs_remove_recursive(dbg_dir);
+	if (ab_handler_reg)
+		input_unregister_handler(&ab_handler);
+	cancel_work_sync(&ab_work);
 	misc_deregister(&dvfel_misc);
 	unregister_kretprobe(&krp_wait);
 	unregister_kprobe(&kp_parse);
@@ -1209,6 +1452,7 @@ static void __exit dvfel_exit(void)
 			g.ent[i].state = EL_RELEASE;
 	rel_work_fn(NULL);
 	cancel_work_sync(&g.rel_work);
+	mute_free();
 }
 
 module_init(dvfel_init);

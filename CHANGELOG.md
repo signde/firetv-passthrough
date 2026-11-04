@@ -1,5 +1,21 @@
 # Changelog
 
+## Unreleased
+
+- Gazelle FEL (PS7717): A/B, the remote's Netflix button switches the enhancement layer off and on
+  at once during FEL playback, also on a paused picture, in any FEL player and without player
+  changes. The EL off is a neutral EL picture from the module (uncompressed 10-bit, as the VD2 input
+  reads it), so the composer keeps its FEL setup and nothing blanks. A watcher applies the switch to a
+  paused picture and shows "FEL: EL off / on" through a small helper app (tools/fel-indicator).
+
+## 0.2.2 (experimental, local build)
+
+- Gazelle FEL: starts the helper with `coherent_bl_fallback=0`. With it on, the
+  per-frame composer-mode rewrite made the lower part of the picture flicker darker
+  during FEL playback (Kodi FEL, VLC FEL and Nuvio alike). Turning it off live
+  during playback removed the flicker while FEL stayed active. BL-only fallback
+  frames (seek/start) may keep the EL geometry for a frame.
+
 ## 0.2.1 (experimental)
 
 - Fixes a Gazelle regression in the TrueHD microphone correction: temporary audio outputs could trigger DSP errors and sustained high CPU usage during streaming playback.
