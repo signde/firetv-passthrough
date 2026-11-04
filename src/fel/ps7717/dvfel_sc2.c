@@ -1084,6 +1084,8 @@ static int stats_show(struct seq_file *m, void *v)
 	seq_printf(m,"bl_detached %d retired %llu\n",g.bl_detached,g.el_retired);
 	seq_printf(m,"seek_wait_ms %u extended %llu\n",seek_wait_ms,g.seek_wait_extended);
  seq_printf(m,"coherent_bl_fallback %d writes %lu\n",coherent_bl_fallback,fallback_mode_writes);
+ seq_printf(m,"fallback_precommit %d writes %lu\n",fallback_precommit,fallback_precommit_writes);
+ seq_printf(m,"tracked_mode %d skipped %lu native_writes %lu geometry_clears %lu\n",tracked_composer_mode,fallback_mode_skips,fallback_native_mode_writes,fallback_geometry_clears);
  seq_printf(m,"blank_seek_gaps %d pending %d epochs %llu checks %llu\n",blank_seek_gaps,g.gap_pending,g.gap_epochs,g.gap_blank_checks);
 	seq_printf(m,"residual_unpaired %d hits %lu\n",residual_unpaired,residual_unpaired_hits);
 	seq_printf(m,"residual_bypass %d hits %lu\n",residual_bypass,residual_checks_bypassed);

@@ -3,7 +3,7 @@
 One experimental Magisk module for audio passthrough on **Cube 3 / Gazelle** and
 **Stick 4K Max 2 / Karat**, with hardware Dolby Vision FEL on supported Cube 3 builds.
 
-**v0.2.1 experimental.** Replaces the audio module and the private
+**v0.2.2 experimental.** Replaces the audio module and the private
 standalone video module. Karat remains audio-only.
 
 ## Gazelle TrueHD correction
@@ -32,6 +32,9 @@ Ordinary players do not use FEL automatically; a player must explicitly start a
 session and supply decoded enhancement-layer frames. See the [FEL interface](docs/FEL-INTERFACE.md).
 FEL playback, audio and seeking have been checked at 24 fps, and at 25 fps over
 SMB on PS7717. 4K60 FEL presentation still needs improvement.
+
+v0.2.2 fixes FEL diagnostic flicker while retaining protection against green
+flashes during seeking. Tested in Kodi FEL and VLC FEL on both supported builds.
 
 Set `ENABLE_FEL=0` in `config.sh` and reboot to disable FEL while retaining audio fixes. Disabling the module and rebooting removes all in-memory patches.
 
@@ -115,7 +118,7 @@ TV/eARC chain advertising eight-channel DTS-HD at 192 kHz.
 
 1. Set Fire OS audio to **Best Available** and enable passthrough in your player.
    In Nova, choose **system passthrough**.
-2. Install `firetv-av-v0.2.0.zip` in Magisk, then reboot.
+2. Install `firetv-av-v0.2.2.zip` in Magisk, then reboot.
 3. Allow about one minute after boot before starting playback.
 
 

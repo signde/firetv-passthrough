@@ -127,6 +127,16 @@ static int canvas_pre(struct kprobe *p, struct pt_regs *r)
 static bool coherent_bl_fallback;
 module_param(coherent_bl_fallback,bool,0644);
 MODULE_PARM_DESC(coherent_bl_fallback,"Synchronize composer and EL geometry for BL-only fallback; default off");
+/* Experimental ordering switch. False retains the released behavior. */
+static bool fallback_precommit = true;
+module_param(fallback_precommit,bool,0644);
+MODULE_PARM_DESC(fallback_precommit,"Apply coherent fallback mode before core configuration latch");
+/* The guarded core setup writes are serialized by the stock VSYNC path.
+ * Track values actually queued by it, including reset-time full writes. */
+static int tracked_composer_mode = -1;
+static unsigned long fallback_mode_skips, fallback_geometry_clears;
+static unsigned long fallback_native_mode_writes;
+static unsigned long fallback_precommit_writes;
 static unsigned long fallback_mode_writes;
 static int last_route_enabled = -1;
 static int reg_pre(struct kprobe *p, struct pt_regs *r)
@@ -143,14 +153,31 @@ static int reg_pre(struct kprobe *p, struct pt_regs *r)
          (READ_ONCE(*(u32 *)AMDV_MASK_ADDR)&1) &&
          !(READ_ONCE(*(u32 *)DV_FLAGS_ADDR)&0x100);
  /* An absent EL must not keep the preceding half-resolution EL geometry. */
- if (coherent_bl_fallback && !enabled) half=false;
- if(off==1){val=(val&~8U)|(half?8:0);}
+ if (coherent_bl_fallback && !enabled) {
+  if (half && off==0xf3 && (reg&0xff000000)==0x01000000)
+   fallback_geometry_clears++;
+  half=false;
+ }
+ if(off==3 && val==1 && (reg&0xff000000)==0x01000000 &&
+    coherent_bl_fallback && fallback_precommit) {
+  /* Stock queues its composer coefficients before REG_START+3 (apply),
+   * and swap control afterwards. Keep mode in the same configuration
+   * as those coefficients instead of changing it after the latch. */
+  if (READ_ONCE(tracked_composer_mode) != (enabled?0:1)) {
+   write_dv_bits(0x01000032,enabled?0:1,0,1);
+   WRITE_ONCE(tracked_composer_mode,enabled?0:1);
+   composer_mode_changed=true;
+   fallback_mode_writes++;fallback_precommit_writes++;
+  } else fallback_mode_skips++;
+ }
+ else if(off==1){val=(val&~8U)|(half?8:0);}
  else if(off==0xf3){
   val=(val&~0x36U)|(half?0x34:0)|((enabled&&(val&1))?2:0);
-  if (coherent_bl_fallback && (reg&0xff000000)==0x01000000) {
+  if (coherent_bl_fallback && !fallback_precommit && (reg&0xff000000)==0x01000000) {
    /* Stock caches mode1 even though our FEL path writes mode0; explicitly
     * write the current mode in the same VSYNC/RDMA batch as swap control. */
    write_dv_bits(0x01000032,enabled?0:1,0,1);
+   WRITE_ONCE(tracked_composer_mode,enabled?0:1);
    composer_mode_changed=true;fallback_mode_writes++;
   }
   if((reg&0xff000000)==0x01000000 && route_el && (mux_allowed || (enabled && prepare_el_route()))){
@@ -169,12 +196,14 @@ static int reg_pre(struct kprobe *p, struct pt_regs *r)
    vd2_changed=true;vd2_route_writes++;
   }
  }
- else if(off==0x32 && (reg&0xff000000)==0x01000000 &&
-         fel_composer_mode && enabled && val==1){
-  /* Stock comp_cfg_2_comp_reg hardcodes composer_mode=1. Working CE
-   * on this device has identical comp coefficients but mode=0.
-   * Intercept only this guarded session's open-driver register write. */
-  val=0;composer_mode_changed=true;composer_mode_writes++;
+ else if(off==0x32 && (reg&0xff000000)==0x01000000){
+  /* Observe every full mode write, not just those needing a FEL override.
+   * Reset-time coefficient programming must invalidate any prior mode. */
+  if(fel_composer_mode && enabled && val==1){
+   val=0;composer_mode_changed=true;composer_mode_writes++;
+  }
+  WRITE_ONCE(tracked_composer_mode,val&1);
+  fallback_native_mode_writes++;
  }
  else return 0;
  if(val!=r->regs[1]){r->regs[1]=val;fixed_register++;}
@@ -322,6 +351,7 @@ static int fixes_init(void)
 }
 static void fixes_start(void)
 {
+ WRITE_ONCE(tracked_composer_mode,-1);
  saved_enable_fel=READ_ONCE(*(u8 *)FEL_ENABLE_ADDR);
  saved_el_mux=(read_dv_reg(0x1a71)>>4)&3;
  saved_vd2_bypass=(read_dv_reg(0x1a84)>>4)&1;
@@ -333,6 +363,7 @@ static void fixes_start(void)
 }
 static void fixes_stop(void)
 {
+ WRITE_ONCE(tracked_composer_mode,-1);
  WRITE_ONCE(*(u8 *)FEL_ENABLE_ADDR,saved_enable_fel);
  WRITE_ONCE(fix_session,false);
  /* Flush the intended restoration through RDMA and also write it directly:

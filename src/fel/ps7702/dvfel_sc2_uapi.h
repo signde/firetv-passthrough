@@ -28,7 +28,7 @@
 #include <linux/ioctl.h>
 #include <linux/types.h>
 
-#define DVFEL_SC2_VERSION	"2026.10.29.1"
+#define DVFEL_SC2_VERSION	"2026.11.04.3"
 
 #define DVFEL_SC2_MAX_WAIT_MS	1000	/* bounded completion wait */
 

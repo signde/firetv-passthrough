@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.2 (experimental)
+
+- Fixes Gazelle FEL flicker while preserving protection against green flashes during seeking.
+- Tracks composer-mode writes and applies necessary corrections before the frame configuration is applied.
+- Tested in Kodi FEL and VLC FEL on 7.7.0.2 (PS7702.4965N) and 7.7.1.7 (PS7717.5741N), including pause/resume and seeking.
+- Audio handling, Karat and firmware compatibility are unchanged. HDR output enhancements are not included.
+
 ## 0.2.1 (experimental)
 
 - Fixes a Gazelle regression in the TrueHD microphone correction: temporary audio outputs could trigger DSP errors and sustained high CPU usage during streaming playback.
