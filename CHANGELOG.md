@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.2 (experimental, local build)
+
+- Gazelle FEL: starts the helper with `coherent_bl_fallback=0`. With it on, the
+  per-frame composer-mode rewrite made the lower part of the picture flicker darker
+  during FEL playback (Kodi FEL, VLC FEL and Nuvio alike). Turning it off live
+  during playback removed the flicker while FEL stayed active. BL-only fallback
+  frames (seek/start) may keep the EL geometry for a frame.
+
 ## 0.2.1 (experimental)
 
 - Fixes a Gazelle regression in the TrueHD microphone correction: temporary audio outputs could trigger DSP errors and sustained high CPU usage during streaming playback.

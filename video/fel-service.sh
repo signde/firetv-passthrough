@@ -31,7 +31,7 @@ while [ ! -c /dev/dvfel ] && [ "$i" -lt 50 ]; do
 done
 [ -c /dev/dvfel ] || fail DEVICE_NODE_TIMEOUT
 # Match the existing validated, opt-in player settings.
-for setting in wait_el:1 residual_unpaired:1 coherent_bl_fallback:1 seek_wait_ms:200 blank_seek_gaps:0; do
+for setting in wait_el:1 residual_unpaired:1 coherent_bl_fallback:0 seek_wait_ms:200 blank_seek_gaps:0; do
  name=${setting%:*};value=${setting#*:}
  echo "$value" > "/sys/module/dvfel/parameters/$name" || fail CONFIGURATION_FAILED
 done
