@@ -16,6 +16,8 @@ video/**/*.ko
 Module.symvers
 modules.order
 video/build-inputs.json
+video/fel-indicator.apk
+tools/fel-indicator/build/
 
 # Private APK signing material
 *.jks

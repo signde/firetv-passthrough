@@ -35,6 +35,13 @@ SMB on PS7717. 4K60 FEL presentation still needs improvement.
 
 Set `ENABLE_FEL=0` in `config.sh` and reboot to disable FEL while retaining audio fixes. Disabling the module and rebooting removes all in-memory patches.
 
+**EL on/off (A/B, PS7717):** during FEL playback the remote's **Netflix** button switches the
+enhancement layer off and on at once, also on a paused picture, in any FEL player; "FEL: EL off" /
+"FEL: EL on" appears on screen (the small `com.firetvav.felindicator` helper app, installed by the
+module). Outside FEL playback the button opens Netflix as usual. With the EL off the module hands the
+composer a neutral EL picture, so the picture is the base layer only. The key code is the `dvfel`
+parameter `ab_key` (0 disables the button); `el_mute` switches the EL by hand.
+
 ## Deferred issues
 
 - 4K60 FEL frame pacing and recoverable Kodi seek warnings.

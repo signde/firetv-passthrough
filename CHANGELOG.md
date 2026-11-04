@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- Gazelle FEL (PS7717): A/B, the remote's Netflix button switches the enhancement layer off and on
+  at once during FEL playback, also on a paused picture, in any FEL player and without player
+  changes. The EL off is a neutral EL picture from the module (uncompressed 10-bit, as the VD2 input
+  reads it), so the composer keeps its FEL setup and nothing blanks. A watcher applies the switch to a
+  paused picture and shows "FEL: EL off / on" through a small helper app (tools/fel-indicator).
+
 ## 0.2.2 (experimental, local build)
 
 - Gazelle FEL: starts the helper with `coherent_bl_fallback=0`. With it on, the
