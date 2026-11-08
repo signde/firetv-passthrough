@@ -64,5 +64,9 @@ done
     def test_already_correct_mode_has_no_write(self):
         self.assertEqual(self.run_shell('sleep() { :; }; echo 6 > mode; reconcile AudioRestart; wc -l < writes'), '0')
 
+    def test_karat_pcm_recover_keeps_fireos_mode(self):
+        self.assertEqual(self.run_shell('DEVICE=karat; reconcile PcmRecover; wc -l < writes; cat mode').split(),
+                         ['0', '5'])
+
 if __name__ == '__main__':
     unittest.main()

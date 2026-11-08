@@ -19,7 +19,7 @@ version string. Runtime guards still check the exact reviewed kernel/sites.
 ```sh
 GAZELLE_WORK=/path/to/prepared/work ./build-video.sh
 python3 build.py --fetch-runtime
-python3 tests/package.py dist/firetv-av-v0.2.2.zip
+python3 tests/package.py dist/firetv-av-v0.2.3.zip
 ```
 
 After the first build, `python3 build.py` reuses the hash-verified Frida runtime.
