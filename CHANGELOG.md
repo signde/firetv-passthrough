@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.3-rc.1 (experimental prerelease)
+
+- Refresh stale Android HDMI capabilities after audio-hook attachment when needed, without changing saved surround preferences.
+- Retains Karat HDMI bypass when Fire OS restores mode 5 during frame-rate changes.
+- Restores missing DD/DD+ HDMI capability replies in bypass mode, limited to formats supported by the connected display.
+- Uses the existing on-device audio hook, with no periodic HDMI polling.
+- Gazelle audio/FEL and the supported firmware profiles are unchanged. HDR output enhancements are not included.
+- Tested on Karat RS8182.3811N with Prime frame-rate switching, DD/DD+ passthrough, reboot and audio-service recovery. The intermittent Peacock live-stream startup stall remains unresolved.
+
 ## 0.2.2 (experimental)
 
 - Fixes Gazelle FEL flicker while preserving protection against green flashes during seeking.

@@ -1,6 +1,6 @@
 id=firetv_passthrough
 name=Fire TV AV (Gazelle / Karat)
-version=0.2.2-experimental
-versionCode=8
+version=0.2.3-rc.1-experimental
+versionCode=13
 author=signde
 description=Audio passthrough on Gazelle/Karat, plus a TrueHD microphone correction and hardware Dolby Vision FEL on supported Gazelle builds. Experimental.

@@ -24,7 +24,7 @@ def valid(payload):
 
 assert valid(files), 'Post-install payload verification failed'
 for name in ('service.sh', 'runtime.js', 'bin/frida-inject', 'verify-firmware.sh',
-             'runtime-karat.js', 'src/karat.js', 'src/gazelle-dsp.js', 'module.prop',
+             'runtime-karat.js', 'bin/karat-audio-profiles.dex', 'src/KaratAudioProfiles.java', 'src/karat-audio-profiles.sha256', 'src/karat.js', 'src/karat-mode.js', 'src/karat-capabilities.js', 'src/gazelle-dsp.js', 'module.prop',
              'scripts/dolby-service.sh', 'scripts/dts-service.sh',
              'video/service.sh', 'video/fel-service.sh', 'video/build-inputs.json',
              'video/fel/ps7702/dvfel.ko', 'video/fel/ps7717/dvfel.ko',
@@ -38,6 +38,8 @@ print('PASS: Magisk cleanup survives; modified service, agent and injector fail 
 
 assert b'correctGazelleDspReference(hal, hooks' in files['runtime.js']
 assert b'correctGazelleDspReference' not in files['runtime-karat.js']
+assert b'retainKaratBypass(hal, hooks' in files['runtime-karat.js']
+assert b'retainKaratBypass' not in files['runtime.js']
 
 assert b'ENABLE_HDR' not in files['config.sh']
 assert b'supervise.sh' not in files['video/service.sh']
@@ -45,3 +47,8 @@ for name in files:
     assert not name.startswith(('src/video/', 'video/link/', 'video/sinks/', 'third_party/frida-java-bridge/')), name
     assert name not in ('action.sh', 'uninstall.sh', 'video/classes.dex', 'video/guard-template.js', 'video/supervise.sh'), name
 print('PASS: audio/FEL package excludes the HDR controller and display-switching payloads')
+
+for line in files['src/karat-audio-profiles.sha256'].decode().splitlines():
+    digest, name = line.split()
+    assert hashlib.sha256(files[name]).hexdigest() == digest, name
+print('PASS: Karat profile helper source and DEX match their build manifest')

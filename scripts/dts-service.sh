@@ -80,7 +80,7 @@ while enabled; do
     [ "$current" = 6 ] || { log "BYPASS readback failed."; status "BYPASS_FAILED"; exit 1; }
     [ "$(pidof "$AUDIO_SERVICE")" = "$pid" ] || continue
     echo "$signature" > "$STATE/attached"
-    rm -f "$STATE/ready" "$STATE/fatal"
+    rm -f "$STATE/ready" "$STATE/fatal" "$STATE/expected-dolby"
     log "Verified $FIRMWARE_PROFILE; using $AUDIO_AGENT for $AUDIO_SERVICE."
     status "ATTACHING pid=$pid profile=$FIRMWARE_PROFILE"
     FIFO="$STATE/events.fifo"
@@ -90,6 +90,12 @@ while enabled; do
         while IFS= read -r line; do
             log "$line"
             case "$line" in
+                *'"kind":"dolby-capability-sink"'*)
+                    expected=
+                    case "$line" in *'"ac3":true'*|*'"ac3":1'*) expected=5 ;; esac
+                    case "$line" in *'"eac3":true'*|*'"eac3":1'*) expected="$expected 6" ;; esac
+                    echo "$expected" > "$STATE/expected-dolby"
+                    ;;
                 *'"kind":"ready"'*) touch "$STATE/ready"; status "ACTIVE pid=$pid version=$MODULE_VERSION" ;;
                 *'DTS_FATAL'*) touch "$STATE/fatal"; status "ATTACH_FAILED pid=$pid" ;;
                 *'"kind":"trial-error"'*) status "STREAM_ERROR pid=$pid (stop playback; see dts.log)" ;;
@@ -131,6 +137,16 @@ while enabled; do
             continue
         fi
         exit 1
+    fi
+    if [ "$(getprop ro.product.device)" = karat ]; then
+        # Only after a fresh attachment, never periodically or during ordinary playback.
+        # This refreshes stale framework profiles without changing saved settings.
+        expected=$(cat "$STATE/expected-dolby" 2>/dev/null)
+        if [ -n "$expected" ]; then
+            CLASSPATH="$MODDIR/bin/karat-audio-profiles.dex" app_process /system/bin KaratAudioProfiles $expected >> "$MODDIR/dts.log" 2>&1
+            result=$?
+            [ "$result" = 0 ] || log "Karat capability recovery returned $result; inspect audio profiles."
+        fi
     fi
     log "Attached to HAL pid=$pid. Waiting for process exit; no idle polling."
     # The runtime blocks on process lifetime. No Mac, ADB or open listener needed.

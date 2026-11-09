@@ -30,6 +30,7 @@ function NativeFunction(p){
 }
 const context=vm.createContext({Process:{arch:'arm',pointerSize:4,id:404,getModuleByName:()=>({getExportByName:n=>n})},
  EXPECTED_FIRMWARE_PROFILES:[{}],NATIVE_SOURCE:'',File:{},Checksum:{},Memory:{alloc},
+ retainKaratDolbyCapabilities:()=>{}, retainKaratBypass(){}, // String8 parameter ownership is tested in karat-mode.js.
  CModule:function(){for(const n of ['state_size','reset','clear','process'])this['dtshd_'+n]='dtshd_'+n;},
  NativeFunction,NativeCallback:function(f){return f;},Interceptor:{attach:(n,c)=>{hooks.set(n,c);return {detach(){}};},replace:(n,f)=>replacement=f,revert(){},flush(){}},
  Script:{pin(){pins++;},unpin(){assert(pins>0);pins--; }},rpc:{exports:{}},

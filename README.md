@@ -3,8 +3,15 @@
 One experimental Magisk module for audio passthrough on **Cube 3 / Gazelle** and
 **Stick 4K Max 2 / Karat**, with hardware Dolby Vision FEL on supported Cube 3 builds.
 
-**v0.2.2 experimental.** Replaces the audio module and the private
+**v0.2.3-rc.1, experimental prerelease.** Replaces the audio module and the private
 standalone video module. Karat remains audio-only.
+
+This Karat update retains bypass across frame-rate changes and repairs missing
+DD/DD+ capability reports. It checks for stale Android audio profiles once after
+attachment and refreshes them if needed, without changing saved surround preferences.
+Tested on Karat 8.1.8.2 (RS8182.3811N), including Prime frame-rate changes and
+DD/DD+ output through an LG G3 and Denon over eARC. Firmware support is unchanged.
+**HDR output-mode enhancements are not included. Experimental, use at your own risk.**
 
 ## Gazelle TrueHD correction
 
@@ -15,7 +22,7 @@ errors and sustained high CPU usage, observed during ESPN playback.
 
 The revised handling was tested on 7.7.1.7 with ESPN transitions and TrueHD
 playback. It retains the reviewed library checks; the previous correction was
-also tested on 7.7.0.2. Karat is unchanged.
+also tested on 7.7.0.2. This DSP correction is Gazelle-only.
 
 Invoking Alexa during TrueHD can still trigger the microphone error storm.
 That interaction and the unrelated Kodi PCM transition issue remain deferred.
@@ -38,8 +45,16 @@ flashes during seeking. Tested in Kodi FEL and VLC FEL on both supported builds.
 
 Set `ENABLE_FEL=0` in `config.sh` and reboot to disable FEL while retaining audio fixes. Disabling the module and rebooting removes all in-memory patches.
 
-## Deferred issues
+## Known limitations
 
+- **Karat Peacock live playback:** an intermittent startup freeze remains unresolved.
+  Stop and reopen playback; if it remains stuck, reboot into Fire OS. This candidate
+  does not claim to fix that stall.
+
+- **Unsupported test clip:** `DV FEL All Layers Test (Woman at 80s).mkv`
+  (the rainbow pinwheel) has mismatched base/enhancement-layer GOPs and picture
+  ordering, contrary to [Profile 7's layer-alignment requirement](https://ott.dolby.com/OnDelKits/Dolby_Vision_Online_Delivery_Kit/v1/Documentation/Specs/Visio_Profiles/help_files/topics/c_notes_profile_public.html).
+  It is not supported and should not be used to judge FEL playback of normal movies.
 - 4K60 FEL frame pacing and recoverable Kodi seek warnings.
 - Alexa interaction during TrueHD and Kodi PCM-to-compressed transitions.
 
@@ -118,7 +133,7 @@ TV/eARC chain advertising eight-channel DTS-HD at 192 kHz.
 
 1. Set Fire OS audio to **Best Available** and enable passthrough in your player.
    In Nova, choose **system passthrough**.
-2. Install `firetv-av-v0.2.2.zip` in Magisk, then reboot.
+2. Install `firetv-av-v0.2.3-rc.1.zip` in Magisk, then reboot.
 3. Allow about one minute after boot before starting playback.
 
 
@@ -170,10 +185,11 @@ and receiver hotplug during playback remain untested.
 
 The Dolby component maintains HDMI bypass at boot and after wake/restart events,
 with brief follow-up checks. The DTS component replaces the system packing path
-in memory, preserving HD audio in IEC61937 bursts. On Gazelle, the HAL also retains bypass when Fire OS requests mode 5 during
+in memory, preserving HD audio in IEC61937 bursts. On Gazelle and Karat, the HAL also retains bypass when Fire OS requests mode 5 during
 display changes. Neither audio component polls HDMI while idle. Vendor audio libraries and app APKs are not replaced.
 
-Karat also receives a Magisk overlay correcting the audio utility's exit crash,
+Karat repairs missing DD/DD+ capability replies in bypass mode using the connected display's advertised support.
+It also receives a Magisk overlay correcting the audio utility's exit crash,
 generated from the device's own file. No proprietary vendor libraries are bundled; the video helpers are built from
 the included kernel-module sources. Frida
 runs on-device without ADB or a computer and captures no audio.

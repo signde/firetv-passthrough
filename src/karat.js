@@ -32,6 +32,8 @@ function release(s) {
   Script.unpin();
 }
 function hook(m,n,c) {hooks.push(Interceptor.attach(m.getExportByName(n),c));}
+retainKaratBypass(hal, hooks, () => armed, event);
+retainKaratDolbyCapabilities(hal, hooks, () => armed, event);
 function aligned(b,n) {
   if(n<10||b.isNull())return false;
   const h=new Uint8Array(b.readByteArray(10));
