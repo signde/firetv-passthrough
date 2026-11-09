@@ -3,8 +3,8 @@
 One experimental Magisk module for audio passthrough on **Cube 3 / Gazelle** and
 **Stick 4K Max 2 / Karat**, with hardware Dolby Vision FEL on supported Cube 3 builds.
 
-**v0.2.2 experimental.** Replaces the audio module and the private
-standalone video module. Karat remains audio-only.
+**v0.2.3 experimental.** Replaces the audio module and the private
+standalone video module. Karat remains audio-only and stays in Fire OS HDMI mode.
 
 ## Gazelle TrueHD correction
 
@@ -88,7 +88,11 @@ requires a matching reviewed audio-library set; Karat also checks its audio util
 | 8.1.8.0 | RS8180.3729N, RS8180.3739N | Static review |
 | 8.1.8.2 | RS8182.3811N | User-tested |
 
-RS8185.3879N has not been reviewed.
+RS8185.3879N has not been reviewed. On one Stick 4K Max 2 running
+RS8185.3891N, `audio.primary.mt8696.so` and `libmtkaudiospdif.so` match
+`firmware/karat-rs8180.sha256`, so the installer accepts that build.
+DTS-HD attachment uses those same library bytes and has not been
+playback-tested on RS8185.3891N.
 
 ## App results
 
@@ -118,7 +122,7 @@ TV/eARC chain advertising eight-channel DTS-HD at 192 kHz.
 
 1. Set Fire OS audio to **Best Available** and enable passthrough in your player.
    In Nova, choose **system passthrough**.
-2. Install `firetv-av-v0.2.2.zip` in Magisk, then reboot.
+2. Install `firetv-av-v0.2.3.zip` in Magisk, then reboot.
 3. Allow about one minute after boot before starting playback.
 
 
@@ -159,19 +163,27 @@ tail -40 /data/adb/modules/firetv_passthrough/dts.log
 cat /data/adb/modules/firetv_passthrough/video/fel-status.txt
 ```
 
-Expect `hdmi_format=6` and DTS status `ACTIVE`. If a stream fails, stop and reopen
-it. Repeated audio-service failures stop further DTS attachment; inspect the logs
-before retrying. Do not run older trial hooks alongside this module.
+On Gazelle, expect `hdmi_format=6` and DTS status `ACTIVE`. Karat stays in
+Fire OS HDMI mode, which is `hdmi_format=5` when Dolby Atmos is available.
+If a stream fails, stop and reopen it. Repeated audio-service failures stop
+further DTS attachment; inspect the logs before retrying. Do not run older
+trial hooks alongside this module.
 
 The tested DTS profile is 48 kHz with 512-sample core frames. Other source profiles
 and receiver hotplug during playback remain untested.
 
 ## How it works
 
-The Dolby component maintains HDMI bypass at boot and after wake/restart events,
-with brief follow-up checks. The DTS component replaces the system packing path
-in memory, preserving HD audio in IEC61937 bursts. On Gazelle, the HAL also retains bypass when Fire OS requests mode 5 during
-display changes. Neither audio component polls HDMI while idle. Vendor audio libraries and app APKs are not replaced.
+The Dolby component maintains HDMI bypass at boot and after wake/restart events
+on Gazelle, with brief follow-up checks. It watches `AudioOutputFormatManager`
+for `hdmi_format=5` in the system log. Gazelle already rewrites that request
+inside the HAL, and the log watch is a backstop there. If the Gazelle HAL then
+fails to open HDMI output 400 and nothing is playing, it restarts the audio HAL
+once. Karat does not force bypass. MS12 needs Fire OS mode for Kodi PCM and for
+Prime Atmos. A MAT rejection requests mode 5, which the Gazelle HAL rewrites to mode 6.
+The DTS component replaces the system packing path in memory on both devices and
+does not change Karat's HDMI mode. Neither audio component polls HDMI while idle.
+Vendor audio libraries and app APKs are not replaced.
 
 Karat also receives a Magisk overlay correcting the audio utility's exit crash,
 generated from the device's own file. No proprietary vendor libraries are bundled; the video helpers are built from

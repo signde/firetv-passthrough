@@ -57,6 +57,7 @@ done
 # Let Fire OS and the Dolby worker reconcile the saved output mode.
 log "Boot complete; settling for 65 seconds."
 pause_enabled 65 || exit 0
+DEVICE=$(getprop ro.product.device)
 rapid=0
 while enabled; do
     verify || { status "UNSUPPORTED"; exit 1; }
@@ -71,13 +72,19 @@ while enabled; do
         exit 1
     }
     # Only bounded startup/service-restart checks, never periodic audio queries.
+    # Karat stays in Fire OS mode. Bypass silences Kodi PCM and makes Prime
+    # refuse Atmos; Kodi packs DTS itself and does not need this switch.
     current=$(mode)
-    if [ "$current" != 6 ]; then
-        log "HAL startup: applying required HDMI BYPASS (observed '$current')."
-        timeout 5 "$APARAM" set 0 hdmi_format=6 >> "$MODDIR/dts.log" 2>&1
-        current=$(mode)
+    if [ "$DEVICE" = karat ]; then
+        log "Karat leaves Fire OS HDMI mode; observed '${current:-unset}'."
+    else
+        if [ "$current" != 6 ]; then
+            log "HAL startup: applying required HDMI BYPASS (observed '$current')."
+            timeout 5 "$APARAM" set 0 hdmi_format=6 >> "$MODDIR/dts.log" 2>&1
+            current=$(mode)
+        fi
+        [ "$current" = 6 ] || { log "BYPASS readback failed."; status "BYPASS_FAILED"; exit 1; }
     fi
-    [ "$current" = 6 ] || { log "BYPASS readback failed."; status "BYPASS_FAILED"; exit 1; }
     [ "$(pidof "$AUDIO_SERVICE")" = "$pid" ] || continue
     echo "$signature" > "$STATE/attached"
     rm -f "$STATE/ready" "$STATE/fatal"

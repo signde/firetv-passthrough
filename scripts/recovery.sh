@@ -15,6 +15,14 @@ wait_enabled() {
 
 reconcile() {
     reason=$1
+    # Karat's HDMI tunnel rejects Dolby MAT, and bypass makes MS12 drop the
+    # PCM and Dolby outputs Kodi is using. Prime undoes that by opening Atmos,
+    # which is the silent-until-Prime failure. Never write bypass on Karat.
+    if [ "$DEVICE" = karat ]; then
+        mode=$(read_mode)
+        log "$reason: Karat keeps Fire OS HDMI mode; hdmi_format='${mode:-unset}'."
+        return 0
+    fi
     case "$reason" in
         FrameworkRestart|AudioRestart)
             delays="0 5 15 40"

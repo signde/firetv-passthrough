@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.3 (experimental)
+
+- Karat stays in Fire OS HDMI mode. Bypass makes MS12 drop Kodi PCM and refuse Prime Atmos. The DTS hook still attaches and does not change `hdmi_format`.
+- The Dolby listener reads the system log buffer. `AudioOutputFormatManager` writes `hdmi_format=5` there.
+- A MAT rejection requests `hdmi_format=5`. On Gazelle the HAL rewrites that request to mode 6.
+- Gazelle still restores bypass. If a display reset also fails to open HDMI output 400 and nothing is playing, the audio HAL restarts once.
+
 ## 0.2.2 (experimental)
 
 - Fixes Gazelle FEL flicker while preserving protection against green flashes during seeking.

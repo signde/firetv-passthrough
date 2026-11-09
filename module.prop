@@ -1,6 +1,6 @@
 id=firetv_passthrough
 name=Fire TV AV (Gazelle / Karat)
-version=0.2.2-experimental
-versionCode=8
+version=0.2.3-experimental
+versionCode=9
 author=signde
-description=Audio passthrough on Gazelle/Karat, plus a TrueHD microphone correction and hardware Dolby Vision FEL on supported Gazelle builds. Experimental.
+description=Audio passthrough on Gazelle/Karat, plus a TrueHD microphone correction and hardware Dolby Vision FEL on supported Gazelle builds. Karat stays in Fire OS HDMI mode. Experimental.
