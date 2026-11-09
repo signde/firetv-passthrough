@@ -180,7 +180,7 @@ for `hdmi_format=5` in the system log. Gazelle already rewrites that request
 inside the HAL, and the log watch is a backstop there. If the Gazelle HAL then
 fails to open HDMI output 400 and nothing is playing, it restarts the audio HAL
 once. Karat does not force bypass. MS12 needs Fire OS mode for Kodi PCM and for
-Prime Atmos, and a display reset's MAT 1.0 probe is not treated as a PCM failure.
+Prime Atmos. A MAT rejection requests mode 5, which the Gazelle HAL rewrites to mode 6.
 The DTS component replaces the system packing path in memory on both devices and
 does not change Karat's HDMI mode. Neither audio component polls HDMI while idle.
 Vendor audio libraries and app APKs are not replaced.

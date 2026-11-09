@@ -133,10 +133,8 @@ while enabled; do
         case "$event" in
             *'ByPass don'\''t use Dolby StreamOut'*|*'Invalid format 0x24000000'*|*'Invalid format 0x24000001'*|*'SPDIFEncoder does not support format 0x2400000'*)
                 # Prime asked for Atmos while bypass had disabled MS12, or the
-                # policy probe rejected MAT. Hold Fire OS mode 5. The MAT probe
-                # is not a PCM failure: treating it as one latches bypass and
-                # Kodi stays silent until Prime opens a Dolby stream.
-                date +%s > "$MODDIR/dolby-hold"
+                # policy probe rejected MAT. Request Fire OS mode 5. On Gazelle
+                # the HAL rewrites that request to mode 6.
                 log "Atmos open needs the Dolby decoder. Setting hdmi_format=5."
                 timeout 5 /system/bin/aparam set 0 hdmi_format=5 >> "$MODDIR/dolby.log" 2>&1
                 mode=$(read_mode)
@@ -162,16 +160,13 @@ while enabled; do
                     esac
                 done
                 if [ "$mat_rejected" = 1 ]; then
-                    date +%s > "$MODDIR/dolby-hold"
                     log "Atmos open needs the Dolby decoder. Setting hdmi_format=5."
                     timeout 5 /system/bin/aparam set 0 hdmi_format=5 >> "$MODDIR/dolby.log" 2>&1
                 else
                     reconcile DisplayReset || break
                 fi
-                # Karat must not enter bypass here. The open failure in this burst
-                # is the MAT 1.0 probe (SPDIFEncoder rejects 0x24000001) that
-                # follows a display-rate change. Forcing bypass is what leaves
-                # Kodi silent until Prime plays.
+                # Karat never writes bypass. Gazelle may restart the audio HAL
+                # once when this burst fails to open output 400 and playback is idle.
                 if [ "$failed_open" = 1 ] && [ "$DEVICE" != karat ]; then
                     recover_failed_open || break
                 fi
