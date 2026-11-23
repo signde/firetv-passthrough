@@ -5,7 +5,22 @@
 #include <linux/utsname.h>
 #include <linux/kallsyms.h>
 struct code_guard { const char *name; unsigned long addr; size_t size; u64 hash; };
-#if defined(DVFEL_PS7712)
+#if defined(DVFEL_PS7715)
+#include "../ps7715/live_guards.h"
+#define FEL_KERNEL_RELEASE "5.4.125-ab25"
+#elif defined(DVFEL_PS7714_5507)
+#include "../ps7714_5507/live_guards.h"
+#define FEL_KERNEL_RELEASE "5.4.125-ab17"
+#elif defined(DVFEL_PS7714_5506)
+#include "../ps7714_5506/live_guards.h"
+#define FEL_KERNEL_RELEASE "5.4.125-ab16"
+#elif defined(DVFEL_PS7714_5503)
+#include "../ps7714_5503/live_guards.h"
+#define FEL_KERNEL_RELEASE "5.4.125-ab13"
+#elif defined(DVFEL_PS7713)
+#include "../ps7713/live_guards.h"
+#define FEL_KERNEL_RELEASE "5.4.125-ab21"
+#elif defined(DVFEL_PS7712)
 #include "../ps7712/live_guards.h"
 #define FEL_KERNEL_RELEASE "5.4.125-ab26"
 #elif defined(DVFEL_PS7711)

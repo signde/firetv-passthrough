@@ -2,6 +2,7 @@
 // presentation-position function and stream layout. Other paths stay unchanged.
 const GAZELLE_TRUEHD_HAL_HASHES = new Set([
   'b60f1b826c74d1c86143be62529f1b0c731cd65df5c140a121410d9e9d52e0cb',
+  'bfe65dc43af7ab91ba16bb1993835a153f1442574a2cc0356932052f2bc3aa29',
   '18ebffd265df2221663087fbcb8e8a577539700c791eb6bebf43c77b86bd38c9'
 ]);
 const GAZELLE_TRUEHD_API_HASH = '4967489fdbf3b5fba9922d8bff9ae5a984af1e16249f800b91178e6aaacd29ca';

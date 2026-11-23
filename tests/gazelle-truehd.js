@@ -15,7 +15,7 @@ function fixture(options = {}) {
   const hal = {path:'hal',base:P(base),getExportByName:n => P(base + (n === 'get_hdmi_sink_cap_new' ? 0x27381 : n === 'dolby_truehd_bypass_process' ? 0x49501 : options.badOffset ? 0x3a789 : 0x3a785))};
   const api = {path:'api',getExportByName:() => P(0x300000)};
   const hashes = {
-    hal:options.newFirmware ? '18ebffd265df2221663087fbcb8e8a577539700c791eb6bebf43c77b86bd38c9' : 'b60f1b826c74d1c86143be62529f1b0c731cd65df5c140a121410d9e9d52e0cb',
+    hal:options.halHash ?? 'b60f1b826c74d1c86143be62529f1b0c731cd65df5c140a121410d9e9d52e0cb',
     api:'4967489fdbf3b5fba9922d8bff9ae5a984af1e16249f800b91178e6aaacd29ca'
   };
   const ctx = {Process:{arch:'arm',getModuleByName:n => {assert.equal(n,'libms12api_v24.so','private encoder need not be loaded at boot');return api;}},
@@ -39,8 +39,12 @@ function fixture(options = {}) {
   }
   return {batch,position,hooks,events,attached,disable:()=>{enabled=false;}};
 }
-for(const newFirmware of [false,true]) {
-  const t=fixture({newFirmware});assert.equal(t.hooks.length,3);
+for(const halHash of [
+  'b60f1b826c74d1c86143be62529f1b0c731cd65df5c140a121410d9e9d52e0cb',
+  'bfe65dc43af7ab91ba16bb1993835a153f1442574a2cc0356932052f2bc3aa29',
+  '18ebffd265df2221663087fbcb8e8a577539700c791eb6bebf43c77b86bd38c9'
+]) {
+  const t=fixture({halHash});assert.equal(t.hooks.length,3);
   assert.equal(t.batch(3072),768);assert.equal(t.batch(768),768);assert.equal(t.batch(100),100);assert.equal(t.batch(0),0);
   assert.equal(t.batch(3072,0x100000),3072,'other encoder callers unchanged');
   assert.equal(t.batch(3072,0x149900),3072,'caller range excludes next function');
@@ -65,7 +69,7 @@ for(const options of [{badHash:'hal'},{badHash:'api'},{badOffset:true},{failAtta
   const t=fixture(options);assert.equal(t.hooks.length,0);assert.equal(t.attached.size,0);
   assert.equal(t.events.at(-1).kind,'truehd-corrections-skipped');
 }
-console.log('PASS: both profiles, batch boundaries, unrelated callers, RAW/IEC and codec/rate guards, timestamps, 64-bit positions, disable and atomic failure');
+console.log('PASS: all three HAL profiles, batch boundaries, unrelated callers, RAW/IEC and codec/rate guards, timestamps, 64-bit positions, disable and atomic failure');
 
 const merge = vm.runInNewContext(source + '\nmergeTruehdRates');
 const narrow = 'MAT, 8 ch, 48 kHz, DepVaule 0x7';

@@ -3,6 +3,7 @@
 // Reviewed Gazelle libraries only. No polling or microphone suppression.
 const GAZELLE_DSP_HAL_HASHES = new Set([
   'b60f1b826c74d1c86143be62529f1b0c731cd65df5c140a121410d9e9d52e0cb',
+  'bfe65dc43af7ab91ba16bb1993835a153f1442574a2cc0356932052f2bc3aa29',
   '18ebffd265df2221663087fbcb8e8a577539700c791eb6bebf43c77b86bd38c9'
 ]);
 const GAZELLE_DSP_ASP_HASH = 'dad091d48856869f6c6c8807b820b71e58a15c3ad37e0b27439160200365aefb';

@@ -1,6 +1,6 @@
 # Maintainer build notes
 
-`build-video.sh` rebuilds the six Gazelle FEL kernel helper variants. `build.py` assembles the installable ZIP and verifies that the
+`build-video.sh` rebuilds the eleven Gazelle FEL kernel helper variants. `build.py` assembles the installable ZIP and verifies that the
 video sources and generated payloads still match. Run both after a video change.
 
 ## FEL prerequisites
@@ -8,9 +8,9 @@ video sources and generated payloads still match. Run both after a video change.
 - Docker image `gazelle-fel-builder:local`, with Clang/LLD and kernel build tools.
 - `GAZELLE_WORK` pointing to the prepared kernel workspace. It contains
   `gazelle-fel-7702/source/kernel/amlogic/pop1g/5.4/common`, and each of
-  `gazelle-fel-{7702,7711,7712,7717,7717-5746,7718}/kbuild` with the matching configuration, generated
-  headers and symbol versions. All six use Amazon Linux 5.4.125, with the reviewed
-  firmware-specific layouts in the helper sources.
+  `gazelle-fel-{7702,7711,7712,7713,7714-5503,7714-5506,7714-5507,7715,7717,7717-5746,7718}/kbuild` with the matching configuration, generated
+  headers and symbol versions. All eleven use Amazon Linux 5.4.125, with the reviewed
+  firmware-specific layouts in the helper sources. PS7716.5665N shares the PS7715.5585N helper.
 
 These prepared kernel inputs are external prerequisites, not downloaded or
 reconstructed by this script. Do not substitute a kernel based solely on its
@@ -19,7 +19,7 @@ version string. Runtime guards still check the exact reviewed kernel/sites.
 ```sh
 GAZELLE_WORK=/path/to/prepared/work ./build-video.sh
 python3 build.py --fetch-runtime
-python3 tests/package.py dist/firetv-av-v0.2.4.zip
+python3 tests/package.py dist/firetv-av-v0.2.5.zip
 ```
 
 After the first build, `python3 build.py` reuses the hash-verified Frida runtime.

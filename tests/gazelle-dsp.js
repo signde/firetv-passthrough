@@ -18,7 +18,7 @@ function fixture(options = {}) {
   const asp = {path: 'asp', getExportByName: () => P(50)};
   const alsa = {path: 'alsa', getExportByName: n => api[n]};
   const hashes = {
-    hal: 'b60f1b826c74d1c86143be62529f1b0c731cd65df5c140a121410d9e9d52e0cb',
+    hal: options.halHash ?? 'b60f1b826c74d1c86143be62529f1b0c731cd65df5c140a121410d9e9d52e0cb',
     asp: 'dad091d48856869f6c6c8807b820b71e58a15c3ad37e0b27439160200365aefb',
     alsa: '8ff05177f1771e485fa5ff198b876c8a040cdd9120e86abe3051cc8836800069'};
   const ctx = {
@@ -53,6 +53,9 @@ function fixture(options = {}) {
   return {calls,events,hooks,attached,detached,P,enter,open,write,close,stock,
     disable: () => {enabled=false;}, commandResult: v => {result=v;}};
 }
+const ps7713 = fixture({halHash: 'bfe65dc43af7ab91ba16bb1993835a153f1442574a2cc0356932052f2bc3aa29'});
+ps7713.open();ps7713.write();ps7713.close();
+assert.deepEqual(ps7713.calls,[[0,48000,8],[1,192000,8],[0,48000,8]]);
 let t=fixture();
 t.open();t.close();assert.deepEqual(t.calls,[[0,48000,8]],'unused open must never select TDM-B192');
 t.open();t.write();t.write();assert.deepEqual(t.calls.at(-1),[1,192000,8]);assert.equal(t.calls.length,2,'steady writes deduplicated');

@@ -3,7 +3,7 @@
 One experimental Magisk module for audio passthrough on **Cube 3 / Gazelle** and
 **Stick 4K Max 2 / Karat**, with hardware Dolby Vision FEL on supported Cube 3 builds.
 
-**v0.2.4 experimental.** Install over v0.2.2 or the v0.2.3-rc.1 Karat prerelease.
+**v0.2.5 experimental.** Install over v0.2.4 or a v0.2.5 test build.
 The Magisk module ID stays the same.
 
 ## Stick 4K Max 2 audio
@@ -17,7 +17,7 @@ preserves saved surround preferences.
 
 ## Cube 3 TrueHD packing and sync
 
-Adds audio corrections for the reviewed **PS7702.4965N**, **PS7711.5272N**, **PS7712.5371N**, **PS7717.5741N**, **PS7717.5746N** and **PS7718.5826N** library combinations:
+Adds audio corrections for the reviewed **PS7702.4965N**, **PS7711.5272N**, **PS7712.5371N**, **PS7713.5443N**, **PS7714.5503N**, **PS7714.5506N**, **PS7714.5507N**, **PS7715.5585N**, **PS7716.5665N**, **PS7717.5741N**, **PS7717.5746N** and **PS7718.5826N** library combinations:
 
 - Combines TrueHD rates when the receiver advertises several matching MAT entries.
 - Limits input batches to the vendor TrueHD encoder, avoiding repeated packing
@@ -48,7 +48,7 @@ That interaction and the unrelated Kodi PCM transition issue remain deferred.
 
 ## Dolby Vision FEL
 
-FEL currently supports **7.7.0.2 (PS7702.4965N)**, **7.7.1.1 (PS7711.5272N)**, **7.7.1.2 (PS7712.5371N)**, **7.7.1.7 (PS7717.5741N and PS7717.5746N)** and **7.7.1.8 (PS7718.5826N)**
+FEL currently supports **7.7.0.2 (PS7702.4965N)**, **7.7.1.1 (PS7711.5272N)**, **7.7.1.2 (PS7712.5371N)**, **7.7.1.3 (PS7713.5443N)**, **7.7.1.4 (PS7714.5503N, PS7714.5506N and PS7714.5507N)**, **7.7.1.5 (PS7715.5585N)**, **7.7.1.6 (PS7716.5665N)**, **7.7.1.7 (PS7717.5741N and PS7717.5746N)** and **7.7.1.8 (PS7718.5826N)**
 with their verified kernels. Other supported audio builds continue as audio-only.
 FEL requires a compatible player, such as **Kodi FEL**, **VLC FEL** or **Wholphin FEL**, installed
 separately. It uses both hardware decoders and the Dolby Vision composer.
@@ -98,11 +98,12 @@ requires a matching reviewed audio-library set; Karat also checks its audio util
 | 7.7.1.0 | PS7710.6003 | Static review |
 | 7.7.1.1 | PS7711.5272 | User-tested |
 | 7.7.1.2 | PS7712.5371 | User-tested |
-| 7.7.1.3 | PS7713.5443 | Static review |
-| 7.7.1.4 | PS7714.5503, PS7714.5507 | Static review |
+| 7.7.1.3 | PS7713.5443 | User-tested |
+| 7.7.1.4 | PS7714.5503 | User-tested |
 | 7.7.1.4 | PS7714.5506 | User-tested |
-| 7.7.1.5 | PS7715.5585 | Static review |
-| 7.7.1.6 | PS7716.5665 | Static review |
+| 7.7.1.4 | PS7714.5507 | User-tested |
+| 7.7.1.5 | PS7715.5585 | User-tested |
+| 7.7.1.6 | PS7716.5665 | User-tested |
 | 7.7.1.7 | PS7717.5741 | User-tested |
 | 7.7.1.7 | PS7717.5746 | User-tested |
 | 7.7.1.8 | PS7718.5826 | User-tested |
@@ -153,7 +154,7 @@ TV/eARC chain advertising eight-channel DTS-HD at 192 kHz.
 
 1. Set Fire OS audio to **Best Available** and enable passthrough in your player.
    In Nova, choose **system passthrough**.
-2. Install `firetv-av-v0.2.4.zip` in Magisk, then reboot.
+2. Install `firetv-av-v0.2.5.zip` in Magisk, then reboot.
 3. Allow about one minute after boot before starting playback.
 
 

@@ -29,7 +29,7 @@ for name in ('service.sh', 'runtime.js', 'bin/frida-inject', 'verify-firmware.sh
              'bin/gazelle-hdmi-profiles.dex', 'src/karat.js', 'src/gazelle-dsp.js', 'src/gazelle-truehd.js', 'module.prop',
              'scripts/dolby-service.sh', 'scripts/dts-service.sh',
              'video/service.sh', 'video/fel-service.sh', 'video/build-inputs.json',
-             'video/fel/ps7702/dvfel.ko', 'video/fel/ps7712/dvfel.ko', 'video/fel/ps7711/dvfel.ko', 'video/fel/ps7717/dvfel.ko', 'video/fel/ps7717_5746/dvfel.ko', 'video/fel/ps7718/dvfel.ko',
+             'video/fel/ps7702/dvfel.ko', 'video/fel/ps7713/dvfel.ko', 'video/fel/ps7714_5503/dvfel.ko', 'video/fel/ps7714_5506/dvfel.ko', 'video/fel/ps7714_5507/dvfel.ko', 'video/fel/ps7715/dvfel.ko', 'video/fel/ps7712/dvfel.ko', 'video/fel/ps7711/dvfel.ko', 'video/fel/ps7717/dvfel.ko', 'video/fel/ps7717_5746/dvfel.ko', 'video/fel/ps7718/dvfel.ko',
              'scripts/recovery.sh', 'scripts/legacy.sh', 'scripts/patch_karat_aparam.sh', 'firmware/ps7688.sha256', 'firmware/ps7713.sha256', 'firmware/ps7715.sha256', *[n for n in files if n.startswith('firmware/karat-') and n.endswith('.sha256')]):
     assert name in manifest, f'Critical payload not covered: {name}'
     damaged = dict(files)

@@ -91,7 +91,7 @@ def main():
     names = [name for name in names
              if not name.startswith(('src/video/', 'video/link/', 'video/sinks/', 'third_party/frida-java-bridge/'))
              and name not in ('action.sh', 'uninstall.sh', 'video/classes.dex', 'video/guard-template.js', 'video/supervise.sh')]
-    for required in ('video/fel/ps7702/dvfel.ko', 'video/fel/ps7712/dvfel.ko', 'video/fel/ps7711/dvfel.ko', 'video/fel/ps7717/dvfel.ko', 'video/fel/ps7717_5746/dvfel.ko', 'video/fel/ps7718/dvfel.ko'):
+    for required in ('video/fel/ps7702/dvfel.ko', 'video/fel/ps7713/dvfel.ko', 'video/fel/ps7714_5503/dvfel.ko', 'video/fel/ps7714_5506/dvfel.ko', 'video/fel/ps7714_5507/dvfel.ko', 'video/fel/ps7715/dvfel.ko', 'video/fel/ps7712/dvfel.ko', 'video/fel/ps7711/dvfel.ko', 'video/fel/ps7717/dvfel.ko', 'video/fel/ps7717_5746/dvfel.ko', 'video/fel/ps7718/dvfel.ko'):
         if not (ROOT/required).is_file():
             parser.error('Run build-video.sh first: missing '+required)
     subprocess.run(['python3', str(ROOT/'video-build-inputs.py'), 'check'], check=True)

@@ -1,6 +1,35 @@
 # Changelog
 
-## 0.2.4 (experimental, pending release)
+## 0.2.5 (experimental)
+
+- Adds hardware-tested Dolby Vision Profile 7 FEL support on six Cube 3 builds: PS7713.5443N, PS7714.5503N, PS7714.5506N, PS7714.5507N, PS7715.5585N and PS7716.5665N. Builds 5585 and 5665 share one verified FEL helper.
+- Enables the existing RAW TrueHD timing, packing, HDMI capability and microphone/DSP fixes for the audio libraries in build 5443 and all three 7.7.1.4 builds. Builds 5585 and 5665 already matched the audio checks in v0.2.4.
+
+## 0.2.5-test.6 (unreleased)
+
+- Adds Cube 3 FEL support on Fire OS 7.7.1.6 build PS7716.5665N. This build shares the 7.7.1.5 FEL helper and audio corrections.
+
+## 0.2.5-test.5 (unreleased)
+
+- Adds Cube 3 FEL support on Fire OS 7.7.1.5 build PS7715.5585N. This build uses the existing TrueHD and microphone/DSP corrections.
+
+## 0.2.5-test.4 (unreleased)
+
+- Adds Cube 3 FEL support on Fire OS 7.7.1.4 build PS7714.5507N. Its audio libraries match the tested PS7714.5506N build.
+
+## 0.2.5-test.3 (unreleased)
+
+- Adds Cube 3 FEL support on Fire OS 7.7.1.4 build PS7714.5506N. Its audio libraries match the tested PS7714.5503N build.
+
+## 0.2.5-test.2 (unreleased)
+
+- Adds Cube 3 FEL support on Fire OS 7.7.1.4 (PS7714.5503N). This build uses the same audio libraries as PS7713.5443N for passthrough and the TrueHD corrections.
+
+## 0.2.5-test.1 (unreleased)
+
+- Adds Cube 3 FEL support on Fire OS 7.7.1.3 (PS7713.5443N). Enables the Cube’s TrueHD timing, packing, HDMI capability and microphone/DSP corrections for its reviewed audio libraries.
+
+## 0.2.4 (experimental)
 
 - Cube 3 gains RAW TrueHD timing, packing and HDMI capability fixes, plus FEL support on PS7711.5272N, PS7712.5371N, PS7717.5746N and PS7718.5826N.
 - Stick 4K Max 2 retains the fixes from 0.2.3-rc.1. Mode 6 survives frame-rate changes, and apps can recover DD/DD+ passthrough when Fire OS omits formats advertised by the HDMI sink.
