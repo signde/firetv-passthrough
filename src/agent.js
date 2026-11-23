@@ -34,6 +34,7 @@ function hook(name,callbacks) { hooks.push(Interceptor.attach(hal.getExportByNam
 function fail(message) { if(!error) {error=message;event('trial-error',{message});} }
 retainGazelleBypass(hal, hooks, () => armed && !closing, event);
 correctGazelleDspReference(hal, hooks, () => armed && !closing, event);
+correctGazelleTruehd(hal, hooks, () => armed && !closing, event);
 function aligned(input,n) {
   if(n<10)return false;
   const h=new Uint8Array(input.readByteArray(10));

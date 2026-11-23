@@ -5,7 +5,22 @@
 #include <linux/utsname.h>
 #include <linux/kallsyms.h>
 struct code_guard { const char *name; unsigned long addr; size_t size; u64 hash; };
+#if defined(DVFEL_PS7712)
+#include "../ps7712/live_guards.h"
+#define FEL_KERNEL_RELEASE "5.4.125-ab26"
+#elif defined(DVFEL_PS7711)
+#include "../ps7711/live_guards.h"
+#define FEL_KERNEL_RELEASE "5.4.125-ab20"
+#elif defined(DVFEL_PS7718)
+#include "../ps7718/live_guards.h"
+#define FEL_KERNEL_RELEASE "5.4.125-ab35"
+#elif defined(DVFEL_PS7717_5746)
+#include "../ps7717_5746/live_guards.h"
+#define FEL_KERNEL_RELEASE "5.4.125-ab30"
+#else
 #include "live_guards.h"
+#define FEL_KERNEL_RELEASE "5.4.125-ab25"
+#endif
 #define VD1_ADDR 0xffffffc011b644d8UL
 #define VD2_ADDR 0xffffffc011b64b78UL
 #define FEL_ENABLE_ADDR 0xffffffc011bac9ccUL
@@ -322,7 +337,7 @@ static int fixes_init(void)
  if((unsigned long)read_dv_reg!=0xffffffc010c19d50UL ||
     (unsigned long)write_dv_bits!=0xffffffc010c19c54UL ||
     (unsigned long)write_dv_bits_now!=0xffffffc010c1a020UL)return -ENODEV;
- if(strcmp(init_uts_ns.name.release,"5.4.125-ab25"))return -ENODEV;
+ if(strcmp(init_uts_ns.name.release,FEL_KERNEL_RELEASE))return -ENODEV;
  for(i=0;i<ARRAY_SIZE(guards);i++){
   const struct code_guard *v=&guards[i];size_t off,j,n;u64 hash=14695981039346656037ULL;
   if(kallsyms_lookup_name(v->name)!=v->addr)return -EINVAL;

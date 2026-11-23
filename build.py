@@ -77,12 +77,21 @@ def main():
         parser.error('Provide --runtime PATH or use --fetch-runtime once')
     runtime = path.read_bytes()
     require_hash(runtime, RUNTIME_SHA, 'Frida runtime')
-    names = ['module.prop', 'service.sh', 'customize.sh', 'README.md', 'config.sh',
+    for line in (ROOT/'src/karat-audio-profiles.sha256').read_text().splitlines():
+        digest, name = line.split()
+        require_hash((ROOT/name).read_bytes(), digest, name)
+    names = ['bin/karat-audio-profiles.dex', 'src/KaratAudioProfiles.java', 'src/karat-audio-profiles.sha256',
+             'tools/build-karat-audio-profiles.py', 'src/karat-mode.js', 'src/karat-capabilities.js',
+             'bin/gazelle-hdmi-profiles.dex', 'src/GazelleHdmiProfiles.java', 'tools/build-gazelle-hdmi-profiles.sh', 'module.prop', 'service.sh', 'customize.sh', 'README.md', 'config.sh',
              'verify-firmware.sh', 'src/native.c',
-             'src/agent.js', 'src/karat.js', 'src/gazelle-mode.js', 'src/gazelle-dsp.js', 'LICENSE', 'NOTICE.md', 'CHANGELOG.md', 'build.py', 'build-video.sh']
+             'src/agent.js', 'src/karat.js', 'src/gazelle-mode.js', 'src/gazelle-dsp.js', 'src/gazelle-truehd.js', 'LICENSE', 'NOTICE.md', 'CHANGELOG.md', 'build.py', 'build-video.sh']
     names += [p.relative_to(ROOT).as_posix() for directory in ('firmware', 'licenses', 'third_party', 'scripts', 'video', 'src/fel')
               for p in sorted((ROOT/directory).rglob('*')) if p.is_file() and 'node_modules' not in p.parts and '__pycache__' not in p.parts and not any(part.startswith('.') for part in p.relative_to(ROOT).parts) and not ('src' in p.relative_to(ROOT).parts and p.suffix == '.ko') and p.suffix not in ('.pyc', '.pyo', '.o', '.cmd', '.mod') and p.name not in ('Module.symvers', 'modules.order', 'dvfel.mod.c', 'gazelle_link.mod.c')]
-    for required in ('video/fel/ps7702/dvfel.ko', 'video/fel/ps7717/dvfel.ko'):
+    # Leftover HDR experiments must not enter the audio/FEL package.
+    names = [name for name in names
+             if not name.startswith(('src/video/', 'video/link/', 'video/sinks/', 'third_party/frida-java-bridge/'))
+             and name not in ('action.sh', 'uninstall.sh', 'video/classes.dex', 'video/guard-template.js', 'video/supervise.sh')]
+    for required in ('video/fel/ps7702/dvfel.ko', 'video/fel/ps7712/dvfel.ko', 'video/fel/ps7711/dvfel.ko', 'video/fel/ps7717/dvfel.ko', 'video/fel/ps7717_5746/dvfel.ko', 'video/fel/ps7718/dvfel.ko'):
         if not (ROOT/required).is_file():
             parser.error('Run build-video.sh first: missing '+required)
     subprocess.run(['python3', str(ROOT/'video-build-inputs.py'), 'check'], check=True)
@@ -101,11 +110,15 @@ def main():
         if script == 'agent.js':
             source += (ROOT/'src/gazelle-mode.js').read_text() + '\n'
             source += (ROOT/'src/gazelle-dsp.js').read_text() + '\n'
+            source += (ROOT/'src/gazelle-truehd.js').read_text() + '\n'
+        else:
+            source += (ROOT/'src/karat-mode.js').read_text() + '\n'
+            source += (ROOT/'src/karat-capabilities.js').read_text() + '\n'
         source += (ROOT/'src'/script).read_text()
         source += '\n} catch(e) {console.error("DTS_FATAL "+e.stack); throw e;}\n'
         (stage/output).write_text(source)
         subprocess.run(['node', '--check', str(stage/output)], check=True)
-    (stage/'bin').mkdir()
+    (stage/'bin').mkdir(exist_ok=True)
     (stage/'bin/frida-inject').write_bytes(runtime)
     # Magisk removes these root files after installation. Hash persistent payloads.
     manifest = ''.join(sha(p.read_bytes())+'  '+p.relative_to(stage).as_posix()+'\n'

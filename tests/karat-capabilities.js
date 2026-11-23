@@ -1,0 +1,21 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const context={};vm.createContext(context);vm.runInContext(fs.readFileSync('src/karat-capabilities.js','utf8'),context);
+const fix=context.karatDolbyCapabilities;
+const ac3=0x9000000,eac3=0xa000000;
+const supported=(f,r,c)=> f===ac3 ? [32000,44100,48000].includes(r)&&[2,6].includes(c) :
+ f===eac3 && [44100,48000].includes(r)&&[2,6,8].includes(c);
+const original='sup_formats=AUDIO_FORMAT_PCM_16_BIT|AUDIO_FORMAT_E_AC3_JOC|AUDIO_FORMAT_DTS_HD';
+const expected=original+'|AUDIO_FORMAT_AC3|AUDIO_FORMAT_E_AC3';
+assert.equal(fix('sup_formats',original,supported),expected);
+assert.equal(fix('sup_formats',expected,supported),expected);
+assert.equal(fix('sup_formats',original,()=>false),original);
+assert.equal(fix('sup_formats','sup_formats=AUDIO_FORMAT_PCM_16_BIT',supported),'sup_formats=AUDIO_FORMAT_PCM_16_BIT');
+assert.equal(fix('format=150994944;sup_sampling_rates','sup_sampling_rates=',supported),'sup_sampling_rates=32000|44100|48000');
+assert.equal(fix('format=167772160;sup_sampling_rates','sup_sampling_rates=',supported),'sup_sampling_rates=44100|48000');
+assert.equal(fix('format=150994944;sup_channels','sup_channels=',supported),'sup_channels=AUDIO_CHANNEL_OUT_STEREO|AUDIO_CHANNEL_OUT_5POINT1');
+assert.equal(fix('format=167772160;sup_channels','sup_channels=',supported),'sup_channels=AUDIO_CHANNEL_OUT_STEREO|AUDIO_CHANNEL_OUT_5POINT1|AUDIO_CHANNEL_OUT_7POINT1');
+assert.equal(fix('format=167772160;sup_channels','sup_channels=AUDIO_CHANNEL_OUT_STEREO',supported),'sup_channels=AUDIO_CHANNEL_OUT_STEREO');
+assert.equal(fix('format=167772160;sup_channels','sup_channels=',()=>false),'sup_channels=');
+assert.equal(fix('format=570425344;sup_channels','sup_channels=',supported),'sup_channels=');
+assert.equal(fix('format=167772160;sup_channels;extra=1','sup_channels=',supported),'sup_channels=');
+console.log('PASS: Karat capability repair is EDID-limited, additive and preserves other formats/replies');

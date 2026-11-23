@@ -2,8 +2,8 @@
 set -eu
 cd "$(dirname "$0")"
 : "${GAZELLE_WORK:?Set GAZELLE_WORK to the prepared Gazelle kernel work directory}"
-for profile in ps7702 ps7717; do
-    case "$profile" in ps7702) build=gazelle-fel-7702;; ps7717) build=gazelle-fel-7717;; esac
+for profile in ps7702 ps7711 ps7712 ps7717 ps7717_5746 ps7718; do
+    case "$profile" in ps7702) build=gazelle-fel-7702;; ps7711) build=gazelle-fel-7711;; ps7712) build=gazelle-fel-7712;; ps7717) build=gazelle-fel-7717;; ps7717_5746) build=gazelle-fel-7717-5746;; ps7718) build=gazelle-fel-7718;; esac
     docker run --rm -v "$GAZELLE_WORK:/workspace" -v "$PWD:/module-src" gazelle-fel-builder:local \
       make -C /workspace/gazelle-fel-7702/source/kernel/amlogic/pop1g/5.4/common \
       O="/workspace/$build/kbuild" ARCH=arm64 CC=clang LD=ld.lld HOSTCC=clang LLVM=1 \

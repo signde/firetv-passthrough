@@ -7,7 +7,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parent
 STAMP = ROOT/'video/build-inputs.json'
-PAYLOADS = [f'video/fel/{profile}/dvfel.ko' for profile in ('ps7702', 'ps7717')]
+PAYLOADS = [f'video/fel/{profile}/dvfel.ko' for profile in ('ps7702', 'ps7711', 'ps7712', 'ps7717', 'ps7717_5746', 'ps7718')]
 
 def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()

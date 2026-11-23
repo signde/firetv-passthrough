@@ -3,8 +3,34 @@
 One experimental Magisk module for audio passthrough on **Cube 3 / Gazelle** and
 **Stick 4K Max 2 / Karat**, with hardware Dolby Vision FEL on supported Cube 3 builds.
 
-**v0.2.2 experimental.** Replaces the audio module and the private
-standalone video module. Karat remains audio-only.
+**v0.2.4 experimental.** Install over v0.2.2 or the v0.2.3-rc.1 Karat prerelease.
+The Magisk module ID stays the same.
+
+## Stick 4K Max 2 audio
+
+Includes the Karat fixes from v0.2.3-rc.1, tested on Fire OS 8.1.8.2
+(RS8182.3811N). HDMI bypass stays in mode 6 when Fire OS changes the display
+refresh rate. If Fire OS omits DD or DD+ from its capability reports, the module
+restores the formats advertised by the connected display or receiver. It checks
+Android’s cached HDMI profiles once when it attaches to the audio service and
+preserves saved surround preferences.
+
+## Cube 3 TrueHD packing and sync
+
+Adds audio corrections for the reviewed **PS7702.4965N**, **PS7711.5272N**, **PS7712.5371N**, **PS7717.5741N**, **PS7717.5746N** and **PS7718.5826N** library combinations:
+
+- Combines TrueHD rates when the receiver advertises several matching MAT entries.
+- Limits input batches to the vendor TrueHD encoder, avoiding repeated packing
+  failures and memory growth seen with low-bitrate TrueHD test material.
+- Applies a 130 ms playback-position correction to RAW TrueHD when the
+  firmware skips its normal bypass timing adjustment. The correction scales with
+  sample rate, including 48, 96 and 192 kHz and the 44.1 kHz family. IEC and other
+  codecs retain their existing timing.
+
+Use zero player audio offset when comparing sync. Check audio startup,
+pause/resume and seeking with TrueHD, DD+ and DTS-HD MA. Broader TrueHD testing
+is still needed. HDR output controls are outside the scope of this build.
+
 
 ## Gazelle TrueHD correction
 
@@ -15,16 +41,16 @@ errors and sustained high CPU usage, observed during ESPN playback.
 
 The revised handling was tested on 7.7.1.7 with ESPN transitions and TrueHD
 playback. It retains the reviewed library checks; the previous correction was
-also tested on 7.7.0.2. Karat is unchanged.
+also tested on 7.7.0.2. This DSP correction applies only to Cube 3.
 
 Invoking Alexa during TrueHD can still trigger the microphone error storm.
 That interaction and the unrelated Kodi PCM transition issue remain deferred.
 
 ## Dolby Vision FEL
 
-FEL currently supports **7.7.0.2 (PS7702.4965N)** and **7.7.1.7 (PS7717.5741N)**
+FEL currently supports **7.7.0.2 (PS7702.4965N)**, **7.7.1.1 (PS7711.5272N)**, **7.7.1.2 (PS7712.5371N)**, **7.7.1.7 (PS7717.5741N and PS7717.5746N)** and **7.7.1.8 (PS7718.5826N)**
 with their verified kernels. Other supported audio builds continue as audio-only.
-FEL requires a compatible player, such as **Kodi FEL** or **VLC FEL**, installed
+FEL requires a compatible player, such as **Kodi FEL**, **VLC FEL** or **Wholphin FEL**, installed
 separately. It uses both hardware decoders and the Dolby Vision composer.
 There is no player whitelist: players can be installed before or after the module.
 Once the module is running, no extra reboot or player root grant is needed.
@@ -34,13 +60,20 @@ FEL playback, audio and seeking have been checked at 24 fps, and at 25 fps over
 SMB on PS7717. 4K60 FEL presentation still needs improvement.
 
 v0.2.2 fixes FEL diagnostic flicker while retaining protection against green
-flashes during seeking. Tested in Kodi FEL and VLC FEL on both supported builds.
+flashes during seeking. Tested in Kodi FEL and VLC FEL on PS7702.4965N and PS7717.5741N.
 
 Set `ENABLE_FEL=0` in `config.sh` and reboot to disable FEL while retaining audio fixes. Disabling the module and rebooting removes all in-memory patches.
 
-## Deferred issues
+## Known limitations
+
+- Peacock live streams can intermittently freeze at startup on Karat. Reopen playback or reboot into Fire OS if it stays stuck.
+- **Unsupported test clip:** `DV FEL All Layers Test (Woman at 80s).mkv`
+  (the rainbow pinwheel) has mismatched base/enhancement-layer GOPs and picture
+  ordering, contrary to [Profile 7's layer-alignment requirement](https://ott.dolby.com/OnDelKits/Dolby_Vision_Online_Delivery_Kit/v1/Documentation/Specs/Visio_Profiles/help_files/topics/c_notes_profile_public.html).
+  It is not supported and should not be used to judge FEL playback of normal movies.
 
 - 4K60 FEL frame pacing and recoverable Kodi seek warnings.
+- On PS7711.5272N, one Cube rebooted when Kodi switched from P7 FEL to HDR10. The kernel logged repeated video canvas warnings. The cause is still under investigation.
 - Alexa interaction during TrueHD and Kodi PCM-to-compressed transitions.
 
 ## Supported firmware
@@ -63,14 +96,16 @@ requires a matching reviewed audio-library set; Karat also checks its audio util
 | 7.7.0.6 | PS7706.5106 | Static review |
 | 7.7.0.7 | PS7707.5376 | Static review |
 | 7.7.1.0 | PS7710.6003 | Static review |
-| 7.7.1.1 | PS7711.5272 | Static review |
-| 7.7.1.2 | PS7712.5371 | Static review |
+| 7.7.1.1 | PS7711.5272 | User-tested |
+| 7.7.1.2 | PS7712.5371 | User-tested |
 | 7.7.1.3 | PS7713.5443 | Static review |
 | 7.7.1.4 | PS7714.5503, PS7714.5507 | Static review |
 | 7.7.1.4 | PS7714.5506 | User-tested |
 | 7.7.1.5 | PS7715.5585 | Static review |
 | 7.7.1.6 | PS7716.5665 | Static review |
 | 7.7.1.7 | PS7717.5741 | User-tested |
+| 7.7.1.7 | PS7717.5746 | User-tested |
+| 7.7.1.8 | PS7718.5826 | User-tested |
 
 ### Stick 4K Max 2 / Karat
 
@@ -118,7 +153,7 @@ TV/eARC chain advertising eight-channel DTS-HD at 192 kHz.
 
 1. Set Fire OS audio to **Best Available** and enable passthrough in your player.
    In Nova, choose **system passthrough**.
-2. Install `firetv-av-v0.2.2.zip` in Magisk, then reboot.
+2. Install `firetv-av-v0.2.4.zip` in Magisk, then reboot.
 3. Allow about one minute after boot before starting playback.
 
 
@@ -170,7 +205,7 @@ and receiver hotplug during playback remain untested.
 
 The Dolby component maintains HDMI bypass at boot and after wake/restart events,
 with brief follow-up checks. The DTS component replaces the system packing path
-in memory, preserving HD audio in IEC61937 bursts. On Gazelle, the HAL also retains bypass when Fire OS requests mode 5 during
+in memory, preserving HD audio in IEC61937 bursts. On Gazelle and Karat, the HAL also retains bypass when Fire OS requests mode 5 during
 display changes. Neither audio component polls HDMI while idle. Vendor audio libraries and app APKs are not replaced.
 
 Karat also receives a Magisk overlay correcting the audio utility's exit crash,
