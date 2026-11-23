@@ -1,116 +1,89 @@
 # Fire TV AV
 
-One experimental Magisk module for audio passthrough on **Cube 3 / Gazelle** and
-**Stick 4K Max 2 / Karat**, with hardware Dolby Vision FEL on supported Cube 3 builds.
+Fire TV AV is an experimental Magisk module for rooted **Fire TV Cube (3rd gen, Gazelle)**
+and **Fire TV Stick 4K Max (2nd gen, Karat)** devices. It lets a compatible receiver decode
+Dolby Digital, Dolby Digital Plus (including Atmos), and DTS-HD MA/DTS:X from apps that
+send those formats. On supported Cube 3 builds, it also enables hardware Dolby Vision
+Profile 7 Full Enhancement Layer (FEL) playback in compatible players.
 
-**v0.2.5 experimental.** Install over v0.2.4 or a v0.2.5 test build.
-The Magisk module ID stays the same.
+[Downloads](https://github.com/signde/firetv-passthrough/releases) · [Supported firmware](#supported-firmware) · [Installation](#installation) · [Changelog](CHANGELOG.md)
 
-## Stick 4K Max 2 audio
+## Audio passthrough
 
-Includes the Karat fixes from v0.2.3-rc.1, tested on Fire OS 8.1.8.2
-(RS8182.3811N). HDMI bypass stays in mode 6 when Fire OS changes the display
-refresh rate. If Fire OS omits DD or DD+ from its capability reports, the module
-restores the formats advertised by the connected display or receiver. It checks
-Android’s cached HDMI profiles once when it attaches to the audio service and
-preserves saved surround preferences.
+With **Best Available** selected, Fire OS can render DD/DD+ as Dolby MAT. Fire TV AV
+keeps HDMI bypass (mode 6) active so the original DD/DD+ bitstream reaches the receiver.
+For DTS-HD, the module preserves the full stream through the system audio packer,
+including DTS:X metadata. The player must supply the compressed track. If the server
+transcodes it to AAC or the player decodes it to PCM, that is what the module receives.
 
-## Cube 3 TrueHD packing and sync
+**Cube 3 TrueHD.** On compatible firmware, the module applies four corrections.
 
-Adds audio corrections for the reviewed **PS7702.4965N**, **PS7711.5272N**, **PS7712.5371N**, **PS7713.5443N**, **PS7714.5503N**, **PS7714.5506N**, **PS7714.5507N**, **PS7715.5585N**, **PS7716.5665N**, **PS7717.5741N**, **PS7717.5746N** and **PS7718.5826N** library combinations:
+- Applies a 130 ms playback-position correction to Android RAW TrueHD passthrough
+  to keep audio in sync. The correction scales with sample rate, including 48, 96
+  and 192 kHz and the 44.1 kHz family.
+- Limits how much data the vendor TrueHD encoder receives at once to prevent repeated
+  packing failures and memory growth on low-bitrate passages.
+- Combines the sample rates from matching HDMI MAT entries so apps can see all the
+  TrueHD rates the receiver advertises.
+- Switches the microphone DSP reference when audio output starts and stops to prevent
+  repeated microphone read errors and sustained high CPU usage during audio transitions.
 
-- Combines TrueHD rates when the receiver advertises several matching MAT entries.
-- Limits input batches to the vendor TrueHD encoder, avoiding repeated packing
-  failures and memory growth seen with low-bitrate TrueHD test material.
-- Applies a 130 ms playback-position correction to RAW TrueHD when the
-  firmware skips its normal bypass timing adjustment. The correction scales with
-  sample rate, including 48, 96 and 192 kHz and the 44.1 kHz family. IEC and other
-  codecs retain their existing timing.
-
-Use zero player audio offset when comparing sync. Check audio startup,
-pause/resume and seeking with TrueHD, DD+ and DTS-HD MA. Broader TrueHD testing
-is still needed. HDR output controls are outside the scope of this build.
-
-
-## Gazelle TrueHD correction
-
-Coordinates the voice DSP reference with audio-output opening, playback and
-teardown, keeping mode 6 and TrueHD passthrough active. This fixes a regression
-in the previous correction: brief audio-output changes could trigger microphone
-errors and sustained high CPU usage, observed during ESPN playback.
-
-The revised handling was tested on 7.7.1.7 with ESPN transitions and TrueHD
-playback. It retains the reviewed library checks; the previous correction was
-also tested on 7.7.0.2. This DSP correction applies only to Cube 3.
-
-Invoking Alexa during TrueHD can still trigger the microphone error storm.
-That interaction and the unrelated Kodi PCM transition issue remain deferred.
+**Stick 4K Max 2.** If Fire OS omits DD or DD+ from its audio capabilities, the module
+restores the formats advertised by the connected TV or receiver. It checks Android’s
+cached HDMI profiles when it attaches to the audio service and preserves the saved
+surround preferences.
 
 ## Dolby Vision FEL
 
-FEL currently supports **7.7.0.2 (PS7702.4965N)**, **7.7.1.1 (PS7711.5272N)**, **7.7.1.2 (PS7712.5371N)**, **7.7.1.3 (PS7713.5443N)**, **7.7.1.4 (PS7714.5503N, PS7714.5506N and PS7714.5507N)**, **7.7.1.5 (PS7715.5585N)**, **7.7.1.6 (PS7716.5665N)**, **7.7.1.7 (PS7717.5741N and PS7717.5746N)** and **7.7.1.8 (PS7718.5826N)**
-with their verified kernels. Other supported audio builds continue as audio-only.
-FEL requires a compatible player, such as **Kodi FEL**, **VLC FEL** or **Wholphin FEL**, installed
-separately. It uses both hardware decoders and the Dolby Vision composer.
-There is no player whitelist: players can be installed before or after the module.
-Once the module is running, no extra reboot or player root grant is needed.
-Ordinary players do not use FEL automatically; a player must explicitly start a
-session and supply decoded enhancement-layer frames. See the [FEL interface](docs/FEL-INTERFACE.md).
-FEL playback, audio and seeking have been checked at 24 fps, and at 25 fps over
-SMB on PS7717. 4K60 FEL presentation still needs improvement.
+On Cube 3, a compatible player supplies both layers of the Profile 7 stream. The Cube
+decodes the layers in hardware and combines them in the Dolby Vision composer. Install
+[Kodi FEL](https://github.com/signde/xbmc/releases),
+[VLC FEL](https://github.com/signde/vlc-fel-android/releases), or
+[Wholphin FEL](https://github.com/signde/Wholphin/releases) separately. Other players
+can use the same [FEL interface](docs/FEL-INTERFACE.md) if they implement it.
 
-v0.2.2 fixes FEL diagnostic flicker while retaining protection against green
-flashes during seeking. Tested in Kodi FEL and VLC FEL on PS7702.4965N and PS7717.5741N.
-
-Set `ENABLE_FEL=0` in `config.sh` and reboot to disable FEL while retaining audio fixes. Disabling the module and rebooting removes all in-memory patches.
-
-## Known limitations
-
-- Peacock live streams can intermittently freeze at startup on Karat. Reopen playback or reboot into Fire OS if it stays stuck.
-- **Unsupported test clip:** `DV FEL All Layers Test (Woman at 80s).mkv`
-  (the rainbow pinwheel) has mismatched base/enhancement-layer GOPs and picture
-  ordering, contrary to [Profile 7's layer-alignment requirement](https://ott.dolby.com/OnDelKits/Dolby_Vision_Online_Delivery_Kit/v1/Documentation/Specs/Visio_Profiles/help_files/topics/c_notes_profile_public.html).
-  It is not supported and should not be used to judge FEL playback of normal movies.
-
-- 4K60 FEL frame pacing and recoverable Kodi seek warnings.
-- On PS7711.5272N, one Cube rebooted when Kodi switched from P7 FEL to HDR10. The kernel logged repeated video canvas warnings. The cause is still under investigation.
-- Alexa interaction during TrueHD and Kodi PCM-to-compressed transitions.
+You can install the player before or after the module. Once the module is running,
+the player needs neither a root grant nor another reboot. To use audio passthrough
+alone, set `ENABLE_FEL=0` in `/data/adb/modules/firetv_passthrough/config.sh` and reboot.
 
 ## Supported firmware
 
-The tables below carry forward results from the separate modules. **User-tested**
-means playback-tested with those modules; **static review** means library
-compatibility was checked without playback testing that build. Installation
-requires a matching reviewed audio-library set; Karat also checks its audio utility.
+**Playback-tested** means playback was verified on hardware. **Static review** means
+the audio libraries were checked without a playback test on that build. The installer
+checks the device and its audio libraries. On Karat it also checks the audio utility.
 
 ### Cube 3 / Gazelle
 
-| Fire OS | Build(s) | Status |
-| --- | --- | --- |
-| 7.6.8.8 | PS7688.4591 | Static review |
-| 7.6.9.0 | PS7690.4714, PS7690.4716 | Static review |
-| 7.6.9.6 | PS7696.5226, PS7696.5229 | Static review |
-| 7.6.9.9 | PS7699.4894, PS7699.4896 | Static review |
-| 7.7.0.2 | PS7702.4965 | User-tested |
-| 7.7.0.4 | PS7704.5024 | Static review |
-| 7.7.0.6 | PS7706.5106 | Static review |
-| 7.7.0.7 | PS7707.5376 | Static review |
-| 7.7.1.0 | PS7710.6003 | Static review |
-| 7.7.1.1 | PS7711.5272 | User-tested |
-| 7.7.1.2 | PS7712.5371 | User-tested |
-| 7.7.1.3 | PS7713.5443 | User-tested |
-| 7.7.1.4 | PS7714.5503 | User-tested |
-| 7.7.1.4 | PS7714.5506 | User-tested |
-| 7.7.1.4 | PS7714.5507 | User-tested |
-| 7.7.1.5 | PS7715.5585 | User-tested |
-| 7.7.1.6 | PS7716.5665 | User-tested |
-| 7.7.1.7 | PS7717.5741 | User-tested |
-| 7.7.1.7 | PS7717.5746 | User-tested |
-| 7.7.1.8 | PS7718.5826 | User-tested |
+FEL requires a matching Fire OS build, kernel, and Dolby driver. The TrueHD and
+microphone/DSP corrections check the audio libraries separately. Both corrections
+have been playback-tested on the builds marked **Yes** in the FEL column. Static
+review in the audio column covers basic passthrough only.
+
+| Fire OS | Build(s) | Audio passthrough | Dolby Vision FEL |
+| --- | --- | --- | --- |
+| 7.6.8.8 | PS7688.4591 | Static review | No |
+| 7.6.9.0 | PS7690.4714, PS7690.4716 | Static review | No |
+| 7.6.9.6 | PS7696.5226, PS7696.5229 | Static review | No |
+| 7.6.9.9 | PS7699.4894, PS7699.4896 | Static review | No |
+| 7.7.0.2 | PS7702.4965 | Playback-tested | Yes |
+| 7.7.0.4 | PS7704.5024 | Static review | No |
+| 7.7.0.6 | PS7706.5106 | Static review | No |
+| 7.7.0.7 | PS7707.5376 | Static review | No |
+| 7.7.1.0 | PS7710.6003 | Static review | No |
+| 7.7.1.1 | PS7711.5272 | Playback-tested | Yes |
+| 7.7.1.2 | PS7712.5371 | Playback-tested | Yes |
+| 7.7.1.3 | PS7713.5443 | Playback-tested | Yes |
+| 7.7.1.4 | PS7714.5503, PS7714.5506, PS7714.5507 | Playback-tested | Yes |
+| 7.7.1.5 | PS7715.5585 | Playback-tested | Yes |
+| 7.7.1.6 | PS7716.5665 | Playback-tested | Yes |
+| 7.7.1.7 | PS7717.5741, PS7717.5746 | Playback-tested | Yes |
+| 7.7.1.8 | PS7718.5826 | Playback-tested | Yes |
 
 ### Stick 4K Max 2 / Karat
 
-| Fire OS | Build(s) | Status |
+Karat supports audio passthrough only. Build `RS8185.3879N` is unreviewed.
+
+| Fire OS | Build(s) | Audio passthrough |
 | --- | --- | --- |
 | 8.1.4.5 | RS8145.3070N | Static review |
 | 8.1.4.9 | RS8149.3133N | Static review |
@@ -122,13 +95,49 @@ requires a matching reviewed audio-library set; Karat also checks its audio util
 | 8.1.6.9 | RS8169.3556N | Static review |
 | 8.1.7.4 | RS8174.3641N, RS8174.3648N | Static review |
 | 8.1.8.0 | RS8180.3729N, RS8180.3739N | Static review |
-| 8.1.8.2 | RS8182.3811N | User-tested |
+| 8.1.8.2 | RS8182.3811N | Playback-tested |
 
-RS8185.3879N has not been reviewed.
+## Installation
+
+Back up your setup first. Use a rooted device with Magisk and a supported firmware
+build. For DTS-HD, the receiver or TV/eARC chain must advertise eight-channel DTS-HD
+at 192 kHz.
+
+1. Set Fire OS audio to **Best Available** and enable passthrough in your player.
+   In Nova, choose **system passthrough**.
+2. Download the `firetv-av-v*.zip` module asset from [Releases](https://github.com/signde/firetv-passthrough/releases).
+   Install it in Magisk and reboot. You can install it over previous versions.
+3. Wait about a minute after boot before starting playback.
+
+If you use the separate Dolby, DTS, or video modules, the installer disables them.
+Once playback works, you can remove them. To go back to those modules, disable Fire
+TV AV, re-enable the separate modules, and reboot. To uninstall Fire TV AV, disable
+or remove it in Magisk and reboot. Disable it before a firmware update and check
+the new build against the firmware table before enabling it again.
+
+### Kodi FEL audio settings
+
+On Cube 3, merge these entries into the `<audio>` section of
+`/sdcard/Android/data/org.xbmc.kodi.fel/files/.kodi/userdata/advancedsettings.xml`
+and restart Kodi FEL.
+
+```xml
+<advancedsettings>
+  <audio>
+    <superviseaudiodelay>true</superviseaudiodelay>
+    <allowmultichannelfloat>true</allowmultichannelfloat>
+  </audio>
+</advancedsettings>
+```
+
+Delay supervision helps audio recover after pauses and seeks, sometimes with brief
+dropouts. Multichannel float enables higher-precision PCM. If DD+ drifts with the
+Kodi IEC packer, try the Android system (RAW) packer. Start with zero player audio
+offset when checking TrueHD sync. Recheck passthrough settings after restoring a Kodi backup.
 
 ## App results
 
-Observed output with the tested samples:
+DTS output depends on the player and server. These are the results for the tested samples.
 
 | App | Cube 3 / Gazelle | Stick 4K Max 2 / Karat |
 | --- | --- | --- |
@@ -140,84 +149,66 @@ Observed output with the tested samples:
 | Plex 2026.19.1 | ❌ AAC transcode | ✅ DTS-HD MA, DTS:X |
 | Jellyfin Android TV 0.19.10 | ⚠️ DTS core or ❌ AAC transcode | ⚠️ DTS core |
 
-Karat results use RS8182.3811N, Nova 6.4.3, Emby 3.5.63 (`com.mb.android`)
-and Kodi 21.3. Gazelle's Plex/Jellyfin results are from PS7702. Kodi uses its own
-DTS packer and does not need the DTS fix. Plezy and Wholphin were tested on
-Gazelle PS7717 and Karat RS8182 with the combined module; Plezy supplied
-already-packed audio, while Wholphin used the patched system packer. App/server transcoding cannot be
-reversed by the module.
+Karat results are from RS8182.3811N, with Nova 6.4.3, Emby 3.5.63
+(`com.mb.android`), and Kodi 21.3. The Cube’s Plex and Jellyfin results are from
+PS7702. Kodi and Plezy handle DTS packing themselves. Wholphin used the system packer.
+Plezy and Wholphin were tested on Gazelle PS7717 and Karat RS8182.
 
-## Installation
+## Known limitations
 
-You need root, Magisk and supported firmware. DTS-HD requires a receiver or
-TV/eARC chain advertising eight-channel DTS-HD at 192 kHz.
-
-1. Set Fire OS audio to **Best Available** and enable passthrough in your player.
-   In Nova, choose **system passthrough**.
-2. Install `firetv-av-v0.2.5.zip` in Magisk, then reboot.
-3. Allow about one minute after boot before starting playback.
-
-
-For **Kodi FEL on Cube 3**, add these audio settings to
-`/sdcard/Android/data/org.xbmc.kodi.fel/files/.kodi/userdata/advancedsettings.xml`:
-
-```xml
-<advancedsettings>
-  <audio>
-    <superviseaudiodelay>true</superviseaudiodelay>
-    <allowmultichannelfloat>true</allowmultichannelfloat>
-  </audio>
-</advancedsettings>
-```
-
-Merge into any existing `<audio>` section and restart Kodi FEL. Delay supervision
-helps audio recover after pauses/seeks, sometimes with brief dropouts; multichannel
-float enables higher-precision PCM. Recheck passthrough settings after restoring
-a Kodi backup.
-
-Use the module ZIP, not GitHub's automatic source ZIP. The installer disables the
-old Dolby, DTS and standalone video modules if present. Reboot to switch over, then remove those
-disabled modules after confirming playback works.
-
-To uninstall, disable/remove this module and reboot. To roll back to the separate
-modules, disable this one, re-enable the old modules and reboot. Disable this
-module before a firmware update and check compatibility before enabling it again.
+- **FEL frame rate and seeking.** Playback, audio, and seeking have been checked at
+  24 fps and at 25 fps over SMB on PS7717. 4K60 FEL can drop frames. Kodi may log
+  recoverable warnings during seeks. On PS7711.5272N, one Cube rebooted when Kodi
+  switched from P7 FEL to HDR10. The kernel logged video canvas warnings. The cause is unknown.
+- **Unsupported FEL sample.** `DV FEL All Layers Test (Woman at 80s).mkv` (the rainbow
+  pinwheel) uses different picture ordering and GOP structures in its base and enhancement
+  layers. This violates [Dolby’s Profile 7 layer-alignment requirement](https://ott.dolby.com/OnDelKits/Dolby_Vision_Online_Delivery_Kit/v1/Documentation/Specs/Visio_Profiles/help_files/topics/c_notes_profile_public.html).
+- **Audio transitions.** Invoking Alexa during TrueHD can trigger repeated microphone
+  errors. Kodi can also have trouble switching from PCM to compressed output.
+- **DTS-HD.** The tested source profile uses 48 kHz audio with 512-sample DTS core
+  frames. Other source profiles and receiver hotplug during playback remain untested.
+- **Peacock on Karat.** Live streams can intermittently freeze at startup. Reopen
+  the stream, or reboot into Fire OS if playback stays frozen.
 
 ## Troubleshooting
 
-From a root shell:
+Run these commands from a root shell after the module has finished starting.
 
 ```sh
 aparam get 0 hdmi_format
 cat /data/adb/modules/firetv_passthrough/status.txt
 tail -40 /data/adb/modules/firetv_passthrough/dolby.log
 tail -40 /data/adb/modules/firetv_passthrough/dts.log
+```
+
+Expect `hdmi_format=6` for HDMI bypass and `ACTIVE` for the DTS component.
+On a Cube configured for FEL, the following command should return a status starting with `READY`.
+
+```sh
 cat /data/adb/modules/firetv_passthrough/video/fel-status.txt
 ```
 
-Expect `hdmi_format=6` and DTS status `ACTIVE`. If a stream fails, stop and reopen
-it. Repeated audio-service failures stop further DTS attachment; inspect the logs
-before retrying. Do not run older trial hooks alongside this module.
-
-The tested DTS profile is 48 kHz with 512-sample core frames. Other source profiles
-and receiver hotplug during playback remain untested.
+If playback fails, stop and reopen the stream. Repeated audio-service failures
+stop further DTS attachment. Check the logs before retrying and run only one set
+of audio hooks at a time. When reporting a problem, include the device, exact Fire
+OS build, module and player versions, HDMI chain, source format, receiver readout,
+and the output above while the problem is happening.
 
 ## How it works
 
-The Dolby component maintains HDMI bypass at boot and after wake/restart events,
-with brief follow-up checks. The DTS component replaces the system packing path
-in memory, preserving HD audio in IEC61937 bursts. On Gazelle and Karat, the HAL also retains bypass when Fire OS requests mode 5 during
-display changes. Neither audio component polls HDMI while idle. Vendor audio libraries and app APKs are not replaced.
+The Dolby component restores HDMI bypass after boot, wake, and service restarts.
+On both devices, bypass stays active during display refresh-rate changes. The DTS
+component packs the HD stream into IEC 61937 bursts in memory. The audio services
+respond to startup and playback events without polling HDMI while idle.
 
-Karat also receives a Magisk overlay correcting the audio utility's exit crash,
-generated from the device's own file. No proprietary vendor libraries are bundled; the video helpers are built from
-the included kernel-module sources. Frida
-runs on-device without ADB or a computer and captures no audio.
+On Karat, Magisk overlays a copy of the device’s own audio utility to correct a
+crash on exit. The module uses the installed vendor audio libraries and player
+APKs. The FEL helpers are built from the included kernel-module sources. Frida
+runs on the device without ADB or a computer and captures no audio.
 
 ## License
 
-Original audio code is MIT licensed; the kernel helpers retain their GPL licenses.
-Thanks to **djnice** for the Android FEL player and kernel-helper work adapted for Gazelle. Frida retains its own licenses; see
-[NOTICE.md](NOTICE.md). Published module packages must be accompanied by the
-Frida source companion archive, which is not a Magisk module.
-See [CHANGELOG.md](CHANGELOG.md) for version history.
+The original audio code is MIT licensed. The kernel helpers retain their GPL
+licenses. Thanks to **djnice** for the Android FEL player and kernel-helper work
+adapted for Gazelle. Frida retains its own licenses. Distributors must include the
+Frida source companion archive alongside the installable module ZIP. [License notices](NOTICE.md)
