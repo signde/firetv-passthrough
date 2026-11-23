@@ -6,7 +6,7 @@ Dolby Digital, Dolby Digital Plus (including Atmos), and DTS-HD MA/DTS:X from ap
 send those formats. On supported Cube 3 builds, it also enables hardware Dolby Vision
 Profile 7 Full Enhancement Layer (FEL) playback in compatible players.
 
-[Downloads](https://github.com/signde/firetv-passthrough/releases) · [Supported firmware](#supported-firmware) · [Installation](#installation) · [Changelog](CHANGELOG.md)
+[Downloads](https://github.com/signde/firetv-passthrough/releases) · [Supported firmware](#supported-firmware) · [Installation](#installation) · [Changelog](CHANGELOG.md) · [Discuss on XDA](https://xdaforums.com/t/mod-magisk-root-fireos-7-8-fire-tv-av-audio-passthrough-dolby-vision-fel.4804107/)
 
 ## Audio passthrough
 
