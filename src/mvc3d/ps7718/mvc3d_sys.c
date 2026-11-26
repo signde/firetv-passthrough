@@ -166,6 +166,23 @@ static void osd_set(int i, const char *debug, const char *blank)
 	sys_attr(path, blank, NULL, 0);
 }
 
+/*
+ * The display mode is set only when its name changes: 2D 1080p24hz and frame packed 1080p24hz have the
+ * same name. A player that switches the display to the film's rate first (Wholphin's refresh rate
+ * switching, 2026-11-26) leaves it at 1080p24hz, and setting 1080p24hz again did not turn frame packing
+ * on; back to 2D from frame packing would not turn it off. So when the name stays the same, the mode
+ * goes through 1080p60hz first (the Cube's usual mode, one every 1080p sink takes).
+ */
+#define VIA_MODE "1080p60hz"
+static void mode_change_via(const char *from, const char *to)
+{
+	if (strcmp(from, to))
+		return;
+	pr_info("display: %s again, through %s for a real mode set\n", to, VIA_MODE);
+	mvc3d_sys_write(SYS_MODE, VIA_MODE);
+	msleep(2000);
+}
+
 /* (disp_lock held) everything back as it was */
 static void display_restore(void)
 {
@@ -180,6 +197,7 @@ static void display_restore(void)
 	/* the next mode set is 2D */
 	mvc3d_fp_arm(false);
 	msleep(1000);
+	mode_change_via(FP_MODE, disp.mode);
 	mvc3d_sys_write(SYS_MODE, disp.mode);
 	msleep(2000);
 	if (disp.attr[0] && !mvc3d_sys_read(SYS_ATTR, v, sizeof(v)) && strcmp(v, disp.attr))
@@ -219,6 +237,8 @@ int mvc3d_display_take(void)
 		disp.mode, disp.attr, disp.vgo, disp.fps, disp.dve, disp.osd[0], disp.osd[1],
 		disp.osd[2]);
 	disp.taken = true;
+	/* before arming: the intermediate mode is 2D */
+	mode_change_via(disp.mode, FP_MODE);
 	mvc3d_fp_arm(true);
 	msleep(1000);
 	mvc3d_sys_write(SYS_MODE, FP_MODE);
