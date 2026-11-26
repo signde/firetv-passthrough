@@ -983,6 +983,7 @@ static void fp_hooks_remove(void)
 {
 	struct hdmitx_dev *hd = p_get_hdmitx21_device ? p_get_hdmitx21_device() : NULL;
 
+	mvc3d_ui3d_hooks(false, 0, 0);
 	atomic_set(&fp_keep_stop, 1);
 	cancel_delayed_work_sync(&fp_keep_work);
 	if (plane_probe_on)
@@ -1063,11 +1064,13 @@ int mvc3d_fp_hooks(bool on)
 			psel_probe_on = psel_found && hook_kp(&psel_probe, "psel");
 			vdpos_probe_on = vdpos_found && hook_kp(&vdpos_probe, "vdpos");
 			vskip_probe_on = vskip_found && hook_kp(&vskip_probe, "vskip");
+			mvc3d_ui3d_hooks(true, READ_ONCE(fp_base_h), READ_ONCE(fp_win_h));
 			atomic_set(&fp_keep_stop, 0);
 			mod_delayed_work(system_wq, &fp_keep_work, msecs_to_jiffies(1000));
-			pr_info("frame packing hooks on (ENCP %d re-assert %d set_display %d; fixes vftype %d vsf %d psel %d vdpos %d vskip %d)\n",
+			pr_info("frame packing hooks on (ENCP %d re-assert %d set_display %d; fixes vftype %d vsf %d psel %d vdpos %d vskip %d; UI over both eyes %d)\n",
 				encp_probe_on, wrrd_probe_on, setdisp_probe_on, vftype_probe_on,
-				vsf_probe_on, psel_probe_on, vdpos_probe_on, vskip_probe_on);
+				vsf_probe_on, psel_probe_on, vdpos_probe_on, vskip_probe_on,
+				mvc3d_ui3d_active());
 		}
 	} else if (fp_hooks_users > 0 && --fp_hooks_users == 0) {
 		fp_hooks_remove();
@@ -1251,8 +1254,9 @@ void mvc3d_fp_session_start(void)
 void mvc3d_fp_summary(void)
 {
 	if (mvc3d_fp_ok)
-		pr_info("VSIF checks %llu lost %llu, HDCP auths %llu, 3D type set again %llu\n",
-			fp_vsif_checks, fp_vsif_lost, fp_hdcp_auths, fp_3d_reasserts);
+		pr_info("VSIF checks %llu lost %llu, HDCP auths %llu, 3D type set again %llu, UI planes stretched %llu\n",
+			fp_vsif_checks, fp_vsif_lost, fp_hdcp_auths, fp_3d_reasserts,
+			mvc3d_ui3d_stretched());
 }
 
 void mvc3d_fp_stats(struct seq_file *m)

@@ -1302,7 +1302,8 @@ static long ioc_start(struct sc2_dev *h, void __user *p)
 	s.out_height = h->fp ? 2 * s.height + (s.height == 720 ? 30 : 45) : s.height;
 	s.stride = 0;
 	s.reserved[0] = MVC3D_HW_F_DIRECT;
-	s.reserved[1] = 0;
+	/* the player draws its UI per eye when the UI spans both eyes */
+	s.reserved[1] = h->fp && h->display && mvc3d_ui3d_active() ? MVC3D_HW_F_UI3D : 0;
 	pr_info("start %ux%u %s (direct)\n", s.width, s.height, h->fp ? "frame packed" : "2D");
 	kick(h);
 	return copy_to_user(p, &s, sizeof(s)) ? -EFAULT : 0;
@@ -1497,10 +1498,13 @@ static ssize_t hw_write(struct file *f, const char __user *u, size_t n, loff_t *
 
 static ssize_t hw_read(struct file *f, char __user *u, size_t n, loff_t *pos)
 {
-	char c[48];
+	char c[64];
 	loff_t at = 0; /* always the whole line: a status */
-	int len = scnprintf(c, sizeof(c), "armed=%d on=%d started=%d\n", READ_ONCE(mvc3d_fp_armed),
-			    READ_ONCE(mvc3d_fp_on), READ_ONCE(mvc3d_dev->started));
+	/* ui3d=1: the Android UI spans both eyes (rows 0-529 left eye, 551-1080 right eye) */
+	int len = scnprintf(c, sizeof(c), "armed=%d on=%d started=%d ui3d=%d\n",
+			    READ_ONCE(mvc3d_fp_armed), READ_ONCE(mvc3d_fp_on),
+			    READ_ONCE(mvc3d_dev->started),
+			    READ_ONCE(mvc3d_dev->started) && mvc3d_dev->display && mvc3d_ui3d_active());
 
 	return simple_read_from_buffer(u, n, &at, c, len);
 }

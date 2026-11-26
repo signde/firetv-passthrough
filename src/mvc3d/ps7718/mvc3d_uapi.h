@@ -32,6 +32,12 @@
 
 /* MVC3D_HW_START out reserved[0]: the decoder's pictures straight to the display (the only mode) */
 #define MVC3D_HW_F_DIRECT	1
+/*
+ * MVC3D_HW_START out reserved[1]: frame packed 1080p with the Android UI over both eyes (the 1920x1080 UI
+ * stretched to the 1920x2205 frame: rows 0-529 show in the left eye, rows 551-1080 in the right one); 0:
+ * the UI is hidden for the session
+ */
+#define MVC3D_HW_F_UI3D		1
 
 struct mvc3d_hw_start {
 	__u32 width;		/* in: one view (1920x1080 or 1280x720) */
@@ -40,7 +46,7 @@ struct mvc3d_hw_start {
 	__u32 out_height;	/* out: 2D: height; FP: 2 * height + active space */
 	__u32 stride;		/* out: unused in direct mode */
 	__u32 gen;		/* out: pictures of this start have this gen (FLUSH changes it) */
-	__u32 reserved[2];	/* out: reserved[0] = MVC3D_HW_F_DIRECT, reserved[1] = 0 */
+	__u32 reserved[2];	/* out: reserved[0] = MVC3D_HW_F_DIRECT, reserved[1] = MVC3D_HW_F_UI3D or 0 */
 };
 
 struct mvc3d_hw_buf {

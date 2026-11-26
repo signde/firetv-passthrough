@@ -234,9 +234,13 @@ int mvc3d_display_take(void)
 		r = -EIO;
 		goto out;
 	}
-	/* UI planes off (HWC frames no longer switch them on), video layer on */
-	for (i = 0; i < 3; i++)
-		osd_set(i, "1", "1");
+	/*
+	 * The UI: over both eyes for a player that draws it per eye (ui_3d: the frame packing hooks
+	 * stretch its planes), else off (HWC frames no longer switch the planes on). The video layer on.
+	 */
+	if (!mvc3d_ui3d_active())
+		for (i = 0; i < 3; i++)
+			osd_set(i, "1", "1");
 	mvc3d_sys_write(SYS_DISABLE, "0");
 	mvc3d_sys_write(SYS_VGO, "1");
 	{
@@ -244,7 +248,8 @@ int mvc3d_display_take(void)
 
 		mvc3d_sys_read(SYS_MODE, v, sizeof(v));
 		mvc3d_sys_read(SYS_ATTR, a, sizeof(a));
-		pr_info("display frame packed: mode %s attr %s\n", v, a);
+		pr_info("display frame packed: mode %s attr %s, UI %s\n", v, a,
+			mvc3d_ui3d_active() ? "over both eyes" : "hidden");
 	}
 out:
 	mutex_unlock(&disp_lock);
