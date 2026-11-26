@@ -63,7 +63,10 @@
  *   other modules' parameters (set in-kernel through their kernel_param ops):
  *     amvdec_h264mvc  view_mode, drop_thread_hold
  *     aml_media       framepacking_support/_width/_height/_blank, dolby_vision_policy/_mode
- *   /dev/amvideo AMSTREAM_IOC_SET_3D_TYPE _IOW('S', 0x3c, u32); /sys/class/vfm/map (default chain)
+ *   sysfs attributes, written/read through their own sysfs_ops (mvc3d_sys.c): class/display/mode,
+ *     class/amhdmitx/amhdmitx0/attr, class/video/{video_global_output,disable_video,threedim_mode
+ *     ("process type 0x%x,trans fmt %u.")}, class/graphics/fb0-2/{osd_display_debug,blank};
+ *     /sys/class/vfm/map (default chain)
  */
 /* clang-format on */
 #ifndef MVC3D_H

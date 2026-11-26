@@ -300,6 +300,8 @@ static void colour_dump(const char *when)
 	pr_info("colour regs (%s):%s\n", when, buf);
 }
 
+static void fp_3d_type_keep(void);
+
 static void fp_keep_fn(struct work_struct *w)
 {
 	int ms = FP_VSIF_CHECK_MS;
@@ -319,6 +321,9 @@ static void fp_keep_fn(struct work_struct *w)
 
 	if (atomic_read(&fp_keep_stop))
 		return;
+	if (mvc3d_dev && READ_ONCE(mvc3d_dev->started) && mvc3d_dev->fp && READ_ONCE(mvc3d_fp_on) &&
+	    READ_ONCE(mvc3d_dev->shown))
+		fp_3d_type_keep();
 	if (READ_ONCE(mvc3d_fp_on) && p_infoframe_send && p_infoframe_rawget) {
 		u8 b[32] = { 0 }, h2[32] = { 0 };
 		int r = p_infoframe_rawget(0x81, b);
@@ -1190,61 +1195,64 @@ void mvc3d_fp_exit(void)
 }
 
 /*
- * (process context) the VPP's 3D type, as AMSTREAM_IOC_SET_3D_TYPE on /dev/amvideo does it for a
- * player (CoreELEC's Kodi: MODE_3D_ENABLE | MODE_3D_FA with framepacking_support for MVC frame
- * packing): VD1 reads the left eye, VD2 the right eye, lines 0-1079 and 1125-2204 of the 2205 line
- * frame. 0: off.
+ * (process context or a worker) the VPP's 3D type, as AMSTREAM_IOC_SET_3D_TYPE on /dev/amvideo does
+ * it for a player (CoreELEC's Kodi: MODE_3D_ENABLE | MODE_3D_FA with framepacking_support for MVC
+ * frame packing): VD1 reads the left eye, VD2 the right eye, lines 0-1079 and 1125-2204 of the 2205
+ * line frame. 0: off. Through amvideo's own threedim_mode attribute, whose store runs the same code
+ * as that ioctl: SELinux does not let the kernel open /dev/amvideo (-13), and players need not.
  */
-#define AMVIDEO_IOC_SET_3D_TYPE _IOW('S', 0x3c, u32)
-
-struct type3d_args {
-	u32 type;
-	int ret;
-};
-
-static int fp_3d_type_now(u32 type);
-
-static void type3d_fn(void *a)
-{
-	struct type3d_args *t = a;
-
-	t->ret = fp_3d_type_now(t->type);
-}
+#define SYS_3D_TYPE "class/video/threedim_mode"
 
 int mvc3d_fp_3d_type(u32 type)
 {
-	struct type3d_args t = { type, 0 };
+	char v[16];
+	int r;
 
-	mvc3d_in_worker(type3d_fn, &t);
-	return t.ret;
+	snprintf(v, sizeof(v), "%#x", type);
+	r = mvc3d_sys_write(SYS_3D_TYPE, v);
+	pr_info("3D type %#x: %d\n", type, r);
+	return r;
 }
 
-static int fp_3d_type_now(u32 type)
+/* amvideo's 3D type now ("process type 0x%x,trans fmt %u."), or -1 */
+static int fp_3d_type_get(void)
 {
-	struct file *f = filp_open("/dev/amvideo", O_RDWR, 0);
-	long r = -ENOTTY;
+	char v[64];
+	unsigned int t;
 
-	if (IS_ERR(f)) {
-		pr_warn("/dev/amvideo: %ld\n", PTR_ERR(f));
-		return PTR_ERR(f);
-	}
-	if (f->f_op && f->f_op->unlocked_ioctl)
-		r = f->f_op->unlocked_ioctl(f, AMVIDEO_IOC_SET_3D_TYPE, type);
-	filp_close(f, NULL);
-	pr_info("3D type %#x: %ld\n", type, r);
-	return r;
+	if (mvc3d_sys_read(SYS_3D_TYPE, v, sizeof(v)) || sscanf(v, "process type %x", &t) != 1)
+		return -1;
+	return t;
+}
+
+/*
+ * (the keeper, while a frame packed session shows pictures) a decoder restart can set the 3D type
+ * back: set again, as the root player used to every 2 s
+ */
+static u64 fp_3d_reasserts;
+static void fp_3d_type_keep(void)
+{
+	int t = fp_3d_type_get();
+
+	if (t < 0 || (t & 0xff) == (MODE_3D_ENABLE | MODE_3D_FA))
+		return;
+	fp_3d_reasserts++;
+	if (fp_3d_reasserts <= 20)
+		pr_info("3D type was %#x: set again\n", t);
+	mvc3d_fp_3d_type(MODE_3D_ENABLE | MODE_3D_FA);
 }
 
 void mvc3d_fp_session_start(void)
 {
 	colour_logged = 0;
+	fp_3d_reasserts = 0;
 }
 
 void mvc3d_fp_summary(void)
 {
 	if (mvc3d_fp_ok)
-		pr_info("VSIF checks %llu lost %llu, HDCP auths %llu\n", fp_vsif_checks,
-			fp_vsif_lost, fp_hdcp_auths);
+		pr_info("VSIF checks %llu lost %llu, HDCP auths %llu, 3D type set again %llu\n",
+			fp_vsif_checks, fp_vsif_lost, fp_hdcp_auths, fp_3d_reasserts);
 }
 
 void mvc3d_fp_stats(struct seq_file *m)
