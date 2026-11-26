@@ -684,6 +684,40 @@ static int pull_thread(void *data)
 /* the display side: provider "mvc3dhw" for amvideo                   */
 /* ------------------------------------------------------------------ */
 
+/*
+ * The right eye of a frame packed picture is VD2 reading the right view through its plain MIF, set
+ * up by amvideo as part of VD1 (vd1_set_dcu: PSEL 0, VD1 left, VD2 right). Which input VD2 shows -
+ * its MIF or its AFBC decoder - is bits 13-14 of VD2_AFBCDM_VDTOP_CTRL0 (T7 layout), and amvideo
+ * sets them only when VD2 shows a picture of its own (vd2_set_dcu). After a compressed picture on
+ * VD2 - Dolby Vision FEL shows its enhancement layer there - they stay on AFBC, and the right eye is
+ * the idle decoder's default colour: black (seen 2026-11-26: 0x7200 after a FEL title, 0x1200 on a
+ * fresh boot; clearing the bits by hand brought the right eye back). So while frame packed, VD2's
+ * input is kept on its MIF. Not put back at the end: the MIF is the boot state, and amvideo sets the
+ * bits again for VD2's next own picture.
+ */
+#define VD2_AFBCDM_VDTOP_CTRL0 0x48b8
+#define VDTOP_INPUT_AFBC (3U << 13)
+static u64 vd2_mif_kept;
+static u32 vd2_mif_first;
+
+/* (h->lock held) in amvideo's vsync interrupt */
+static void vd2_mif_keep_locked(struct sc2_dev *h)
+{
+	int v;
+
+	if (!h->started || !h->fp || !mvc3d_read_vcbus)
+		return;
+	v = mvc3d_read_vcbus(VD2_AFBCDM_VDTOP_CTRL0);
+	if (v == -1 || !(v & VDTOP_INPUT_AFBC))
+		return;
+	aml_vcbus_update_bits(VD2_AFBCDM_VDTOP_CTRL0, VDTOP_INPUT_AFBC, 0);
+	if (!vd2_mif_kept++) {
+		vd2_mif_first = v;
+		pr_info("right eye: VD2 input back to its MIF (VD2_AFBCDM_VDTOP_CTRL0 %#x, AFBC left on by an earlier picture)\n",
+			v);
+	}
+}
+
 /* (h->lock held) in amvideo's vsync interrupt: the vsync period */
 static void dg_vsync_locked(struct sc2_dev *h);
 static void vs_tick_locked(struct sc2_dev *h, u64 now)
@@ -721,6 +755,7 @@ static void vs_tick_locked(struct sc2_dev *h, u64 now)
 
 		h->vs_last_ns = now;
 		h->vs_seq++;
+		vd2_mif_keep_locked(h);
 		dg_vsync_locked(h);
 		/*
 		 * pictures back from the display 2 (+ put_delay_vsync) vsyncs ago: the VPP is done
@@ -1574,6 +1609,8 @@ static int stats_show(struct seq_file *m, void *v)
 	mvc3d_pool_stats(m);
 	mvc3d_fp_stats(m);
 	seq_printf(m, "puts held for order %llu, forced %llu\n", put_held, put_forced);
+	seq_printf(m, "right eye: VD2 input back to its MIF %llu times (first from %#x)\n", vd2_mif_kept,
+		   vd2_mif_first);
 	seq_printf(m, "shown after due: avg %lld us, max %lld us; default map \"%s\"\n",
 		   h->late_cnt ? (s64)div64_s64((s64)h->late_us_sum, h->late_cnt) : 0,
 		   h->late_max_us, h->default_chain);

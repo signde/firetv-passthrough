@@ -101,6 +101,7 @@
 #include <linux/amlogic/media/vfm/vframe_provider.h>
 #include <linux/amlogic/media/vfm/vframe_receiver.h>
 #include <linux/amlogic/media/vfm/vfm_ext.h>
+#include <linux/amlogic/media/registers/register_map.h>
 
 #include "mvc3d_uapi.h"
 
@@ -116,7 +117,7 @@
 #include <linux/amlogic/media/vout/vinfo.h>
 #include <linux/amlogic/media/vout/hdmi_tx21/hdmi_tx_module.h>
 
-#define MVC3D_MODULE_VERSION "2026.11.26.18-gazelle"
+#define MVC3D_MODULE_VERSION "2026.11.26.19-gazelle"
 
 #ifndef MODE_3D_ENABLE
 #define MODE_3D_ENABLE 0x00000001
