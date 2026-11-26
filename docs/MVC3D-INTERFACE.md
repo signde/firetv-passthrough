@@ -14,8 +14,9 @@ or reading its status does not start anything. A session belongs to the open fil
   the HDMI mode set, ENCP, VSIF, HDCP, DRM plane, video window and five instruction fixes), saves the display
   (HDMI mode, colour attribute, UI planes, video layer, `framepacking_support`, Dolby Vision settings),
   switches to 1080p24 frame packed and waits until frame packing is on (`EIO` and everything put back if it
-  does not come on), hides the UI planes and routes `decoder.h264mvc` through the helper to amvideo. It takes
-  3-6 s. Returns `gen` and `reserved[0] = MVC3D_HW_F_DIRECT`.
+  does not come on), shows the Android UI over both eyes (below; else hides the UI planes) and routes
+  `decoder.h264mvc` through the helper to amvideo. It takes 3-6 s. Returns `gen`, `reserved[0] =
+  MVC3D_HW_F_DIRECT` and `reserved[1] = MVC3D_HW_F_UI3D` when the UI is over both eyes (0: hidden).
 - The player feeds the stock hardware MVC decoder (`amvdec_h264mvc`) itself - libmvc3dplay's hardware path
   (djnice's [vlc-fel-android](https://github.com/djnice/vlc-fel-android), `libmvc3dplay/src/mvc3dhw.c`) - and
   then, per decoded picture: `MVC3D_HW_WAIT` (the next picture, with its `gen`), `MVC3D_HW_PRESENT` (show it
@@ -24,8 +25,17 @@ or reading its status does not start anything. A session belongs to the open fil
 - The last close of the file (also when the player crashes): the display put back as it was before, the route
   back to default, the session's probes removed - idle again.
 
-`read()` returns one status line, `armed=N on=N started=N`. Writing `arm` arms frame packing (and registers the
-HDMI probes) until that file is closed, for players that set the HDMI mode themselves.
+`read()` returns one status line, `armed=N on=N started=N ui3d=N`. Writing `arm` arms frame packing (and
+registers the HDMI probes) until that file is closed, for players that set the HDMI mode themselves.
+
+Menus and subtitles (`ui_3d=1`, the default; 1080p frame packing): the frame is 1920x2205 (left eye lines
+0-1079, 45 blank lines, right eye 1125-2204) while Android still composes its UI at 1920x1080, so the helper
+stretches the UI planes over the whole frame (2205/1080). A player then draws its UI once per eye, as Kodi does
+in frame packed mode: UI rows 0-529 land in the left eye, rows 551-1080 in the right eye (each screen row y at
+y x 1080/2205, and 1125 x 1080/2205 = 551 lower for the right eye), each copy shifted sideways by the same
+amount in opposite directions for depth. A player that does not do this should cover the whole screen with
+its video surface; anything it draws shows squashed across both eyes. With `ui_3d=0` the UI is hidden for the
+session.
 
 The UAPI is in `src/mvc3d/ps7718/mvc3d_uapi.h` (the same ABI as djnice's S905X4 module).
 
@@ -41,5 +51,5 @@ HDMI output; this is not a security boundary against hostile apps. No global SEL
 Not covered by an automated test. The frame packing itself (helper versions up to .15, loaded per session by
 Wholphin FEL's root script) was hardware-tested on a Fire TV Cube 3rd gen (PS7718.5826N) with a 3D projector:
 Avatar, Billy Lynn's Long Halftime Walk, Money From Home, Dune, Dredd, Mission: Impossible - Fallout. This
-shared form (.16: loaded at boot, idle until a session, the display set up in-kernel) is not hardware-tested
-yet.
+shared form (.16: loaded at boot, idle until a session, the display set up in-kernel) and the UI over both
+eyes (.17) are not hardware-tested yet.
