@@ -1215,9 +1215,11 @@ static void hw_stop(struct sc2_dev *h)
 		mvc3d_display_give_back();
 		h->display = false;
 	}
-	/* idle again: this session's hooks off */
-	if (fp)
+	/* idle again: the UI no longer stretched, this session's hooks off */
+	if (fp) {
+		mvc3d_ui3d_want(false);
 		mvc3d_fp_hooks(false);
+	}
 	mvc3d_pool_hooks(false);
 	/*
 	 * a decoder still open (the client died before its amstream) keeps the pool until it goes
@@ -1258,6 +1260,8 @@ static long ioc_start(struct sc2_dev *h, void __user *p)
 		r = mvc3d_fp_hooks(true);
 		if (r)
 			goto fail_pool;
+		/* the UI over both eyes only for a player that draws it per eye */
+		mvc3d_ui3d_want(s.reserved[1] & MVC3D_HW_F_UI3D);
 		if (mvc3d_own_display()) {
 			r = mvc3d_display_take();
 			if (r)
@@ -1314,8 +1318,10 @@ fail_display:
 		h->display = false;
 	}
 fail_hooks:
-	if (fp)
+	if (fp) {
+		mvc3d_ui3d_want(false);
 		mvc3d_fp_hooks(false);
+	}
 fail_pool:
 	mvc3d_pool_hooks(false);
 	return r;

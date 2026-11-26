@@ -1067,10 +1067,10 @@ int mvc3d_fp_hooks(bool on)
 			mvc3d_ui3d_hooks(true, READ_ONCE(fp_base_h), READ_ONCE(fp_win_h));
 			atomic_set(&fp_keep_stop, 0);
 			mod_delayed_work(system_wq, &fp_keep_work, msecs_to_jiffies(1000));
-			pr_info("frame packing hooks on (ENCP %d re-assert %d set_display %d; fixes vftype %d vsf %d psel %d vdpos %d vskip %d; UI over both eyes %d)\n",
+			pr_info("frame packing hooks on (ENCP %d re-assert %d set_display %d; fixes vftype %d vsf %d psel %d vdpos %d vskip %d; UI over both eyes possible %d)\n",
 				encp_probe_on, wrrd_probe_on, setdisp_probe_on, vftype_probe_on,
 				vsf_probe_on, psel_probe_on, vdpos_probe_on, vskip_probe_on,
-				mvc3d_ui3d_active());
+				mvc3d_ui3d_ready());
 		}
 	} else if (fp_hooks_users > 0 && --fp_hooks_users == 0) {
 		fp_hooks_remove();

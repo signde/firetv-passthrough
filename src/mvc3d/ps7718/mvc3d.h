@@ -116,7 +116,7 @@
 #include <linux/amlogic/media/vout/vinfo.h>
 #include <linux/amlogic/media/vout/hdmi_tx21/hdmi_tx_module.h>
 
-#define MVC3D_MODULE_VERSION "2026.11.26.17-gazelle"
+#define MVC3D_MODULE_VERSION "2026.11.26.18-gazelle"
 
 #ifndef MODE_3D_ENABLE
 #define MODE_3D_ENABLE 0x00000001
@@ -199,6 +199,8 @@ void mvc3d_display_give_back(void);
 
 /* mvc3d_ui.c */
 void mvc3d_ui3d_hooks(bool on, int base_h, int out_h);
+void mvc3d_ui3d_want(bool want);
+bool mvc3d_ui3d_ready(void);
 bool mvc3d_ui3d_active(void);
 u64 mvc3d_ui3d_stretched(void);
 

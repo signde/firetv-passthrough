@@ -8,7 +8,8 @@
  * pipeline is worked out (vpu_pipeline_traverse: the OSD scalers and blend windows come from them), so the
  * UI covers the whole frame: a player that draws its UI once per eye - rows 0-529 for the left eye, rows
  * 551-1080 for the right one, as Kodi does with its GUI in frame packed mode at full height - shows menus
- * and subtitles in 3D. Without such a player the UI is hidden for the session, as before (ui_3d=0).
+ * and subtitles in 3D. Only for a player that asks for it (MVC3D_HW_F_UI3D in its START): for any other
+ * player, and with ui_3d=0, the UI is hidden for the session, as before.
  *
  * struct meson_vpu_pipeline_state / meson_vpu_osd_layer_info from the 7.7.1.4 headers; checked by their
  * values before use.
@@ -24,6 +25,7 @@ MODULE_PARM_DESC(
 
 static int ui_base_h, ui_out_h;	/* 1080, 2205 */
 static bool ui_probe_on, ui_layout_bad;
+static bool ui_wanted;	/* this session's player draws its UI per eye (it asked: MVC3D_HW_F_UI3D) */
 static u64 ui_stretched;
 
 /* what this hook wrote last per plane, so a second pass over the same state does not stretch twice */
@@ -65,7 +67,8 @@ static int ui_traverse_pre(struct kprobe *kp, struct pt_regs *regs)
 	struct meson_vpu_pipeline_state *mvps = (void *)regs->regs[0];
 	int i, r;
 
-	if (!READ_ONCE(mvc3d_fp_on) || !READ_ONCE(ui_3d) || ui_layout_bad || !mvps || !ui_base_h)
+	if (!READ_ONCE(mvc3d_fp_on) || !READ_ONCE(ui_wanted) || !READ_ONCE(ui_3d) || ui_layout_bad ||
+	    !mvps || !ui_base_h)
 		return 0;
 	r = layout_sane(mvps);
 	if (!r)
@@ -115,6 +118,7 @@ void mvc3d_ui3d_hooks(bool on, int base_h, int out_h)
 		if (ui_probe_on)
 			unregister_kprobe(&ui_probe);
 		ui_probe_on = false;
+		WRITE_ONCE(ui_wanted, false);
 		return;
 	}
 	if (ui_probe_on || !READ_ONCE(ui_3d) || base_h != 1080 || out_h <= base_h)
@@ -131,10 +135,25 @@ void mvc3d_ui3d_hooks(bool on, int base_h, int out_h)
 		pr_warn("ui_3d: no probe on vpu_pipeline_traverse (%d): UI hidden in 3D\n", r);
 }
 
+/*
+ * (process context) whether the session's player asked for the UI over both eyes: set at its start
+ * before the display is taken, cleared once the display is back
+ */
+void mvc3d_ui3d_want(bool want)
+{
+	WRITE_ONCE(ui_wanted, want);
+}
+
+/* whether the UI could span both eyes this session (the probe on, the layout as expected) */
+bool mvc3d_ui3d_ready(void)
+{
+	return ui_probe_on && READ_ONCE(ui_3d) && !ui_layout_bad;
+}
+
 /* whether this session's UI spans both eyes (else the session hides it) */
 bool mvc3d_ui3d_active(void)
 {
-	return ui_probe_on && READ_ONCE(ui_3d) && !ui_layout_bad;
+	return mvc3d_ui3d_ready() && READ_ONCE(ui_wanted);
 }
 
 u64 mvc3d_ui3d_stretched(void)
