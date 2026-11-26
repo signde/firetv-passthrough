@@ -14,8 +14,8 @@ or reading its status does not start anything. A session belongs to the open fil
   the HDMI mode set, ENCP, VSIF, HDCP, DRM plane, video window and five instruction fixes), saves the display
   (HDMI mode, colour attribute, UI planes, video layer, `framepacking_support`, Dolby Vision settings),
   switches to 1080p24 frame packed and waits until frame packing is on (`EIO` and everything put back if it
-  does not come on), shows the Android UI over both eyes (below; else hides the UI planes) and routes
-  `decoder.h264mvc` through the helper to amvideo. It takes 3-6 s. Returns `gen`, `reserved[0] =
+  does not come on), hides the UI planes (or, for a player that asks, shows the UI over both eyes: below) and
+  routes `decoder.h264mvc` through the helper to amvideo. It takes 3-6 s. Returns `gen`, `reserved[0] =
   MVC3D_HW_F_DIRECT` and `reserved[1] = MVC3D_HW_F_UI3D` when the UI is over both eyes (0: hidden).
 - The player feeds the stock hardware MVC decoder (`amvdec_h264mvc`) itself - libmvc3dplay's hardware path
   (djnice's [vlc-fel-android](https://github.com/djnice/vlc-fel-android), `libmvc3dplay/src/mvc3dhw.c`) - and
@@ -28,14 +28,15 @@ or reading its status does not start anything. A session belongs to the open fil
 `read()` returns one status line, `armed=N on=N started=N ui3d=N`. Writing `arm` arms frame packing (and
 registers the HDMI probes) until that file is closed, for players that set the HDMI mode themselves.
 
-Menus and subtitles (`ui_3d=1`, the default; 1080p frame packing): the frame is 1920x2205 (left eye lines
-0-1079, 45 blank lines, right eye 1125-2204) while Android still composes its UI at 1920x1080, so the helper
-stretches the UI planes over the whole frame (2205/1080). A player then draws its UI once per eye, as Kodi does
-in frame packed mode: UI rows 0-529 land in the left eye, rows 551-1080 in the right eye (each screen row y at
-y x 1080/2205, and 1125 x 1080/2205 = 551 lower for the right eye), each copy shifted sideways by the same
-amount in opposite directions for depth. A player that does not do this should cover the whole screen with
-its video surface; anything it draws shows squashed across both eyes. With `ui_3d=0` the UI is hidden for the
-session.
+Menus and subtitles (1080p frame packing): the frame is 1920x2205 (left eye lines 0-1079, 45 blank lines,
+right eye 1125-2204) while Android still composes its UI at 1920x1080. A player that draws its UI once per eye,
+as Kodi does in frame packed mode, asks for the UI over both eyes with `reserved[1] = MVC3D_HW_F_UI3D` in its
+`MVC3D_HW_START`: the helper then stretches the UI planes over the whole frame (2205/1080), so UI rows 0-529
+land in the left eye and rows 551-1080 in the right eye (each screen row y at y x 1080/2205, and 1125 x
+1080/2205 = 551 lower for the right eye); the player shifts each copy sideways by the same amount in opposite
+directions for depth. Granted: `reserved[1] = MVC3D_HW_F_UI3D` back. A player that leaves `reserved[1]` 0 (as
+libmvc3dplay does) gets the UI hidden for the session, as before. `ui_3d=0` (module parameter) refuses it for
+every player.
 
 The UAPI is in `src/mvc3d/ps7718/mvc3d_uapi.h` (the same ABI as djnice's S905X4 module).
 
