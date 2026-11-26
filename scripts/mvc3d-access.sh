@@ -1,9 +1,10 @@
 #!/system/bin/sh
 # Shared opt-in interface. Opening this node does not start an MVC 3D session.
+. "$OWNER/scripts/live-policy.sh"
 provision_mvc3d_access() {
     [ -c /dev/mvc3dhw ] || return 1
     chmod 000 /dev/mvc3dhw || return 1
-    magiskpolicy --live 'type firetv_mvc3d_device file_type' \
+    live_policy 'type firetv_mvc3d_device file_type' \
         'typeattribute firetv_mvc3d_device mlstrustedobject' \
         'allow appdomain firetv_mvc3d_device chr_file { read write open getattr ioctl }' || return 1
     chown 0:0 /dev/mvc3dhw || return 1
@@ -21,7 +22,7 @@ provision_mvc3d_decoder_access() {
     [ -c "$n" ] || return 1
     t=$(ls -Z "$n" | sed -n 's/^[^:]*:[^:]*:\([^:]*\):.*/\1/p')
     [ -n "$t" ] || return 1
-    magiskpolicy --live "allow appdomain $t chr_file { read write open getattr ioctl }" || return 1
+    live_policy "allow appdomain $t chr_file { read write open getattr ioctl }" || return 1
     mode=$(stat -c %a "$n") || return 1
     case "$mode" in
         *6) ;;
