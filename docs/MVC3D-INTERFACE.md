@@ -29,9 +29,11 @@ HDMI probes) until that file is closed, for players that set the HDMI mode thems
 
 The UAPI is in `src/mvc3d/ps7718/mvc3d_uapi.h` (the same ABI as djnice's S905X4 module).
 
-Feeding the decoder needs `/dev/amstream_vbuf` and `/dev/amvideo`, which apps cannot open by default; today's
-Wholphin FEL build runs that part as a root helper (`mvchwd`, through su) for its 3D sessions. A rule giving
-apps those two nodes as well would let players do it in-process; it is not part of this module yet.
+Feeding the decoder needs `/dev/amstream_vbuf`, which apps cannot open on stock Fire OS. With
+`ENABLE_MVC3D_APP_DECODER=1` (default) the module lets app domains open it too (an allow rule for its stock
+SELinux type, and world read/write if it lacks it), so a player does this in-process; with 0, players need root
+for it. This widens the stock decoder's input to every app. The 3D type that frame packing needs is set by the
+helper itself (amvideo's `threedim_mode` attribute), so players do not need `/dev/amvideo`.
 
 Access is intentionally available to all apps, as for `/dev/dvfel`: an app can claim a session and switch the
 HDMI output; this is not a security boundary against hostile apps. No global SELinux permissive mode is used.

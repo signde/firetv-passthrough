@@ -39,5 +39,10 @@ grep -q 'frame packing ready' /sys/kernel/debug/mvc3d/hw_stats 2>/dev/null ||
  fail 'FRAME_PACKING_UNAVAILABLE: inspect kernel log'
 . "$OWNER/scripts/mvc3d-access.sh"
 provision_mvc3d_access || fail PLAYER_ACCESS_FAILED
+# players feed the decoder themselves (unless ENABLE_MVC3D_APP_DECODER=0 in config.sh)
+[ -f "$OWNER/config.sh" ] && . "$OWNER/config.sh"
+if [ "$ENABLE_MVC3D_APP_DECODER" != 0 ]; then
+ provision_mvc3d_decoder_access || fail DECODER_ACCESS_FAILED
+fi
 status "READY: $(cat /sys/module/mvc3d/version), shared MVC 3D interface"
 # No rmmod on shutdown, disable or app exit; a reboot removes the helper.
