@@ -1465,8 +1465,8 @@ static int hw_open(struct inode *inode, struct file *f)
  * The player, before its film (no ioctl from Java): write "arm" on a file of this device = frame
  * packing wanted until the film's MVC3D_HW_STOP or the file's close, so the mode set the player
  * does now (before the decoder opens) is already the frame packed one. read: "armed=N on=N
- * started=N\n", on = the HDMI output is frame packed, started = the hardware decoder runs (not: the
- * player has no 3D, it gives the mode back).
+ * started=N ui3d=N\n", on = the HDMI output is frame packed, started = the hardware decoder runs (not:
+ * the player has no 3D, it gives the mode back), ui3d = the session shows the Android UI over both eyes.
  */
 static struct file *fp_armer;
 
