@@ -11,4 +11,14 @@ for profile in ps7702 ps7711 ps7712 ps7713 ps7714_5503 ps7714_5506 ps7714_5507 p
     mkdir -p "video/fel/$profile"
     cp "src/fel/$profile/dvfel.ko" "video/fel/$profile/"
 done
+# MVC 3D frame packing helper (PS7718 so far), against the same prepared PS7718 kbuild
+for profile in ps7718; do
+    case "$profile" in ps7718) build=gazelle-fel-7718;; esac
+    docker run --rm -v "$GAZELLE_WORK:/workspace" -v "$PWD:/module-src" gazelle-fel-builder:local \
+      make -C /workspace/gazelle-fel-7702/source/kernel/amlogic/pop1g/5.4/common \
+      O="/workspace/$build/kbuild" ARCH=arm64 CC=clang LD=ld.lld HOSTCC=clang LLVM=1 \
+      CONFIG_AMLOGIC_LTO_CLANG= CONFIG_LTO= M="/module-src/src/mvc3d/$profile" modules
+    mkdir -p "video/mvc3d/$profile"
+    cp "src/mvc3d/$profile/mvc3d.ko" "video/mvc3d/$profile/"
+done
 python3 video-build-inputs.py record
