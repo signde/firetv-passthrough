@@ -1185,7 +1185,7 @@ static DECLARE_DELAYED_WORK(route_work, route_off_fn);
 static void hw_stop(struct sc2_dev *h)
 {
 	unsigned long flags;
-	bool decoder;
+	bool decoder, fp = h->fp;
 
 	spin_lock_irqsave(&h->lock, flags);
 	h->started = false;
@@ -1198,7 +1198,7 @@ static void hw_stop(struct sc2_dev *h)
 		route(h, false);
 	set_freerun_mode(0);
 	mvc3d_sysfs_write(MVC_PARAMS "view_mode", "3");
-	if (h->fp) {
+	if (fp) {
 		mvc3d_sysfs_write(FP_PARAM, "0");
 		mvc3d_fp_3d_type(0);
 		mvc3d_fp_arm(false);
@@ -1210,6 +1210,15 @@ static void hw_stop(struct sc2_dev *h)
 	mvc3d_fp_summary();
 	if (READ_ONCE(mvc3d_debug))
 		diag_summary();
+	/* the display as before the session (its 2D mode set still goes through the hooks) */
+	if (h->display) {
+		mvc3d_display_give_back();
+		h->display = false;
+	}
+	/* idle again: this session's hooks off */
+	if (fp)
+		mvc3d_fp_hooks(false);
+	mvc3d_pool_hooks(false);
 	/*
 	 * a decoder still open (the client died before its amstream) keeps the pool until it goes
 	 */
@@ -1220,6 +1229,7 @@ static long ioc_start(struct sc2_dev *h, void __user *p)
 {
 	struct mvc3d_hw_start s;
 	unsigned long flags;
+	bool fp;
 	int r;
 
 	if (copy_from_user(&s, p, sizeof(s)))
@@ -1228,11 +1238,8 @@ static long ioc_start(struct sc2_dev *h, void __user *p)
 		return -EBUSY;
 	if (!s.width || s.width > 1920 || !s.height || s.height > 1088 || s.mode > MVC3D_HW_FP)
 		return -EINVAL;
-	if (!mvc3d_pool_probes_on()) {
-		pr_warn("no probes on the MVC decoder's allocations: hardware MVC refused (its 31 bit DMA corrupts memory)\n");
-		return -ENODEV;
-	}
-	if (s.mode == MVC3D_HW_FP && !mvc3d_fp_ok)
+	fp = s.mode == MVC3D_HW_FP;
+	if (fp && !mvc3d_fp_ok)
 		return -ENODEV;
 	/* (the last client's decoder, its process going: a moment for it) */
 	for (r = 0; h->routed && r < 75 && READ_ONCE(h->prov_reg); r++)
@@ -1240,16 +1247,34 @@ static long ioc_start(struct sc2_dev *h, void __user *p)
 	cancel_delayed_work(&route_work);
 	if (READ_ONCE(h->prov_reg))
 		return -EBUSY; /* a decoder of another player is open */
-	r = need_pool ? mvc3d_pool_get(h->misc.this_device) : 0;
+	/*
+	 * this session's hooks: the decoder's allocations, for frame packing the HDMI and video
+	 * paths; then its display (own_display), all undone at its stop
+	 */
+	r = mvc3d_pool_hooks(true);
 	if (r)
 		return r;
+	if (fp) {
+		r = mvc3d_fp_hooks(true);
+		if (r)
+			goto fail_pool;
+		if (mvc3d_own_display()) {
+			r = mvc3d_display_take();
+			if (r)
+				goto fail_hooks;
+			h->display = true;
+		}
+	}
+	r = need_pool ? mvc3d_pool_get(h->misc.this_device) : 0;
+	if (r)
+		goto fail_display;
 	mvc3d_pool_reset();
 	r = route(h, true);
 	if (r) {
 		mvc3d_pool_put();
-		return r;
+		goto fail_display;
 	}
-	h->fp = s.mode == MVC3D_HW_FP;
+	h->fp = fp;
 	mvc3d_sysfs_write(MVC_PARAMS "view_mode", h->fp ? "3" : "0");
 	mvc3d_sysfs_write(MVC_PARAMS "drop_thread_hold", "0");
 	if (h->fp) {
@@ -1281,6 +1306,18 @@ static long ioc_start(struct sc2_dev *h, void __user *p)
 	pr_info("start %ux%u %s (direct)\n", s.width, s.height, h->fp ? "frame packed" : "2D");
 	kick(h);
 	return copy_to_user(p, &s, sizeof(s)) ? -EFAULT : 0;
+
+fail_display:
+	if (h->display) {
+		mvc3d_display_give_back();
+		h->display = false;
+	}
+fail_hooks:
+	if (fp)
+		mvc3d_fp_hooks(false);
+fail_pool:
+	mvc3d_pool_hooks(false);
+	return r;
 }
 
 static long ioc_wait(struct sc2_dev *h, void __user *p)
@@ -1447,6 +1484,9 @@ static ssize_t hw_write(struct file *f, const char __user *u, size_t n, loff_t *
 	mutex_lock(&h->mlock);
 	if (fp_armer && fp_armer != f) {
 		r = -EBUSY;
+	} else if (!fp_armer && mvc3d_fp_hooks(true)) {
+		/* the arming file holds the frame packing hooks until it is closed */
+		r = -ENODEV;
 	} else {
 		fp_armer = f;
 		mvc3d_fp_arm(true);
@@ -1479,6 +1519,7 @@ static int hw_release(struct inode *inode, struct file *f)
 		fp_armer = NULL;
 		if (!h->started)
 			mvc3d_fp_arm(false);
+		mvc3d_fp_hooks(false);
 	}
 	mutex_unlock(&h->mlock);
 	return 0;
@@ -1556,7 +1597,11 @@ static int __init sc2_init(void)
 	h->misc.minor = MISC_DYNAMIC_MINOR;
 	h->misc.name = HW_NAME;
 	h->misc.fops = &hw_fops;
-	h->misc.mode = 0600; /* root only: its one client, mvchwd, runs as root */
+	/*
+	 * players open it themselves: the Magisk module that loads mvc3d gives it its own SELinux type
+	 * (as signde's does for /dev/dvfel); a session belongs to the file that started it
+	 */
+	h->misc.mode = 0666;
 	r = misc_register(&h->misc);
 	if (r)
 		goto fail_thread;

@@ -219,22 +219,53 @@ bool mvc3d_pool_probes_on(void)
 	return ref_probe_on && alloc_probe_on;
 }
 
+/*
+ * The probes on the MVC decoder's allocations are only registered while a session runs (from its
+ * start until its stop): idle, the module is not on the decoders' paths. A probe given by name keeps
+ * the address register_kprobe() looked up, which a second registration refuses: cleared first.
+ */
+int mvc3d_pool_hooks(bool on)
+{
+	int r;
+
+	if (!on) {
+		if (ref_probe_on)
+			unregister_kprobe(&ref_probe);
+		if (alloc_probe_on)
+			unregister_kretprobe(&alloc_probe);
+		ref_probe_on = false;
+		alloc_probe_on = false;
+		return 0;
+	}
+	if (ref_probe_on && alloc_probe_on)
+		return 0;
+	ref_probe.addr = NULL;
+	ref_probe.flags = 0;
+	r = register_kprobe(&ref_probe);
+	ref_probe_on = !r;
+	if (r) {
+		pr_warn("no probe on amvdec_h264mvc init_canvas (%d): hardware MVC refused\n", r);
+		return -ENODEV;
+	}
+	alloc_probe.kp.addr = NULL;
+	alloc_probe.kp.flags = 0;
+	r = register_kretprobe(&alloc_probe);
+	alloc_probe_on = !r;
+	if (r) {
+		pr_warn("no probe on decoder_bmmu_box_alloc_buf_phy (%d): hardware MVC refused\n", r);
+		mvc3d_pool_hooks(false);
+		return -ENODEV;
+	}
+	return 0;
+}
+
 void mvc3d_pool_init(void)
 {
-	int r = register_kprobe(&ref_probe);
-
-	ref_probe_on = !r;
-	if (r)
-		pr_warn("no probe on amvdec_h264mvc init_canvas (%d): hardware MVC refused\n", r);
-	alloc_probe_on = !register_kretprobe(&alloc_probe);
 }
 
 void mvc3d_pool_exit(void)
 {
-	if (ref_probe_on)
-		unregister_kprobe(&ref_probe);
-	if (alloc_probe_on)
-		unregister_kretprobe(&alloc_probe);
+	mvc3d_pool_hooks(false);
 	cancel_work_sync(&pool_work);
 }
 

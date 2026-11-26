@@ -113,7 +113,7 @@
 #include <linux/amlogic/media/vout/vinfo.h>
 #include <linux/amlogic/media/vout/hdmi_tx21/hdmi_tx_module.h>
 
-#define MVC3D_MODULE_VERSION "2026.11.26.15-gazelle"
+#define MVC3D_MODULE_VERSION "2026.11.26.16-gazelle"
 
 #ifndef MODE_3D_ENABLE
 #define MODE_3D_ENABLE 0x00000001
@@ -147,6 +147,7 @@ struct sc2_dev {
 
 	struct file *owner;
 	bool started, prov_reg, routed, fp;
+	bool display; /* this session set up the display (own_display): put back at its stop */
 	u32 seq, gen;
 	struct slot slots[NSLOT];
 	int ready[NSLOT], ready_head, ready_cnt; /* got from the decoder, for MVC3D_HW_WAIT */
@@ -177,6 +178,7 @@ void mvc3d_in_worker(void (*fn)(void *), void *arg);
 /* mvc3d_fp.c */
 extern bool mvc3d_fp_ok, mvc3d_fp_armed, mvc3d_fp_on;
 void mvc3d_fp_init(void);
+int mvc3d_fp_hooks(bool on);
 void mvc3d_fp_exit(void);
 void mvc3d_fp_arm(bool on);
 int mvc3d_fp_3d_type(u32 type);
@@ -185,10 +187,18 @@ void mvc3d_fp_session_start(void);
 void mvc3d_fp_summary(void);
 void mvc3d_fp_stats(struct seq_file *m);
 
+/* mvc3d_sys.c */
+bool mvc3d_own_display(void);
+int mvc3d_sys_read(const char *path, char *buf, size_t size);
+int mvc3d_sys_write(const char *path, const char *val);
+int mvc3d_display_take(void);
+void mvc3d_display_give_back(void);
+
 /* mvc3d_pool.c */
 void mvc3d_pool_init(void);
 void mvc3d_pool_exit(void);
 bool mvc3d_pool_probes_on(void);
+int mvc3d_pool_hooks(bool on);
 int mvc3d_pool_get(struct device *dev);
 void mvc3d_pool_put(void);
 void mvc3d_pool_reset(void);

@@ -856,13 +856,19 @@ static struct kprobe psel_probe = { .pre_handler = psel_pre };
 static struct kprobe vdpos_probe = { .pre_handler = vdpos_pre };
 static struct kprobe vskip_probe = { .pre_handler = vskip_pre };
 static bool vftype_probe_on, vsf_probe_on, psel_probe_on, vdpos_probe_on, vskip_probe_on;
+static bool vftype_found, vsf_found, psel_found, vdpos_found, vskip_found;
 
-static bool fix_on(struct kprobe *kp, const struct fix_spot *s, const char *what)
+/*
+ * (at load) the fix's instruction checked (the 6 words from off - 0xc): its address goes to kp,
+ * the probe itself is only registered while a session runs (mvc3d_fp_hooks)
+ */
+static bool fix_find(struct kprobe *kp, const struct fix_spot *s, const char *what)
 {
 	struct kprobe k = { .symbol_name = s->sym };
 	u32 w[6];
 	u8 *a;
 
+	kp->addr = NULL;
 	if (register_kprobe(&k)) {
 		pr_warn("%s: no %s: fix off\n", what, s->sym);
 		return false;
@@ -874,11 +880,37 @@ static bool fix_on(struct kprobe *kp, const struct fix_spot *s, const char *what
 		return false;
 	}
 	kp->addr = (kprobe_opcode_t *)(a + s->off);
-	if (register_kprobe(kp)) {
-		pr_warn("%s: probe refused: fix off\n", what);
-		return false;
-	}
 	return true;
+}
+
+/*
+ * (Re)registration: register_kprobe() keeps the address it looked up for a probe given by name and
+ * refuses a probe with both a name and an address, so the address is cleared again first.
+ */
+static bool hook_kp(struct kprobe *kp, const char *what)
+{
+	int r;
+
+	if (kp->symbol_name)
+		kp->addr = NULL;
+	kp->flags = 0;
+	r = register_kprobe(kp);
+	if (r)
+		pr_warn("%s: probe refused (%d)\n", what, r);
+	return !r;
+}
+
+static bool hook_krp(struct kretprobe *rp, const char *what)
+{
+	int r;
+
+	if (rp->kp.symbol_name)
+		rp->kp.addr = NULL;
+	rp->kp.flags = 0;
+	r = register_kretprobe(rp);
+	if (r)
+		pr_warn("%s: probe refused (%d)\n", what, r);
+	return !r;
 }
 
 /*
@@ -933,13 +965,134 @@ void mvc3d_fp_conv_vf(struct vframe_s *vf)
 }
 
 /*
- * tests: fp_test=1 arms frame packing without a player (the next 1080p24/25/30 mode set is frame
- * packed)
+ * The hooks on the HDMI and video paths (mode set, ENCP, VSIF, HDCP, DRM plane, video window and
+ * the five instruction fixes) are only registered while someone needs frame packing: a session
+ * (MVC3D_HW_START in frame packed mode), an "arm" writer of /dev/mvc3dhw, or fp_test. Loaded and
+ * idle, the module is on none of those paths.
+ */
+static DEFINE_MUTEX(fp_hooks_lock);
+static int fp_hooks_users;
+
+/* (fp_hooks_lock held) every hook off, the hdmitx state back */
+static void fp_hooks_remove(void)
+{
+	struct hdmitx_dev *hd = p_get_hdmitx21_device ? p_get_hdmitx21_device() : NULL;
+
+	atomic_set(&fp_keep_stop, 1);
+	cancel_delayed_work_sync(&fp_keep_work);
+	if (plane_probe_on)
+		unregister_kprobe(&plane_check_probe);
+	if (win_probe_on)
+		unregister_kprobe(&win_probe);
+	if (vsf_probe_on)
+		unregister_kprobe(&vsf_probe);
+	if (psel_probe_on)
+		unregister_kprobe(&psel_probe);
+	if (vftype_probe_on)
+		unregister_kprobe(&vftype_probe);
+	if (vskip_probe_on)
+		unregister_kprobe(&vskip_probe);
+	if (vdpos_probe_on)
+		unregister_kprobe(&vdpos_probe);
+	if (hdcp_probe_on)
+		unregister_kprobe(&hdcp_probe);
+	if (wrrd_probe_on)
+		unregister_kretprobe(&wrrd_probe);
+	if (encp_probe_on)
+		unregister_kretprobe(&encp_probe);
+	if (setdisp_probe_on)
+		unregister_kretprobe(&setdisp_probe);
+	if (tvic_probe_on)
+		unregister_kretprobe(&tvic_probe);
+	if (fmtpara_probe_on)
+		unregister_kretprobe(&fmtpara_probe);
+	plane_probe_on = false;
+	win_probe_on = false;
+	vsf_probe_on = false;
+	psel_probe_on = false;
+	vftype_probe_on = false;
+	vskip_probe_on = false;
+	vdpos_probe_on = false;
+	hdcp_probe_on = false;
+	wrrd_probe_on = false;
+	encp_probe_on = false;
+	setdisp_probe_on = false;
+	tvic_probe_on = false;
+	fmtpara_probe_on = false;
+	cancel_delayed_work_sync(&fp_work);
+	if (hd && (READ_ONCE(mvc3d_fp_on) || fp_attr_forced)) {
+		/* (the output stays as it is until the next mode set) */
+		fp_flag(hd, false);
+		fp_attr(hd, false);
+		WRITE_ONCE(mvc3d_fp_on, false);
+	}
+}
+
+/* (process context) one user more (on) or less (off); 0 or -ENODEV */
+int mvc3d_fp_hooks(bool on)
+{
+	int r = 0;
+
+	if (!mvc3d_fp_ok)
+		return on ? -ENODEV : 0;
+	mutex_lock(&fp_hooks_lock);
+	if (on) {
+		if (fp_hooks_users++ == 0) {
+			fmtpara_probe_on = hook_krp(&fmtpara_probe, "mode set (fmtpara)");
+			tvic_probe_on = fmtpara_probe_on && hook_krp(&tvic_probe, "mode set (timing)");
+			if (!tvic_probe_on) {
+				fp_hooks_remove();
+				fp_hooks_users = 0;
+				pr_warn("no mode set probes: no frame packing\n");
+				r = -ENODEV;
+				goto out;
+			}
+			setdisp_probe_on = hook_krp(&setdisp_probe, "set_display");
+			encp_probe_on = p_hd21_write && p_hd21_read && hook_krp(&encp_probe, "ENCP");
+			wrrd_probe_on = wrrd_probe.kp.addr && hook_krp(&wrrd_probe, "VSIF re-assert");
+			hdcp_probe_on = hook_kp(&hdcp_probe, "HDCP");
+			plane_probe_on = hook_kp(&plane_check_probe, "DRM plane");
+			win_probe_on = hook_kp(&win_probe, "video window");
+			vftype_probe_on = vftype_found && hook_kp(&vftype_probe, "vftype");
+			vsf_probe_on = vsf_found && hook_kp(&vsf_probe, "vsf");
+			psel_probe_on = psel_found && hook_kp(&psel_probe, "psel");
+			vdpos_probe_on = vdpos_found && hook_kp(&vdpos_probe, "vdpos");
+			vskip_probe_on = vskip_found && hook_kp(&vskip_probe, "vskip");
+			atomic_set(&fp_keep_stop, 0);
+			mod_delayed_work(system_wq, &fp_keep_work, msecs_to_jiffies(1000));
+			pr_info("frame packing hooks on (ENCP %d re-assert %d set_display %d; fixes vftype %d vsf %d psel %d vdpos %d vskip %d)\n",
+				encp_probe_on, wrrd_probe_on, setdisp_probe_on, vftype_probe_on,
+				vsf_probe_on, psel_probe_on, vdpos_probe_on, vskip_probe_on);
+		}
+	} else if (fp_hooks_users > 0 && --fp_hooks_users == 0) {
+		fp_hooks_remove();
+		pr_info("frame packing hooks off\n");
+	}
+out:
+	mutex_unlock(&fp_hooks_lock);
+	return r;
+}
+
+/*
+ * tests: fp_test=1 arms frame packing without a player (hooks on; the next 1080p24/25/30 mode set
+ * is frame packed); set a 2D mode (e.g. 1080p60hz) first, then fp_test=0 (disarmed, hooks off)
  */
 static int fp_test;
+static bool fp_test_ref;
 static void fp_test_fn(struct work_struct *w)
 {
-	mvc3d_fp_arm(READ_ONCE(fp_test) != 0);
+	bool on = READ_ONCE(fp_test) != 0;
+
+	if (on && !fp_test_ref) {
+		if (mvc3d_fp_hooks(true))
+			return;
+		fp_test_ref = true;
+		mvc3d_fp_arm(true);
+	} else if (!on && fp_test_ref) {
+		mvc3d_fp_arm(false);
+		fp_test_ref = false;
+		mvc3d_fp_hooks(false);
+	}
 }
 static DECLARE_WORK(fp_test_work, fp_test_fn);
 
@@ -955,8 +1108,9 @@ static const struct kernel_param_ops fp_test_ops = { .set = fp_test_set, .get = 
 module_param_cb(fp_test, &fp_test_ops, &fp_test, 0644);
 MODULE_PARM_DESC(
 	fp_test,
-	"tests: 1 = frame packing armed without a player (next 1080p24/25/30 mode set), 0 = disarmed");
+	"tests: 1 = frame packing armed and hooked without a player, 0 = off (set a 2D mode first)");
 
+/* (at load) everything checked and looked up; no hook is registered here (mvc3d_fp_hooks) */
 void mvc3d_fp_init(void)
 {
 	const struct hdmi_timing *(*tvic)(enum hdmi_vic vic);
@@ -999,92 +1153,40 @@ void mvc3d_fp_init(void)
 		return;
 	}
 	INIT_DELAYED_WORK(&fp_work, fp_work_fn);
-	fmtpara_probe_on = !register_kretprobe(&fmtpara_probe);
-	tvic_probe_on = fmtpara_probe_on && !register_kretprobe(&tvic_probe);
-	if (!tvic_probe_on) {
-		if (fmtpara_probe_on)
-			unregister_kretprobe(&fmtpara_probe);
-		fmtpara_probe_on = false;
-		pr_warn("no mode set probes: no frame packing\n");
-		return;
-	}
-	setdisp_probe_on = !register_kretprobe(&setdisp_probe);
 	p_infoframe_send = (void *)kallsyms_lookup_name("hdmitx_infoframe_send");
 	p_hd21_write = (void *)kallsyms_lookup_name("hd21_write_reg");
 	p_hd21_read = (void *)kallsyms_lookup_name("hd21_read_reg");
-	encp_probe_on = p_hd21_write && p_hd21_read && !register_kretprobe(&encp_probe);
 	wrrd_probe.kp.addr = (kprobe_opcode_t *)kallsyms_lookup_name(
 		"_tpi_infoframe_wrrd.llvm.6229976626646311496");
-	wrrd_probe_on = wrrd_probe.kp.addr && !register_kretprobe(&wrrd_probe);
 	p_infoframe_rawget = (void *)kallsyms_lookup_name("hdmitx_infoframe_rawget");
 	INIT_DELAYED_WORK(&fp_keep_work, fp_keep_fn);
+	atomic_set(&fp_keep_stop, 1);
 	fp_keep_ok = true;
-	hdcp_probe_on = !register_kprobe(&hdcp_probe);
 	p_is_amdv_on = (void *)kallsyms_lookup_name("is_amdv_on");
 	p_is_amdv_enable = (void *)kallsyms_lookup_name("is_amdv_enable");
-	schedule_delayed_work(&fp_keep_work, msecs_to_jiffies(1000));
-	plane_probe_on = !register_kprobe(&plane_check_probe);
-	win_probe_on = !register_kprobe(&win_probe);
-	vftype_probe_on = fix_on(&vftype_probe, &vftype_spot, "vftype");
-	vsf_probe_on = fix_on(&vsf_probe, &vsf_spot, "vsf");
-	psel_probe_on = fix_on(&psel_probe, &psel_spot, "psel");
-	vdpos_probe_on = fix_on(&vdpos_probe, &vdpos_spot, "vdpos");
-	vskip_probe_on = fix_on(&vskip_probe, &vskip_spot, "vskip");
+	vftype_found = fix_find(&vftype_probe, &vftype_spot, "vftype");
+	vsf_found = fix_find(&vsf_probe, &vsf_spot, "vsf");
+	psel_found = fix_find(&psel_probe, &psel_spot, "psel");
+	vdpos_found = fix_find(&vdpos_probe, &vdpos_spot, "vdpos");
+	vskip_found = fix_find(&vskip_probe, &vskip_spot, "vskip");
 	mvc3d_fp_ok = true;
-	pr_info("HDMI frame packing ready (hdmitx21, attr \"%s\"; ENCP table %d, infoframe_send %d re-assert %d set_display %d window %d; fixes vftype %d vsf %d psel %d vdpos %d vskip %d)\n",
-		attr, encp_probe_on, !!p_infoframe_send, wrrd_probe_on, setdisp_probe_on,
-		!!p_set_video_window_ext, vftype_probe_on, vsf_probe_on, psel_probe_on,
-		vdpos_probe_on, vskip_probe_on);
+	pr_info("HDMI frame packing ready (hdmitx21, attr \"%s\"; infoframe_send %d window %d; fixes found vftype %d vsf %d psel %d vdpos %d vskip %d; hooks per session)\n",
+		attr, !!p_infoframe_send, !!p_set_video_window_ext, vftype_found, vsf_found,
+		psel_found, vdpos_found, vskip_found);
 }
 
 void mvc3d_fp_exit(void)
 {
-	struct hdmitx_dev *hd = p_get_hdmitx21_device ? p_get_hdmitx21_device() : NULL;
-
 	if (mvc3d_fp_ok)
 		cancel_work_sync(&fp_test_work);
-	if (plane_probe_on)
-		unregister_kprobe(&plane_check_probe);
-	if (win_probe_on)
-		unregister_kprobe(&win_probe);
-	if (vsf_probe_on)
-		unregister_kprobe(&vsf_probe);
-	if (psel_probe_on)
-		unregister_kprobe(&psel_probe);
-	if (vftype_probe_on)
-		unregister_kprobe(&vftype_probe);
-	if (vskip_probe_on)
-		unregister_kprobe(&vskip_probe);
-	if (vdpos_probe_on)
-		unregister_kprobe(&vdpos_probe);
-	if (hdcp_probe_on)
-		unregister_kprobe(&hdcp_probe);
-	if (fp_keep_ok) {
-		atomic_set(&fp_keep_stop, 1);
-		cancel_delayed_work_sync(&fp_keep_work);
-	}
-	if (wrrd_probe_on)
-		unregister_kretprobe(&wrrd_probe);
-	if (encp_probe_on)
-		unregister_kretprobe(&encp_probe);
-	if (setdisp_probe_on)
-		unregister_kretprobe(&setdisp_probe);
-	if (tvic_probe_on)
-		unregister_kretprobe(&tvic_probe);
-	if (fmtpara_probe_on)
-		unregister_kretprobe(&fmtpara_probe);
-	if (mvc3d_fp_ok)
-		cancel_delayed_work_sync(&fp_work);
-	if (hd && (mvc3d_fp_on || fp_attr_forced)) {
-		/*
-		 * (the output stays as it is until the next mode set: the restore command does
-		 * that)
-		 */
-		fp_flag(hd, false);
-		fp_attr(hd, false);
-	}
 	if (mvc3d_fp_armed)
 		mvc3d_fp_arm(false);
+	mutex_lock(&fp_hooks_lock);
+	if (fp_hooks_users) {
+		fp_hooks_remove();
+		fp_hooks_users = 0;
+	}
+	mutex_unlock(&fp_hooks_lock);
 }
 
 /*
