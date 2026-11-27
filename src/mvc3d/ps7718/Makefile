@@ -3,6 +3,5 @@
 # See README.md for the build.
 obj-m += mvc3d.o
 mvc3d-y := mvc3d_main.o mvc3d_fp.o mvc3d_pool.o mvc3d_sys.o mvc3d_ui.o
-# mvc3d_ui.c: the VPU pipeline state of the meson DRM driver (its include paths)
-CFLAGS_mvc3d_ui.o += -I$(srctree)/drivers/amlogic/drm -I$(srctree)/drivers/amlogic/drm/vpu-hw
-CFLAGS_mvc3d_ui.o += -I$(srctree)/drivers/staging/android -I$(srctree)/drivers/amlogic/media
+# mvc3d_ui.c: the framebuffer OSD driver's frame info (osd/osd.h, osd/osd_sync.h)
+CFLAGS_mvc3d_ui.o += -I$(srctree)/drivers/amlogic/media

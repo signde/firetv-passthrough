@@ -1254,7 +1254,7 @@ void mvc3d_fp_session_start(void)
 void mvc3d_fp_summary(void)
 {
 	if (mvc3d_fp_ok)
-		pr_info("VSIF checks %llu lost %llu, HDCP auths %llu, 3D type set again %llu, UI planes stretched %llu\n",
+		pr_info("VSIF checks %llu lost %llu, HDCP auths %llu, 3D type set again %llu, UI frames over both eyes %llu\n",
 			fp_vsif_checks, fp_vsif_lost, fp_hdcp_auths, fp_3d_reasserts,
 			mvc3d_ui3d_stretched());
 }

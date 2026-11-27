@@ -3,19 +3,24 @@
  * mvc3d: the Android UI over both eyes of a frame packed session (ui_3d=1).
  *
  * Frame packed 1080p is a 1920x2205 frame (left eye lines 0-1079, 45 blank lines, right eye 1125-2204) set
- * behind Android's back: Android still composes its UI at 1920x1080, and the DRM plane code clips each UI
- * plane to that 1080-line mode. Here the planes' destinations are stretched by 2205/1080 when the VPU
- * pipeline is worked out (vpu_pipeline_traverse: the OSD scalers and blend windows come from them), so the
- * UI covers the whole frame: a player that draws its UI once per eye - rows 0-529 for the left eye, rows
- * 551-1080 for the right one, as Kodi does with its GUI in frame packed mode at full height - shows menus
- * and subtitles in 3D. Only for a player that asks for it (MVC3D_HW_F_UI3D in its START): for any other
- * player, and with ui_3d=0, the UI is hidden for the session, as before.
+ * behind Android's back: Android still composes its UI at 1920x1080. On Fire OS 7.7.1.4 the composer shows
+ * the UI through the framebuffer OSD driver in its HWC (layers) mode, not through DRM: each frame is an
+ * osd_layers_fence_map_s whose disp_info places the composed background (1920x1080) on the screen, and
+ * osd_setting_blend() scales it by position / background in the OSD free scaler. Here, when the OSD driver
+ * takes a frame (_osd_pan_display_layers_fence), its position is stretched by 2205/1080, so the UI covers the
+ * whole frame: a player that draws its UI once per eye - rows 0-529 for the left eye, rows 551-1080 for the
+ * right one, as Kodi does with its GUI in frame packed mode at full height - shows menus and subtitles in 3D.
+ * Only for a player that asks for it (MVC3D_HW_F_UI3D in its START): for any other player, and with
+ * ui_3d=0, the UI is hidden for the session, as before.
  *
- * struct meson_vpu_pipeline_state / meson_vpu_osd_layer_info from the 7.7.1.4 headers; checked by their
- * values before use.
+ * (Measured 2026-11-26: over 4 s of UI updates, 130 frames through osd_sync_request_render and
+ * osd_toggle_buffer, none through DRM's atomic commit, where the .17/.18 hook was.)
+ *
+ * struct osd_layers_fence_map_s / display_flip_info_s from the 7.7.1.4 OSD headers; the values are checked
+ * before anything is written.
  */
 #include "mvc3d.h"
-#include "meson_vpu_pipeline.h"
+#include "osd/osd.h"
 
 static int ui_3d = 1;
 module_param(ui_3d, int, 0644);
@@ -26,84 +31,62 @@ MODULE_PARM_DESC(
 static int ui_base_h, ui_out_h;	/* 1080, 2205 */
 static bool ui_probe_on, ui_layout_bad;
 static bool ui_wanted;	/* this session's player draws its UI per eye (it asked: MVC3D_HW_F_UI3D) */
-static u64 ui_stretched;
-
-/* what this hook wrote last per plane, so a second pass over the same state does not stretch twice */
-static struct {
-	void *mvps;
-	int y;
-	u32 h;
-} ui_last[MESON_MAX_OSDS];
+static u64 ui_stretched, ui_other;
 
 /*
- * The 7.7.1.4 layout, checked by values before anything is written: every slot's enable is 0/1; an
- * enabled slot is the plane meson_plane_atomic_check() just filled in: its plane_index is its slot,
- * its source a real buffer's (1-4096 wide and high, inside the buffer).
+ * A frame's display info, checked by its values: 1 to stretch, 0 nothing to do (not a 1080-line UI on the
+ * 1080-line screen, or already stretched), -1 not the expected layout
  */
-/* 1: sane, 0: no enabled plane (nothing to do), -1: not the expected layout */
-static int layout_sane(struct meson_vpu_pipeline_state *mvps)
+static int disp_info_check(const struct display_flip_info_s *d)
 {
-	int i, enabled = 0;
-
-	for (i = 0; i < MESON_MAX_OSDS; i++) {
-		struct meson_vpu_osd_layer_info *p = &mvps->plane_info[i];
-
-		if (p->enable > 1)
-			return -1;
-		if (!p->enable)
-			continue;
-		enabled++;
-		if (p->plane_index != i || !p->src_w || p->src_w > 4096 || !p->src_h ||
-		    p->src_h > 4096 || p->dst_w > 8192 || p->dst_h > 8192 ||
-		    (p->fb_w && p->src_w > p->fb_w))
-			return -1;
-	}
-	return enabled > 0;
+	if (!d->background_w || d->background_w > 4096 || !d->background_h || d->background_h > 4096 ||
+	    !d->position_w || d->position_w > 8192 || !d->position_h || d->position_h > 8192 ||
+	    d->position_x > 8192 || d->position_y > 8192)
+		return -1;
+	if (d->background_h != (u32)ui_base_h || d->position_y + d->position_h > (u32)ui_base_h)
+		return 0;
+	return 1;
 }
 
-/* vpu_pipeline_traverse(mvps, state): x0 = mvps */
-static int ui_traverse_pre(struct kprobe *kp, struct pt_regs *regs)
+/* _osd_pan_display_layers_fence(output_index, vinfo, fence_map): x0, x1, x2; in the buffer toggle worker */
+static int ui_pan_pre(struct kprobe *kp, struct pt_regs *regs)
 {
-	struct meson_vpu_pipeline_state *mvps = (void *)regs->regs[0];
-	int i, r;
+	struct osd_layers_fence_map_s *fm = (void *)regs->regs[2];
+	struct display_flip_info_s *d;
+	u32 y, h;
+	int r;
 
-	if (!READ_ONCE(mvc3d_fp_on) || !READ_ONCE(ui_wanted) || !READ_ONCE(ui_3d) || ui_layout_bad ||
-	    !mvps || !ui_base_h)
+	if (regs->regs[0] != VIU1 || !READ_ONCE(mvc3d_fp_on) || !READ_ONCE(ui_wanted) || !READ_ONCE(ui_3d) ||
+	    ui_layout_bad || !ui_base_h || !fm || !virt_addr_valid(fm))
 		return 0;
-	r = layout_sane(mvps);
-	if (!r)
-		return 0;
+	d = &fm->disp_info;
+	r = disp_info_check(d);
 	if (r < 0) {
 		ui_layout_bad = true;
-		pr_warn("ui_3d: VPU pipeline state not the 7.7.1.4 layout: UI not stretched\n");
+		pr_warn("ui_3d: OSD frame info not as expected (background %ux%u, position %u,%u %ux%u): UI not stretched\n",
+			d->background_w, d->background_h, d->position_x, d->position_y, d->position_w,
+			d->position_h);
 		return 0;
 	}
-	for (i = 0; i < MESON_MAX_OSDS; i++) {
-		struct meson_vpu_osd_layer_info *p = &mvps->plane_info[i];
-		int y;
-		u32 h;
-
-		if (!p->enable || !p->dst_h)
-			continue;
-		if (ui_last[i].mvps == mvps && ui_last[i].y == p->dst_y && ui_last[i].h == p->dst_h)
-			continue;
-		if (p->dst_y < 0 || p->dst_y + p->dst_h > (u32)ui_base_h)
-			continue;
-		y = p->dst_y * ui_out_h / ui_base_h;
-		h = (p->dst_y + p->dst_h) * ui_out_h / ui_base_h - y;
-		p->dst_y = y;
-		p->dst_h = h;
-		ui_last[i].mvps = mvps;
-		ui_last[i].y = y;
-		ui_last[i].h = h;
-		ui_stretched++;
+	if (!r) {
+		ui_other++;
+		return 0;
 	}
+	y = d->position_y * ui_out_h / ui_base_h;
+	h = (d->position_y + d->position_h) * ui_out_h / ui_base_h - y;
+	if (!ui_stretched)
+		pr_info("ui_3d: UI over both eyes (OSD background %ux%u, position %u,%u %ux%u -> y %u h %u)\n",
+			d->background_w, d->background_h, d->position_x, d->position_y, d->position_w,
+			d->position_h, y, h);
+	d->position_y = y;
+	d->position_h = h;
+	ui_stretched++;
 	return 0;
 }
 
 static struct kprobe ui_probe = {
-	.symbol_name = "vpu_pipeline_traverse",
-	.pre_handler = ui_traverse_pre,
+	.symbol_name = "_osd_pan_display_layers_fence",
+	.pre_handler = ui_pan_pre,
 };
 
 /*
@@ -115,8 +98,12 @@ void mvc3d_ui3d_hooks(bool on, int base_h, int out_h)
 	int r;
 
 	if (!on) {
-		if (ui_probe_on)
+		if (ui_probe_on) {
 			unregister_kprobe(&ui_probe);
+			if (ui_stretched || ui_other)
+				pr_info("ui_3d: %llu frames over both eyes, %llu left as they were\n",
+					ui_stretched, ui_other);
+		}
 		ui_probe_on = false;
 		WRITE_ONCE(ui_wanted, false);
 		return;
@@ -125,14 +112,14 @@ void mvc3d_ui3d_hooks(bool on, int base_h, int out_h)
 		return;
 	ui_base_h = base_h;
 	ui_out_h = out_h;
-	memset(ui_last, 0, sizeof(ui_last));
 	ui_stretched = 0;
+	ui_other = 0;
 	ui_probe.addr = NULL;
 	ui_probe.flags = 0;
 	r = register_kprobe(&ui_probe);
 	ui_probe_on = !r;
 	if (r)
-		pr_warn("ui_3d: no probe on vpu_pipeline_traverse (%d): UI hidden in 3D\n", r);
+		pr_warn("ui_3d: no probe on _osd_pan_display_layers_fence (%d): UI hidden in 3D\n", r);
 }
 
 /*
