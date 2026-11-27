@@ -5,10 +5,10 @@
  * Frame packed 1080p is a 1920x2205 frame (left eye lines 0-1079, 45 blank lines, right eye 1125-2204) set
  * behind Android's back: Android still composes its UI at 1920x1080. On Fire OS 7.7.1.4 the composer shows
  * the UI through the framebuffer OSD driver in its HWC (layers) mode, not through DRM: each frame is an
- * osd_layers_fence_map_s whose disp_info places the composed background (1920x1080) on the screen, and
- * osd_setting_blend() scales it by position / background in the OSD free scaler. Here, when the OSD driver
- * takes a frame (_osd_pan_display_layers_fence), its position is stretched by 2205/1080, so the UI covers the
- * whole frame: a player that draws its UI once per eye - rows 0-529 for the left eye, rows 551-1080 for the
+ * osd_layers_fence_map_s with a destination per OSD layer (in screen rows) and a disp_info placing the
+ * composed background on the screen; osd_setting_blend() scales each layer to its destination in the OSD
+ * free scaler. Here, when the OSD driver takes a frame (_osd_pan_display_layers_fence), the layers'
+ * destinations (and the position) are stretched by 2205/1080, so the UI covers the whole frame: a player that draws its UI once per eye - rows 0-529 for the left eye, rows 551-1080 for the
  * right one, as Kodi does with its GUI in frame packed mode at full height - shows menus and subtitles in 3D.
  * Only for a player that asks for it (MVC3D_HW_F_UI3D in its START): for any other player, and with
  * ui_3d=0, the UI is hidden for the session, as before.
@@ -34,14 +34,16 @@ static bool ui_wanted;	/* this session's player draws its UI per eye (it asked: 
 static u64 ui_stretched, ui_other;
 
 /*
- * A frame's display info, checked by its values: 1 to stretch, 0 nothing to do (not a 1080-line UI on the
- * 1080-line screen, or already stretched), -1 not the expected layout
+ * A frame's display info, checked by its values: 1 to stretch, 0 nothing to do (an empty one - a frame with
+ * nothing to place, as during a mode set -, not a 1080-line UI on the 1080-line screen, or already
+ * stretched), -1 not the expected layout
  */
 static int disp_info_check(const struct display_flip_info_s *d)
 {
-	if (!d->background_w || d->background_w > 4096 || !d->background_h || d->background_h > 4096 ||
-	    !d->position_w || d->position_w > 8192 || !d->position_h || d->position_h > 8192 ||
-	    d->position_x > 8192 || d->position_y > 8192)
+	if (!d->background_w || !d->background_h || !d->position_w || !d->position_h)
+		return 0;
+	if (d->background_w > 4096 || d->background_h > 4096 || d->position_w > 8192 ||
+	    d->position_h > 8192 || d->position_x > 8192 || d->position_y > 8192)
 		return -1;
 	if (d->background_h != (u32)ui_base_h || d->position_y + d->position_h > (u32)ui_base_h)
 		return 0;
@@ -54,7 +56,7 @@ static int ui_pan_pre(struct kprobe *kp, struct pt_regs *regs)
 	struct osd_layers_fence_map_s *fm = (void *)regs->regs[2];
 	struct display_flip_info_s *d;
 	u32 y, h;
-	int r;
+	int r, i, layers = 0;
 
 	if (regs->regs[0] != VIU1 || !READ_ONCE(mvc3d_fp_on) || !READ_ONCE(ui_wanted) || !READ_ONCE(ui_3d) ||
 	    ui_layout_bad || !ui_base_h || !fm || !virt_addr_valid(fm))
@@ -72,15 +74,34 @@ static int ui_pan_pre(struct kprobe *kp, struct pt_regs *regs)
 		ui_other++;
 		return 0;
 	}
+	/*
+	 * The layers: on this OSD (osd0_sc_independ: set_blend_path_new / osd_set_freescale_new) each layer is
+	 * scaled straight to its own destination, which the composer gives in screen rows; the position below
+	 * is for the other blend path, stretched too so that both agree.
+	 */
+	for (i = 0; i < HW_OSD_COUNT; i++) {
+		struct layer_fence_map_s *l = &fm->layer_map[i];
+
+		if (!l->enable || l->fb_index != i || !l->dst_w || !l->dst_h || l->dst_h > 4096 ||
+		    l->dst_y + l->dst_h > (u32)ui_base_h)
+			continue;
+		y = l->dst_y * ui_out_h / ui_base_h;
+		h = (l->dst_y + l->dst_h) * ui_out_h / ui_base_h - y;
+		if (!ui_stretched)
+			pr_info("ui_3d: UI over both eyes: osd%d %u,%u %ux%u -> y %u h %u\n", i, l->dst_x,
+				l->dst_y, l->dst_w, l->dst_h, y, h);
+		l->dst_y = y;
+		l->dst_h = h;
+		layers++;
+	}
 	y = d->position_y * ui_out_h / ui_base_h;
 	h = (d->position_y + d->position_h) * ui_out_h / ui_base_h - y;
-	if (!ui_stretched)
-		pr_info("ui_3d: UI over both eyes (OSD background %ux%u, position %u,%u %ux%u -> y %u h %u)\n",
-			d->background_w, d->background_h, d->position_x, d->position_y, d->position_w,
-			d->position_h, y, h);
 	d->position_y = y;
 	d->position_h = h;
-	ui_stretched++;
+	if (layers)
+		ui_stretched++;
+	else
+		ui_other++;
 	return 0;
 }
 
