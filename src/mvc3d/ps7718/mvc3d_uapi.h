@@ -47,8 +47,11 @@ struct mvc3d_hw_start {
 	__u32 out_height;	/* out: 2D: height; FP: 2 * height + active space */
 	__u32 stride;		/* out: unused in direct mode */
 	__u32 gen;		/* out: pictures of this start have this gen (FLUSH changes it) */
-	__u32 reserved[2];	/* in: reserved[1] = MVC3D_HW_F_UI3D asked or 0; out: reserved[0] =
-				 * MVC3D_HW_F_DIRECT, reserved[1] = MVC3D_HW_F_UI3D granted or 0 */
+	/*
+	 * in: reserved[1] = MVC3D_HW_F_UI3D asked or 0;
+	 * out: reserved[0] = MVC3D_HW_F_DIRECT, reserved[1] = MVC3D_HW_F_UI3D granted or 0
+	 */
+	__u32 reserved[2];
 };
 
 struct mvc3d_hw_buf {
