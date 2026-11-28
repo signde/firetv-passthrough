@@ -85,17 +85,17 @@ def main():
              'bin/gazelle-hdmi-profiles.dex', 'src/GazelleHdmiProfiles.java', 'tools/build-gazelle-hdmi-profiles.sh', 'module.prop', 'service.sh', 'customize.sh', 'README.md', 'config.sh',
              'verify-firmware.sh', 'src/native.c',
              'src/agent.js', 'src/karat.js', 'src/gazelle-mode.js', 'src/gazelle-dsp.js', 'src/gazelle-truehd.js', 'LICENSE', 'NOTICE.md', 'CHANGELOG.md', 'build.py', 'build-video.sh']
-    names += [p.relative_to(ROOT).as_posix() for directory in ('firmware', 'licenses', 'third_party', 'scripts', 'video', 'src/fel')
-              for p in sorted((ROOT/directory).rglob('*')) if p.is_file() and 'node_modules' not in p.parts and '__pycache__' not in p.parts and not any(part.startswith('.') for part in p.relative_to(ROOT).parts) and not ('src' in p.relative_to(ROOT).parts and p.suffix == '.ko') and p.suffix not in ('.pyc', '.pyo', '.o', '.cmd', '.mod') and p.name not in ('Module.symvers', 'modules.order', 'dvfel.mod.c', 'gazelle_link.mod.c')]
+    names += [p.relative_to(ROOT).as_posix() for directory in ('firmware', 'licenses', 'third_party', 'scripts', 'video', 'src/fel', 'src/mvc3d')
+              for p in sorted((ROOT/directory).rglob('*')) if p.is_file() and 'node_modules' not in p.parts and '__pycache__' not in p.parts and not any(part.startswith('.') for part in p.relative_to(ROOT).parts) and not ('src' in p.relative_to(ROOT).parts and p.suffix == '.ko') and p.suffix not in ('.pyc', '.pyo', '.o', '.cmd', '.mod') and p.name not in ('Module.symvers', 'modules.order', 'dvfel.mod.c', 'mvc3d.mod.c', 'gazelle_link.mod.c')]
     # Leftover HDR experiments must not enter the audio/FEL package.
     names = [name for name in names
              if not name.startswith(('src/video/', 'video/link/', 'video/sinks/', 'third_party/frida-java-bridge/'))
              and name not in ('action.sh', 'uninstall.sh', 'video/classes.dex', 'video/guard-template.js', 'video/supervise.sh')]
-    for required in ('video/fel/ps7702/dvfel.ko', 'video/fel/ps7713/dvfel.ko', 'video/fel/ps7714_5503/dvfel.ko', 'video/fel/ps7714_5506/dvfel.ko', 'video/fel/ps7714_5507/dvfel.ko', 'video/fel/ps7715/dvfel.ko', 'video/fel/ps7712/dvfel.ko', 'video/fel/ps7711/dvfel.ko', 'video/fel/ps7717/dvfel.ko', 'video/fel/ps7717_5746/dvfel.ko', 'video/fel/ps7718/dvfel.ko'):
+    for required in ('video/fel/ps7702/dvfel.ko', 'video/fel/ps7713/dvfel.ko', 'video/fel/ps7714_5503/dvfel.ko', 'video/fel/ps7714_5506/dvfel.ko', 'video/fel/ps7714_5507/dvfel.ko', 'video/fel/ps7715/dvfel.ko', 'video/fel/ps7712/dvfel.ko', 'video/fel/ps7711/dvfel.ko', 'video/fel/ps7717/dvfel.ko', 'video/fel/ps7717_5746/dvfel.ko', 'video/fel/ps7718/dvfel.ko', 'video/mvc3d/ps7718/mvc3d.ko'):
         if not (ROOT/required).is_file():
             parser.error('Run build-video.sh first: missing '+required)
     subprocess.run(['python3', str(ROOT/'video-build-inputs.py'), 'check'], check=True)
-    names += ['video-build-inputs.py', 'BUILDING.md', 'docs/FEL-INTERFACE.md']
+    names += ['video-build-inputs.py', 'BUILDING.md', 'docs/FEL-INTERFACE.md', 'docs/MVC3D-INTERFACE.md']
     stage = stage_files(names)
     for pattern, count, script, output in (
         ('ps*.sha256', 4, 'agent.js', 'runtime.js'),

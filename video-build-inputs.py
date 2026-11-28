@@ -8,13 +8,14 @@ import sys
 ROOT = Path(__file__).resolve().parent
 STAMP = ROOT/'video/build-inputs.json'
 PAYLOADS = [f'video/fel/{profile}/dvfel.ko' for profile in ('ps7702', 'ps7711', 'ps7712', 'ps7713', 'ps7714_5503', 'ps7714_5506', 'ps7714_5507', 'ps7715', 'ps7717', 'ps7717_5746', 'ps7718')]
+PAYLOADS += [f'video/mvc3d/{profile}/mvc3d.ko' for profile in ('ps7718',)]
 
 def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 def current():
     paths = [ROOT/'build-video.sh', ROOT/'video-build-inputs.py']
-    for directory in ('src/fel',):
+    for directory in ('src/fel', 'src/mvc3d'):
         for p in (ROOT/directory).rglob('*'):
             if not p.is_file() or 'node_modules' in p.parts or p.name == 'guard-local.ts':
                 continue
